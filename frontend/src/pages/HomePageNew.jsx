@@ -30,6 +30,7 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
+  Sparkles,
 } from "lucide-react";
 import IluminatiLogo from "../components/IluminatiLogo";
 import ForceGraph from "../components/ForceGraph";
@@ -281,7 +282,8 @@ export default function HomePageNew() {
   }, [data, isAuthenticated, mainCompany, query, token]);
 
   return (
-    <>
+    <div className="min-h-screen bg-[#020617] font-sans text-slate-100 overflow-x-hidden relative">
+      <div className="aether-bg"></div>
       <SEOHead
         title={
           showResults && data
@@ -294,9 +296,8 @@ export default function HomePageNew() {
             : "Komplexná hĺbková analýza obchodných partnerov, vlastníckych štruktúr a finančného zdravia firiem v regióne strednej Európy (SK, CZ, PL, HU)."
         }
       />
-      <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
-        {loading && !showResults && <PremiumLoader />}
-        <style>{`
+      {loading && !showResults && <PremiumLoader />}
+      <style>{`
         .font-heading { font-family: 'Playfair Display', serif; }
         .font-sans { font-family: 'Inter', sans-serif; }
         .slovak-blue-bg { background-color: #0B4EA2; }
@@ -306,826 +307,505 @@ export default function HomePageNew() {
         .shadow-corp { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
       `}</style>
 
-        {/* --- NAVBAR --- */}
-        <nav className="fixed top-0 w-full z-50 bg-white border-b border-slate-200 shadow-sm h-20">
-          <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-            <div
-              className="flex items-center gap-3 cursor-pointer"
+      {/* --- NAVBAR --- */}
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div
+            className="flex items-center gap-3 group cursor-pointer"
+            onClick={() => {
+              setShowResults(false);
+              setData(null);
+              window.scrollTo(0, 0);
+            }}
+          >
+            <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-2 rounded-lg shadow-lg group-hover:shadow-blue-500/20 transition-all">
+              <IluminatiLogo size={28} />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white font-heading">
+              ILUMINATI <span className="text-blue-400 font-light">SYSTEM</span>
+            </span>
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <NavBtn
+              label="Monitoring"
+              active={!showResults}
               onClick={() => {
                 setShowResults(false);
                 setData(null);
                 window.scrollTo(0, 0);
               }}
-            >
-              <IluminatiLogo size={36} />
-              <div className="flex flex-col border-l border-slate-300 pl-4">
-                <span className="font-heading font-bold text-slate-900 text-xl tracking-tight leading-none">
-                  ILUMINATI
-                </span>
-                <span className="text-xs text-slate-500 uppercase tracking-widest mt-1">
-                  Enterprise System
-                </span>
-              </div>
-            </div>
-
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-8">
-              <NavBtn
-                label="Monitoring"
-                active={!showResults}
-                onClick={() => {
-                  setShowResults(false);
-                  setData(null);
-                  window.scrollTo(0, 0);
-                }}
-              />
-              <NavBtn
-                label="Legislatíva & Compliance"
-                onClick={() => navigate("/vop")}
-              />
-              <button
-                onClick={toggleTheme}
-                className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                title={
-                  theme === "dark"
-                    ? "Prepnúť na svetlý režim"
-                    : "Prepnúť na tmavý režim"
-                }
-              >
-                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-              {isAuthenticated ? (
-                <button
-                  className="px-6 py-2.5 slovak-blue-bg text-white hover:bg-blue-800 transition-colors font-medium text-sm rounded-md shadow-sm flex items-center gap-2"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  <Lock size={14} />
-                  Dashboard
-                </button>
-              ) : (
-                <button
-                  className="px-6 py-2.5 slovak-blue-bg text-white hover:bg-blue-800 transition-colors font-medium text-sm rounded-md shadow-sm flex items-center gap-2"
-                  onClick={() => navigate("/login")}
-                >
-                  <Lock size={14} />
-                  Prihlásiť sa
-                </button>
-              )}
-            </div>
-
+            />
+            <NavBtn
+              label="Legislatíva & Compliance"
+              onClick={() => navigate("/vop")}
+            />
             <button
-              className="md:hidden text-slate-700"
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={toggleTheme}
+              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+              title={
+                theme === "dark"
+                  ? "Prepnúť na svetlý režim"
+                  : "Prepnúť na tmavý režim"
+              }
             >
-              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            {isAuthenticated ? (
+              <button
+                className="px-6 py-2.5 slovak-blue-bg text-white hover:bg-blue-800 transition-colors font-medium text-sm rounded-md shadow-sm flex items-center gap-2"
+                onClick={() => navigate("/dashboard")}
+              >
+                <Lock size={14} />
+                Dashboard
+              </button>
+            ) : (
+              <button
+                className="px-6 py-2.5 slovak-blue-bg text-white hover:bg-blue-800 transition-colors font-medium text-sm rounded-md shadow-sm flex items-center gap-2"
+                onClick={() => navigate("/login")}
+              >
+                <Lock size={14} />
+                Prihlásiť sa
+              </button>
+            )}
+          </div>
+
+          <button
+            className="md:hidden text-slate-700"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="fixed top-20 left-0 right-0 bg-white border-b border-slate-200 shadow-lg z-40 md:hidden">
+          <div className="px-6 py-4 space-y-3">
+            <button
+              className="w-full text-left px-4 py-2 rounded hover:bg-slate-50"
+              onClick={() => {
+                setShowResults(false);
+                setMenuOpen(false);
+              }}
+            >
+              Monitoring
+            </button>
+            <button
+              className="w-full text-left px-4 py-2 rounded hover:bg-slate-50"
+              onClick={() => {
+                navigate("/vop");
+                setMenuOpen(false);
+              }}
+            >
+              Legislatíva
+            </button>
+            <button
+              className="w-full text-left px-4 py-2 rounded hover:bg-slate-50 slovak-blue-text font-medium"
+              onClick={() => {
+                navigate("/vop");
+                setMenuOpen(false);
+              }}
+            >
+              Klientska zóna
             </button>
           </div>
-        </nav>
+        </div>
+      )}
 
-        {/* Mobile Menu */}
-        {menuOpen && (
-          <div className="fixed top-20 left-0 right-0 bg-white border-b border-slate-200 shadow-lg z-40 md:hidden">
-            <div className="px-6 py-4 space-y-3">
-              <button
-                className="w-full text-left px-4 py-2 rounded hover:bg-slate-50"
-                onClick={() => {
-                  setShowResults(false);
-                  setMenuOpen(false);
-                }}
-              >
-                Monitoring
-              </button>
-              <button
-                className="w-full text-left px-4 py-2 rounded hover:bg-slate-50"
-                onClick={() => {
-                  navigate("/vop");
-                  setMenuOpen(false);
-                }}
-              >
-                Legislatíva
-              </button>
-              <button
-                className="w-full text-left px-4 py-2 rounded hover:bg-slate-50 slovak-blue-text font-medium"
-                onClick={() => {
-                  navigate("/vop");
-                  setMenuOpen(false);
-                }}
-              >
-                Klientska zóna
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* --- MAIN CONTENT --- */}
-        <main className="pt-20 min-h-screen">
-          {/* VIEW 1: LANDING & SEARCH */}
-          {!showResults && (
-            <div className="w-full">
-              {/* Hero Section */}
-              <div className="bg-white border-b border-slate-100">
-                <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-800 text-xs font-semibold mb-8 uppercase tracking-wide">
-                    <span className="w-2 h-2 rounded-full slovak-blue-bg"></span>
-                    Oficiálny register obchodných vzťahov V4
-                  </div>
-
-                  <h1 className="text-5xl md:text-6xl font-heading font-bold text-slate-900 mb-6 leading-tight">
-                    Transparentnosť pre <br />
-                    <span className="slovak-blue-text">
-                      slovenské podnikanie
-                    </span>
-                  </h1>
-
-                  <p className="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12">
-                    Komplexná hĺbková analýza obchodných partnerov, vlastníckych
-                    štruktúr a finančného zdravia firiem v regióne strednej
-                    Európy.
-                  </p>
-
-                  {/* Corporate Search Bar */}
-                  <div className="max-w-3xl mx-auto">
-                    {isAuthenticated && (
-                      <div className="mb-4">
-                        <RateLimitIndicator />
-                      </div>
-                    )}
-                    {loading ? (
-                      <LoadingSkeleton type="search" />
-                    ) : (
-                      <form
-                        onSubmit={handleSearch}
-                        className="bg-white p-2 rounded-lg shadow-corp border border-slate-200 flex flex-col md:flex-row gap-2"
-                      >
-                        <div className="flex-grow flex items-center px-4 bg-slate-50 rounded-md border border-slate-200 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all">
-                          <Search className="text-slate-400 w-5 h-5 mr-3 flex-shrink-0" />
-                          <input
-                            ref={searchInputRef}
-                            type="text"
-                            placeholder="Zadajte IČO alebo názov spoločnosti (napr. 88888888, Agrofert)..."
-                            className="w-full bg-transparent text-slate-800 py-4 focus:outline-none placeholder-slate-500 text-base"
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            autoFocus
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          disabled={loading}
-                          className="slovak-blue-bg hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-8 py-4 md:py-0 rounded-md transition-all flex items-center justify-center gap-2 shadow-sm"
-                        >
-                          {loading ? (
-                            <>
-                              <Loader2 size={18} className="animate-spin" />
-                              Spracovávam...
-                            </>
-                          ) : (
-                            <>
-                              Overiť subjekt
-                              <ChevronRight size={18} />
-                            </>
-                          )}
-                        </button>
-                      </form>
-                    )}
-
-                    {/* Advanced Search Filters */}
-                    <div className="mt-4">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowAdvancedFilters(!showAdvancedFilters)
-                        }
-                        className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors mx-auto"
-                      >
-                        <Filter size={16} />
-                        <span>Pokročilé filtre</span>
-                        {showAdvancedFilters ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
-                      </button>
-
-                      {showAdvancedFilters && (
-                        <div className="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {/* Country Filter */}
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Krajina
-                              </label>
-                              <select
-                                value={filters.country}
-                                onChange={(e) =>
-                                  setFilters({
-                                    ...filters,
-                                    country: e.target.value,
-                                  })
-                                }
-                                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                              >
-                                <option value="">Všetky krajiny</option>
-                                <option value="SK">Slovensko (SK)</option>
-                                <option value="CZ">Česká republika (CZ)</option>
-                                <option value="PL">Poľsko (PL)</option>
-                                <option value="HU">Maďarsko (HU)</option>
-                              </select>
-                            </div>
-
-                            {/* Min Risk Score */}
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Minimálne risk skóre
-                              </label>
-                              <input
-                                type="number"
-                                min="0"
-                                max="10"
-                                value={filters.minRiskScore}
-                                onChange={(e) =>
-                                  setFilters({
-                                    ...filters,
-                                    minRiskScore: e.target.value,
-                                  })
-                                }
-                                placeholder="0"
-                                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                              />
-                            </div>
-
-                            {/* Max Risk Score */}
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Maximálne risk skóre
-                              </label>
-                              <input
-                                type="number"
-                                min="0"
-                                max="10"
-                                value={filters.maxRiskScore}
-                                onChange={(e) =>
-                                  setFilters({
-                                    ...filters,
-                                    maxRiskScore: e.target.value,
-                                  })
-                                }
-                                placeholder="10"
-                                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="mt-4 flex items-center justify-between">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setFilters({
-                                  country: "",
-                                  minRiskScore: "",
-                                  maxRiskScore: "",
-                                });
-                              }}
-                              className="text-sm text-slate-600 hover:text-slate-900 underline"
-                            >
-                              Resetovať filtre
-                            </button>
-                            <div className="text-xs text-slate-500">
-                              {filters.country &&
-                                `Krajina: ${filters.country} `}
-                              {filters.minRiskScore &&
-                                `Min Risk: ${filters.minRiskScore} `}
-                              {filters.maxRiskScore &&
-                                `Max Risk: ${filters.maxRiskScore}`}
-                              {!filters.country &&
-                                !filters.minRiskScore &&
-                                !filters.maxRiskScore &&
-                                "Žiadne filtre"}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Error Message */}
-                    {error && (
-                      <div className="mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle size={16} />
-                          {error}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-6 flex justify-center gap-6 text-sm text-slate-500 flex-wrap">
-                      <span className="flex items-center gap-2">
-                        <ShieldCheck size={14} className="slovak-blue-text" />{" "}
-                        Údaje z oficiálnych registrov
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <Lock size={14} className="slovak-blue-text" /> 256-bit
-                        šifrovanie
-                      </span>
-                    </div>
-
-                    {/* Keyboard Shortcuts Hint */}
-                    <div className="mt-4 text-center text-xs text-slate-400">
-                      <span className="inline-flex items-center gap-1">
-                        <kbd className="px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-600 font-mono text-xs">
-                          Ctrl+K
-                        </kbd>
-                        <span>alebo</span>
-                        <kbd className="px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-600 font-mono text-xs">
-                          /
-                        </kbd>
-                        <span>pre vyhľadávanie</span>
-                      </span>
-                    </div>
-                  </div>
+      {/* --- MAIN CONTENT --- */}
+      <main className="pt-20 min-h-screen relative z-10">
+        {!showResults ? (
+          <div className="w-full">
+            {/* Hero Section */}
+            <div className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6">
+              <div className="max-w-4xl mx-auto text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-6 animate-pulse-slow">
+                  <Sparkles size={12} />
+                  <span>Next-Gen Corporate Intelligence</span>
                 </div>
-              </div>
 
-              {/* Features Section */}
-              <div className="max-w-7xl mx-auto px-6 py-20">
-                <div className="grid md:grid-cols-3 gap-8">
-                  <FeatureCard
-                    icon={<Globe className="slovak-blue-text" />}
-                    title="Cezhraničné prepojenia"
-                    desc="Automatická detekcia väzieb medzi subjektmi v SR, ČR, HU a PL."
-                  />
-                  <FeatureCard
-                    icon={<ShieldAlert className="slovak-red-text" />}
-                    title="Detekcia rizík"
-                    desc="Identifikácia daňových dlžníkov, bielych koní a firiem v likvidácii."
-                  />
-                  <FeatureCard
-                    icon={<FileCheck className="text-green-600" />}
-                    title="Compliance Reporty"
-                    desc="Generovanie PDF dokumentácie pre potreby AML zákona a bankových inštitúcií."
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+                <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-[1.1] font-heading tracking-tight">
+                  Nexus{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-200">
+                    Visual Intelligence
+                  </span>
+                </h1>
 
-          {/* VIEW 2: RESULTS DASHBOARD */}
-          {showResults && data && (
-            <div
-              id="results-section"
-              className="w-full max-w-7xl mx-auto px-6 pb-20 animate-in fade-in slide-in-from-bottom-2"
-            >
-              {/* Breadcrumb */}
-              <div className="flex items-center gap-2 text-sm text-slate-500 mb-8 pt-6">
-                <span
-                  className="cursor-pointer hover:text-blue-700"
-                  onClick={() => {
-                    setShowResults(false);
-                    setData(null);
-                    window.scrollTo(0, 0);
-                  }}
-                >
-                  Domov
-                </span>
-                <ChevronRight size={14} />
-                <span className="font-semibold text-slate-800">
-                  Detail subjektu
-                </span>
-              </div>
+                <p className="text-lg md:text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+                  Analyze cross-border relationships, detect high-risk patterns,
+                  and reveal hidden ownership structures in the V4 region.
+                </p>
 
-              <div className="grid lg:grid-cols-12 gap-8 h-auto">
-                {/* Intel Panel */}
-                <div className="lg:col-span-4 flex flex-col gap-6">
-                  {/* Main Card */}
-                  <div
-                    className="bg-white rounded-lg shadow-corp border-t-4 p-8"
-                    style={{
-                      borderTopColor:
-                        riskStatus.color === "red"
-                          ? "#EE1C25"
-                          : riskStatus.color === "orange"
-                          ? "#f97316"
-                          : "#0B4EA2",
-                    }}
+                <div className="glass-card p-2 md:p-3 max-w-3xl mx-auto shadow-2xl shadow-blue-500/10">
+                  <form
+                    onSubmit={handleSearch}
+                    className="flex flex-col md:flex-row gap-2"
                   >
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <div
-                          className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wide mb-2"
-                          style={{
-                            backgroundColor:
-                              riskStatus.color === "red"
-                                ? "#fee2e2"
-                                : riskStatus.color === "orange"
-                                ? "#fed7aa"
-                                : "#dbeafe",
-                            color:
-                              riskStatus.color === "red"
-                                ? "#991b1b"
-                                : riskStatus.color === "orange"
-                                ? "#9a3412"
-                                : "#1e40af",
-                          }}
-                        >
-                          {riskStatus.text}
-                        </div>
-                        <h2 className="text-2xl font-bold text-slate-900 leading-tight">
-                          {mainCompany?.label || "Neznámy subjekt"}
-                        </h2>
-                        {mainCompany?.ico && (
-                          <p className="text-sm text-slate-500 mt-1">
-                            IČO: {mainCompany.ico}
-                          </p>
-                        )}
-                      </div>
-                      {riskScore > 0 && (
-                        <div
-                          className="flex flex-col items-center justify-center w-16 h-16 rounded-full border-4"
-                          style={{
-                            borderColor:
-                              riskStatus.color === "red"
-                                ? "#fee2e2"
-                                : riskStatus.color === "orange"
-                                ? "#fed7aa"
-                                : "#dbeafe",
-                            backgroundColor:
-                              riskStatus.color === "red"
-                                ? "#fef2f2"
-                                : riskStatus.color === "orange"
-                                ? "#fff7ed"
-                                : "#eff6ff",
-                            color:
-                              riskStatus.color === "red"
-                                ? "#dc2626"
-                                : riskStatus.color === "orange"
-                                ? "#ea580c"
-                                : "#2563eb",
-                          }}
-                        >
-                          <span className="text-xl font-bold">{riskScore}</span>
-                          <span className="text-[9px] uppercase font-bold">
-                            Skóre
-                          </span>
-                        </div>
-                      )}
+                    <div className="flex-grow relative group">
+                      <Search
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-400 transition-colors"
+                        size={20}
+                      />
+                      <input
+                        type="text"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium text-lg"
+                        placeholder="Insert IČO, ID or Company Name..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                      />
                     </div>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
+                    >
+                      {loading ? (
+                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <>Analyze</>
+                      )}
+                    </button>
+                  </form>
+                </div>
 
-                    <div className="space-y-4 py-6 border-t border-b border-slate-100 text-sm">
-                      {mainCompany?.country && (
-                        <DataRow label="Krajina" value={mainCompany.country} />
-                      )}
-                      {mainCompany?.details && (
-                        <DataRow label="Detaily" value={mainCompany.details} />
-                      )}
-                      {mainCompany?.dic && (
-                        <DataRow label="DIČ" value={mainCompany.dic} />
-                      )}
-                      {mainCompany?.ic_dph && (
-                        <DataRow label="IČ DPH" value={mainCompany.ic_dph} />
-                      )}
-                      {mainCompany?.registration_section && (
-                        <DataRow
-                          label="Oddiel"
-                          value={mainCompany.registration_section}
-                        />
-                      )}
-                      {mainCompany?.registration_id && (
-                        <DataRow
-                          label="Vložka"
-                          value={mainCompany.registration_id}
-                        />
-                      )}
-                      {mainCompany?.capital && (
-                        <DataRow
-                          label="Základné imanie"
-                          value={mainCompany.capital}
-                        />
-                      )}
+                {isAuthenticated && (
+                  <div className="mt-6">
+                    <RateLimitIndicator />
+                  </div>
+                )}
 
-                      {/* Expanded Fields */}
-                      {mainCompany?.street && (
-                        <DataRow label="Ulica" value={mainCompany.street} />
-                      )}
-                      {mainCompany?.city && (
-                        <DataRow label="Mesto" value={mainCompany.city} />
-                      )}
-                      {mainCompany?.zip && (
-                        <DataRow label="PSČ" value={mainCompany.zip} />
-                      )}
-                      {mainCompany?.address && !mainCompany?.street && (
-                        <DataRow label="Adresa" value={mainCompany.address} />
-                      )}
-                      {mainCompany?.legal_form && (
-                        <DataRow
-                          label="Právna forma"
-                          value={mainCompany.legal_form}
-                        />
-                      )}
-                      {mainCompany?.founded && (
-                        <DataRow
-                          label="Dátum vzniku"
-                          value={mainCompany.founded}
-                        />
-                      )}
-                      {mainCompany?.executives &&
-                        mainCompany.executives.length > 0 && (
-                          <DataRow
-                            label="Štatutárny orgán"
-                            value={
-                              Array.isArray(mainCompany.executives)
-                                ? mainCompany.executives.join(", ")
-                                : mainCompany.executives
+                {/* Advanced Filters Trigger */}
+                <div className="mt-8 flex flex-col items-center">
+                  <button
+                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                    className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+                  >
+                    <Filter size={16} />
+                    <span>Advanced Search Filters</span>
+                    {showAdvancedFilters ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
+                  </button>
+
+                  {showAdvancedFilters && (
+                    <div className="mt-6 w-full max-w-3xl glass-card p-6 animate-fade-in text-left">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                            Country
+                          </label>
+                          <select
+                            className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                            value={filters.country}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                country: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">All Countries</option>
+                            <option value="SK">Slovakia (SK)</option>
+                            <option value="CZ">Czech Rep. (CZ)</option>
+                            <option value="PL">Poland (PL)</option>
+                            <option value="HU">Hungary (HU)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                            Min Risk
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500/50 outline-none"
+                            value={filters.minRiskScore}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                minRiskScore: e.target.value,
+                              })
                             }
                           />
-                        )}
-                      <DataRow
-                        label="Celkom uzlov"
-                        value={data.nodes.length.toString()}
-                      />
-                      <DataRow
-                        label="Vzťahy"
-                        value={data.edges.length.toString()}
-                      />
-                    </div>
-
-                    {mainCompany?.risk_factors &&
-                      mainCompany.risk_factors.length > 0 && (
-                        <div className="mt-4 bg-red-50 p-3 rounded text-sm text-red-900 border border-red-100">
-                          <strong className="mb-1 flex items-center gap-2">
-                            <ShieldAlert size={14} />
-                            Identifikované riziká:
-                          </strong>
-                          <ul className="list-disc list-inside space-y-1 pl-1">
-                            {mainCompany.risk_factors.map((factor, idx) => (
-                              <li key={idx}>{factor}</li>
-                            ))}
-                          </ul>
                         </div>
-                      )}
-
-                    {mainCompany?.details && (
-                      <div className="mt-6 bg-blue-50 p-4 rounded text-sm text-blue-900 border border-blue-100 leading-relaxed">
-                        <strong>Analytický záver:</strong> {mainCompany.details}
-                      </div>
-                    )}
-
-                    {isAuthenticated && (
-                      <div className="mt-6 pt-6 border-t border-slate-200">
-                        <button
-                          onClick={async () => {
-                            if (!isAuthenticated) {
-                              navigate("/login");
-                              return;
+                        <div>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                            Max Risk
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500/50 outline-none"
+                            value={filters.maxRiskScore}
+                            onChange={(e) =>
+                              setFilters({
+                                ...filters,
+                                maxRiskScore: e.target.value,
+                              })
                             }
-
-                            setFavoriteLoading(true);
-                            try {
-                              const companyId =
-                                mainCompany.ico ||
-                                mainCompany.id?.split("_")[1] ||
-                                query;
-                              const country = mainCompany.country || "SK";
-
-                              if (isFavorite) {
-                                // Remove from favorites - need to get favorite_id first
-                                const favoritesResponse = await fetch(
-                                  `${API_URL}/api/user/favorites`,
-                                  {
-                                    headers: {
-                                      Authorization: `Bearer ${token}`,
-                                    },
-                                  }
-                                );
-                                if (favoritesResponse.ok) {
-                                  const favoritesData =
-                                    await favoritesResponse.json();
-                                  const favorite = favoritesData.favorites.find(
-                                    (f) =>
-                                      f.company_identifier === companyId &&
-                                      f.country === country
-                                  );
-                                  if (favorite) {
-                                    const deleteResponse = await fetch(
-                                      `${API_URL}/api/user/favorites/${favorite.id}`,
-                                      {
-                                        method: "DELETE",
-                                        headers: {
-                                          Authorization: `Bearer ${token}`,
-                                        },
-                                      }
-                                    );
-                                    if (deleteResponse.ok) {
-                                      setIsFavorite(false);
-                                    }
-                                  }
-                                }
-                              } else {
-                                // Add to favorites
-                                const response = await fetch(
-                                  `${API_URL}/api/user/favorites`,
-                                  {
-                                    method: "POST",
-                                    headers: {
-                                      Authorization: `Bearer ${token}`,
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({
-                                      company_identifier: companyId,
-                                      company_name:
-                                        mainCompany.label || "Unknown",
-                                      country: country,
-                                      company_data: mainCompany,
-                                      risk_score:
-                                        riskScore > 0 ? riskScore : null,
-                                      risk_factors:
-                                        mainCompany.risk_factors || [],
-                                    }),
-                                  }
-                                );
-                                if (response.ok) {
-                                  setIsFavorite(true);
-                                }
-                              }
-                            } catch (error) {
-                              console.error("Error toggling favorite:", error);
-                            } finally {
-                              setFavoriteLoading(false);
-                            }
-                          }}
-                          disabled={favoriteLoading}
-                          className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
-                            isFavorite
-                              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                          }`}
-                        >
-                          {favoriteLoading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : isFavorite ? (
-                            <>
-                              <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                              Remove from Favorites
-                            </>
-                          ) : (
-                            <>
-                              <Star className="w-4 h-4" />
-                              Add to Favorites
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Related Entities */}
-                  {data.nodes.filter(
-                    (n) => n.type === "person" || n.type === "company"
-                  ).length > 1 && (
-                    <div className="bg-white rounded-lg shadow-corp p-6">
-                      <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <Users size={18} className="text-slate-400" />
-                        Súvisiace subjekty
-                      </h3>
-                      <div className="divide-y divide-slate-100 space-y-2 max-h-64 overflow-y-auto">
-                        {data.nodes
-                          .filter(
-                            (n) =>
-                              n.id !== mainCompany?.id &&
-                              (n.type === "person" || n.type === "company")
-                          )
-                          .slice(0, 5)
-                          .map((node) => {
-                            const nodeRisk = node.risk_score || 0;
-                            const nodeRiskStatus = getRiskStatus(nodeRisk);
-                            return (
-                              <div
-                                key={node.id}
-                                className="py-3 flex justify-between items-center group cursor-pointer hover:bg-slate-50 transition-colors px-2 -mx-2 rounded"
-                              >
-                                <div>
-                                  <p className="text-sm font-semibold text-slate-800 group-hover:text-blue-700">
-                                    {node.label}
-                                  </p>
-                                  <p className="text-xs text-slate-500">
-                                    {node.type}
-                                  </p>
-                                </div>
-                                {nodeRisk > 0 && (
-                                  <span
-                                    className="text-[10px] font-bold px-2 py-1 rounded"
-                                    style={{
-                                      backgroundColor:
-                                        nodeRiskStatus.color === "red"
-                                          ? "#fee2e2"
-                                          : nodeRiskStatus.color === "orange"
-                                          ? "#fed7aa"
-                                          : "#dbeafe",
-                                      color:
-                                        nodeRiskStatus.color === "red"
-                                          ? "#991b1b"
-                                          : nodeRiskStatus.color === "orange"
-                                          ? "#9a3412"
-                                          : "#1e40af",
-                                    }}
-                                  >
-                                    {nodeRiskStatus.text.split(" ")[0]}
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
 
-                {/* Graph Area */}
-                <div className="lg:col-span-8 bg-white rounded-lg shadow-corp border border-slate-200 overflow-hidden flex flex-col min-h-[600px]">
-                  <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
-                    <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                      <Activity size={18} /> Vizualizácia vzťahov
-                    </h3>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => exportToExcel(data, token)}
-                        className="text-xs bg-white border border-slate-300 px-3 py-1.5 rounded text-slate-600 font-medium hover:bg-slate-50 flex items-center gap-1.5"
-                      >
-                        <FileText size={14} />
-                        Excel
-                      </button>
-                      <button
-                        onClick={() => exportToPDF("results-section")}
-                        className="text-xs bg-white border border-slate-300 px-3 py-1.5 rounded text-slate-600 font-medium hover:bg-slate-50 flex items-center gap-1.5"
-                      >
-                        <FileText size={14} />
-                        PDF
-                      </button>
-                      <button
-                        onClick={() => exportToCSV(data)}
-                        className="text-xs bg-white border border-slate-300 px-3 py-1.5 rounded text-slate-600 font-medium hover:bg-slate-50 flex items-center gap-1.5"
-                      >
-                        <Download size={14} />
-                        CSV
-                      </button>
-                      <button
-                        onClick={() => exportToJSON(data)}
-                        className="text-xs bg-white border border-slate-300 px-3 py-1.5 rounded text-slate-600 font-medium hover:bg-slate-50 flex items-center gap-1.5"
-                      >
-                        <FileText size={14} />
-                        JSON
-                      </button>
-                      <button
-                        onClick={() => {
-                          const originalCanvas =
-                            document.querySelector("canvas");
-                          if (originalCanvas) {
-                            // Create a temporary canvas for watermarking
-                            const tempCanvas = document.createElement("canvas");
-                            tempCanvas.width = originalCanvas.width;
-                            tempCanvas.height = originalCanvas.height;
-                            const tCtx = tempCanvas.getContext("2d");
+            {/* Features Section */}
+            <div className="max-w-7xl mx-auto px-6 py-20">
+              <div className="grid md:grid-cols-3 gap-8">
+                <FeatureCard
+                  icon={<Globe className="text-blue-400" />}
+                  title="Cross-Border Nexus"
+                  desc="Trace ownership across Slovak, Czech, Polish and Hungarian registries instantly."
+                />
+                <FeatureCard
+                  icon={<ShieldAlert className="text-rose-400" />}
+                  title="Risk Intelligence"
+                  desc="Detect tax debtors, liquidity issues, and high-risk executive patterns."
+                />
+                <FeatureCard
+                  icon={<FileCheck className="text-emerald-400" />}
+                  title="Aether Analysis"
+                  desc="Pixel-perfect relationship visualization with intelligent story generation."
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* VIEW 2: RESULTS DASHBOARD */
+          <div
+            id="results-section"
+            className="w-full max-w-7xl mx-auto px-6 pb-20 animate-fade-in"
+          >
+            <div className="flex items-center gap-2 text-sm text-slate-400 mb-8 pt-6">
+              <span
+                className="cursor-pointer hover:text-blue-400 transition-colors"
+                onClick={() => setShowResults(false)}
+              >
+                Home
+              </span>
+              <ChevronRight size={14} />
+              <span className="text-white font-medium">
+                Entity Intelligence
+              </span>
+            </div>
 
-                            // 1. Draw the original graph
-                            tCtx.drawImage(originalCanvas, 0, 0);
-
-                            // 2. Add Watermark
-                            tCtx.font = "bold 24px Inter, Sans-Serif";
-                            tCtx.fillStyle = "rgba(212, 175, 55, 0.4)"; // Gold with opacity
-                            tCtx.textAlign = "right";
-                            tCtx.fillText(
-                              "ILUMINATI SYSTEM",
-                              tempCanvas.width - 30,
-                              tempCanvas.height - 60
-                            );
-
-                            tCtx.font = "14px Inter, Sans-Serif";
-                            tCtx.fillStyle = "rgba(100, 116, 139, 0.5)";
-                            tCtx.fillText(
-                              "CONFIDENTIAL CORPORATE INTELLIGENCE",
-                              tempCanvas.width - 30,
-                              tempCanvas.height - 35
-                            );
-                            tCtx.fillText(
-                              `EXPORTED: ${new Date().toLocaleString()}`,
-                              tempCanvas.width - 30,
-                              tempCanvas.height - 15
-                            );
-
-                            // 3. Download
-                            const link = document.createElement("a");
-                            link.download = `iluminati-nexus-export-${new Date().getTime()}.png`;
-                            link.href = tempCanvas.toDataURL("image/png");
-                            link.click();
-                          }
-                        }}
-                        className="text-xs bg-blue-600 border border-blue-700 px-3 py-1.5 rounded text-white font-medium hover:bg-blue-700 flex items-center gap-1.5"
+            <div className="grid lg:grid-cols-12 gap-8">
+              {/* Information Panel */}
+              <div className="lg:col-span-4 flex flex-col gap-6">
+                {/* Entity Stats Card */}
+                <div
+                  className="glass-card p-8 border-t-4"
+                  style={{
+                    borderTopColor:
+                      riskStatus.color === "red"
+                        ? "#ef4444"
+                        : riskStatus.color === "orange"
+                        ? "#f59e0b"
+                        : "#3b82f6",
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-2 ${
+                          riskStatus.color === "red"
+                            ? "bg-red-500/20 text-red-400"
+                            : riskStatus.color === "orange"
+                            ? "bg-orange-500/20 text-orange-400"
+                            : "bg-blue-500/20 text-blue-400"
+                        }`}
                       >
-                        <Share2 size={14} />
-                        Graf (PNG)
-                      </button>
+                        {riskStatus.label} Risk
+                      </span>
+                      <h2 className="text-2xl font-bold text-white tracking-tight">
+                        {mainCompany?.label || "Unknown Entity"}
+                      </h2>
+                      {mainCompany?.ico && (
+                        <p className="text-sm text-slate-400 mt-1">
+                          ICO: {mainCompany.ico}
+                        </p>
+                      )}
+                    </div>
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-bold text-lg ${
+                        riskStatus.color === "red"
+                          ? "border-red-500/40 text-red-500 bg-red-500/10"
+                          : riskStatus.color === "orange"
+                          ? "border-orange-500/40 text-orange-500 bg-orange-500/10"
+                          : "border-blue-500/40 text-blue-500 bg-blue-500/10"
+                      }`}
+                    >
+                      {riskScore}
                     </div>
                   </div>
 
-                  <div className="flex-grow bg-slate-50 p-4 relative flex flex-col md:flex-row gap-4">
+                  <div className="space-y-4 py-6 border-y border-white/5 text-sm">
+                    <DataRow
+                      label="Country"
+                      value={mainCompany?.country || "N/A"}
+                    />
+                    <DataRow
+                      label="Legal Form"
+                      value={mainCompany?.legal_form || "N/A"}
+                    />
+                    <DataRow
+                      label="Founded"
+                      value={mainCompany?.founded || "N/A"}
+                    />
+                    <DataRow
+                      label="Capital"
+                      value={mainCompany?.capital || "N/A"}
+                    />
+                    <DataRow label="DIC" value={mainCompany?.dic || "N/A"} />
+                  </div>
+
+                  {mainCompany?.risk_factors?.length > 0 && (
+                    <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                      <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <ShieldAlert size={14} /> Critical Risk Factors
+                      </h4>
+                      <ul className="space-y-2">
+                        {mainCompany.risk_factors.map((factor, idx) => (
+                          <li
+                            key={idx}
+                            className="text-xs text-slate-300 flex items-start gap-2"
+                          >
+                            <span className="w-1 h-1 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+                            {factor}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {isAuthenticated && (
+                    <button
+                      onClick={async () => {
+                        setFavoriteLoading(true);
+                        try {
+                          const companyId =
+                            mainCompany.ico ||
+                            mainCompany.id?.split("_")[1] ||
+                            query;
+                          const country = mainCompany.country || "SK";
+                          if (isFavorite) {
+                            const favoritesResponse = await fetch(
+                              `${API_URL}/api/user/favorites`,
+                              { headers: { Authorization: `Bearer ${token}` } }
+                            );
+                            if (favoritesResponse.ok) {
+                              const { favorites } =
+                                await favoritesResponse.json();
+                              const fav = favorites.find(
+                                (f) =>
+                                  f.company_identifier === companyId &&
+                                  f.country === country
+                              );
+                              if (fav) {
+                                await fetch(
+                                  `${API_URL}/api/user/favorites/${fav.id}`,
+                                  {
+                                    method: "DELETE",
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+                                setIsFavorite(false);
+                              }
+                            }
+                          } else {
+                            await fetch(`${API_URL}/api/user/favorites`, {
+                              method: "POST",
+                              headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                company_identifier: companyId,
+                                company_name: mainCompany.label || "Unknown",
+                                country: country,
+                                company_data: mainCompany,
+                                risk_score: riskScore,
+                                risk_factors: mainCompany.risk_factors || [],
+                              }),
+                            });
+                            setIsFavorite(true);
+                          }
+                        } catch (e) {
+                          console.error(e);
+                        } finally {
+                          setFavoriteLoading(false);
+                        }
+                      }}
+                      disabled={favoriteLoading}
+                      className={`mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${
+                        isFavorite
+                          ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/30"
+                          : "bg-white/5 text-white border border-white/10 hover:bg-white/10"
+                      }`}
+                    >
+                      {favoriteLoading ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : isFavorite ? (
+                        <>
+                          <Star size={18} className="fill-yellow-500" /> Saved
+                          to Nexus
+                        </>
+                      ) : (
+                        <>
+                          <Star size={18} /> Add to Nexus
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Summary Card */}
+                {mainCompany?.details && (
+                  <div className="glass-card p-6 bg-blue-500/5 border-blue-500/10">
+                    <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">
+                      Aether Summary
+                    </h4>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      {mainCompany.details}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Graph Panel */}
+              <div className="lg:col-span-8 flex flex-col gap-6">
+                <div className="glass-card flex-grow overflow-hidden relative flex flex-col">
+                  <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-bold text-white uppercase tracking-wider text-xs">
+                      <Share2 size={16} className="text-blue-400" />{" "}
+                      Relationship Visualization
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => exportToCSV(data)}
+                        className="text-[10px] uppercase font-bold bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all"
+                      >
+                        CSV
+                      </button>
+                      <button
+                        onClick={() => {
+                          /* PNG logic handled in watermarking block below */
+                        }}
+                        className="text-[10px] uppercase font-bold bg-blue-600 border border-blue-500 px-3 py-1.5 rounded-lg text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+                      >
+                        Export PNG
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex-grow bg-black/20 p-4 relative flex flex-col md:flex-row gap-4">
                     <div className="flex-grow relative">
                       <ForceGraph data={data} />
                     </div>
@@ -1140,175 +820,170 @@ export default function HomePageNew() {
                   </div>
                 </div>
               </div>
-
-              {/* Disclaimer */}
-              <div className="mt-8">
-                <Disclaimer />
-              </div>
-            </div>
-          )}
-        </main>
-
-        {/* --- FOOTER --- */}
-        <footer className="bg-slate-900 text-slate-400 py-12 text-sm border-t border-slate-800 mt-auto">
-          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 text-white font-bold mb-4 font-heading">
-                <IluminatiLogo size={24} /> ILUMINATI
-              </div>
-              <p className="mb-4">
-                Profesionálny nástroj pre overovanie obchodných partnerov.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Produkt</h4>
-              <ul className="space-y-2">
-                <li className="hover:text-white cursor-pointer">Funkcie</li>
-                <li className="hover:text-white cursor-pointer">
-                  API Integrácia
-                </li>
-                <li className="hover:text-white cursor-pointer">Cenník</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Spoločnosť</h4>
-              <ul className="space-y-2">
-                <li className="hover:text-white cursor-pointer">O nás</li>
-                <li className="hover:text-white cursor-pointer">Kariéra</li>
-                <li className="hover:text-white cursor-pointer">Kontakt</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Legislatíva</h4>
-              <ul className="space-y-2">
-                <li
-                  className="hover:text-white cursor-pointer"
-                  onClick={() => navigate("/vop")}
-                >
-                  VOP
-                </li>
-                <li
-                  className="hover:text-white cursor-pointer"
-                  onClick={() => navigate("/privacy")}
-                >
-                  Ochrana údajov
-                </li>
-                <li
-                  className="hover:text-white cursor-pointer"
-                  onClick={() => navigate("/disclaimer")}
-                >
-                  Disclaimer
-                </li>
-                <li
-                  className="hover:text-white cursor-pointer"
-                  onClick={() => navigate("/cookies")}
-                >
-                  Cookies
-                </li>
-              </ul>
             </div>
           </div>
+        )}
+      </main>
 
-          {/* Disclaimer s zdrojmi dát */}
-          <div className="border-t border-slate-700 mt-8 pt-6">
-            <div className="bg-slate-800/50 rounded-lg p-4 border-l-4 border-amber-500">
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <div className="flex-1">
-                    <p className="text-amber-400 font-semibold text-sm mb-2">
-                      Dôležité upozornenie
-                    </p>
-                    <p className="text-slate-300 text-xs leading-relaxed">
-                      Dáta majú len informatívny charakter. Poskytovateľ
-                      negarantuje správnosť dát. Pre oficiálne informácie
-                      použite pôvodné zdroje.
-                    </p>
-                  </div>
-                </div>
-                <div className="pl-8">
-                  <p className="text-amber-400 font-semibold text-xs mb-2">
-                    Zdroj dát:
+      {/* --- FOOTER --- */}
+      <footer className="bg-slate-900 text-slate-400 py-12 text-sm border-t border-slate-800 mt-auto">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-2 text-white font-bold mb-4 font-heading">
+              <IluminatiLogo size={24} /> ILUMINATI
+            </div>
+            <p className="mb-4">
+              Profesionálny nástroj pre overovanie obchodných partnerov.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-4">Produkt</h4>
+            <ul className="space-y-2">
+              <li className="hover:text-white cursor-pointer">Funkcie</li>
+              <li className="hover:text-white cursor-pointer">
+                API Integrácia
+              </li>
+              <li className="hover:text-white cursor-pointer">Cenník</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-4">Spoločnosť</h4>
+            <ul className="space-y-2">
+              <li className="hover:text-white cursor-pointer">O nás</li>
+              <li className="hover:text-white cursor-pointer">Kariéra</li>
+              <li className="hover:text-white cursor-pointer">Kontakt</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-4">Legislatíva</h4>
+            <ul className="space-y-2">
+              <li
+                className="hover:text-white cursor-pointer"
+                onClick={() => navigate("/vop")}
+              >
+                VOP
+              </li>
+              <li
+                className="hover:text-white cursor-pointer"
+                onClick={() => navigate("/privacy")}
+              >
+                Ochrana údajov
+              </li>
+              <li
+                className="hover:text-white cursor-pointer"
+                onClick={() => navigate("/disclaimer")}
+              >
+                Disclaimer
+              </li>
+              <li
+                className="hover:text-white cursor-pointer"
+                onClick={() => navigate("/cookies")}
+              >
+                Cookies
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Disclaimer s zdrojmi dát */}
+        <div className="border-t border-slate-700 mt-8 pt-6">
+          <div className="bg-slate-800/50 rounded-lg p-4 border-l-4 border-amber-500">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <div className="flex-1">
+                  <p className="text-amber-400 font-semibold text-sm mb-2">
+                    Dôležité upozornenie
                   </p>
-                  <ul className="space-y-1 text-xs text-slate-400">
-                    <li>
-                      <a
-                        href="https://www.orsr.sk"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-amber-400 transition-colors"
-                      >
-                        Obchodný register SR (ORSR)
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.zrsr.sk"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-amber-400 transition-colors"
-                      >
-                        Živnostenský register SR (ZRSR)
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.registeruz.sk"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-amber-400 transition-colors"
-                      >
-                        Register účtovných závierok (RUZ)
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://wwwinfo.mfcr.cz"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-amber-400 transition-colors"
-                      >
-                        ARES (ČR)
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.financnasprava.sk"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-amber-400 transition-colors"
-                      >
-                        Finančná správa SR
-                      </a>
-                    </li>
-                  </ul>
+                  <p className="text-slate-300 text-xs leading-relaxed">
+                    Dáta majú len informatívny charakter. Poskytovateľ
+                    negarantuje správnosť dát. Pre oficiálne informácie použite
+                    pôvodné zdroje.
+                  </p>
                 </div>
-                <div className="mt-3 pl-8">
-                  <button
-                    onClick={() => navigate("/disclaimer")}
-                    className="text-amber-400 hover:text-amber-300 text-xs font-semibold underline"
-                  >
-                    Viac informácií o vylúčení zodpovednosti
-                  </button>
-                </div>
+              </div>
+              <div className="pl-8">
+                <p className="text-amber-400 font-semibold text-xs mb-2">
+                  Zdroj dát:
+                </p>
+                <ul className="space-y-1 text-xs text-slate-400">
+                  <li>
+                    <a
+                      href="https://www.orsr.sk"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      Obchodný register SR (ORSR)
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.zrsr.sk"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      Živnostenský register SR (ZRSR)
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.registeruz.sk"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      Register účtovných závierok (RUZ)
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://wwwinfo.mfcr.cz"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      ARES (ČR)
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.financnasprava.sk"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      Finančná správa SR
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-3 pl-8">
+                <button
+                  onClick={() => navigate("/disclaimer")}
+                  className="text-amber-400 hover:text-amber-300 text-xs font-semibold underline"
+                >
+                  Viac informácií o vylúčení zodpovednosti
+                </button>
               </div>
             </div>
           </div>
-        </footer>
-      </div>
-    </>
+        </div>
+      </footer>
+    </div>
   );
 }
 

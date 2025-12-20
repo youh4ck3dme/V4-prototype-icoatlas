@@ -167,33 +167,33 @@ const ForceGraph = ({ data }) => {
 
   return (
     <>
-      <div className="relative border-2 border-[#D4AF37]/30 rounded-xl bg-gradient-to-br from-[#0A0A0A] via-[#1a1a2e] to-[#16213e] shadow-2xl overflow-hidden mt-6 backdrop-blur-sm force-graph-container">
+      <div className="relative glass-card border-white/10 overflow-hidden force-graph-container h-full">
         {/* Toolbar */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             onClick={handleZoomIn}
-            className="p-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-[#D4AF37]/30 rounded-lg text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all"
+            className="p-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-blue-400 hover:bg-white/10 transition-all"
             title="Priblížiť"
           >
             <ZoomIn size={18} />
           </button>
           <button
             onClick={handleZoomOut}
-            className="p-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-[#D4AF37]/30 rounded-lg text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all"
+            className="p-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-blue-400 hover:bg-white/10 transition-all"
             title="Oddialiť"
           >
             <ZoomOut size={18} />
           </button>
           <button
             onClick={handleReset}
-            className="p-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-[#D4AF37]/30 rounded-lg text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all"
+            className="p-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-blue-400 hover:bg-white/10 transition-all"
             title="Resetovať"
           >
             <RotateCcw size={18} />
           </button>
           <button
             onClick={handleExportPNG}
-            className="p-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-[#D4AF37]/30 rounded-lg text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all"
+            className="p-2 bg-blue-600 border border-blue-500 rounded-lg text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
             title="Exportovať do PNG"
           >
             <Download size={18} />
@@ -345,37 +345,38 @@ const ForceGraph = ({ data }) => {
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="bg-gradient-to-br from-[#0A0A0A] via-[#1a1a2e] to-[#16213e] border-2 border-[#D4AF37]/50 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl relative"
+            className="glass-card p-8 max-w-lg w-full mx-4 shadow-2xl relative border-blue-500/20"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 p-2 text-[#D4AF37] hover:text-[#FFD700] hover:bg-[#D4AF37]/20 rounded-lg transition-all"
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
             >
               <X size={20} />
             </button>
 
             {/* Header */}
-            <div className="flex items-start gap-4 mb-4">
+            <div className="flex items-start gap-5 mb-6">
               <div
-                className="p-3 rounded-lg"
+                className="p-4 rounded-2xl"
                 style={{
-                  backgroundColor: `${getNodeColor(selectedNode)}20`,
-                  border: `2px solid ${getNodeColor(selectedNode)}50`,
+                  backgroundColor: `${getNodeColor(selectedNode)}15`,
+                  border: `1px solid ${getNodeColor(selectedNode)}30`,
                 }}
               >
                 {React.createElement(getNodeIcon(selectedNode), {
                   size: 32,
-                  className: "text-[#D4AF37]",
-                  style: { filter: "drop-shadow(0 0 8px #D4AF37)" },
+                  className: "text-white",
+                  style: {
+                    filter: `drop-shadow(0 0 8px ${getNodeColor(
+                      selectedNode
+                    )})`,
+                  },
                 })}
               </div>
               <div className="flex-1">
-                <h3
-                  className="text-2xl font-bold text-[#D4AF37] mb-1"
-                  style={{ textShadow: "0 0 10px rgba(212, 175, 55, 0.5)" }}
-                >
+                <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">
                   {selectedNode.label}
                 </h3>
                 <div className="flex gap-2 items-center">
@@ -444,9 +445,9 @@ const ForceGraph = ({ data }) => {
             </div>
 
             {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-[#D4AF37]/20">
-              <p className="text-xs text-gray-500 text-center">
-                Kliknite mimo modalu alebo stlačte ESC pre zatvorenie
+            <div className="mt-8 pt-5 border-t border-white/5">
+              <p className="text-[10px] text-slate-500 text-center uppercase font-bold tracking-widest">
+                Nexus Intelligence Modal • ESC to Close
               </p>
             </div>
           </div>
