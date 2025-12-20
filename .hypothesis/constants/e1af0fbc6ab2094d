@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/erp/models.py
+# hypothesis_version: 6.148.7
+
+[100, 255, 'ErpConnection', 'ErpSyncLog', 'User', 'active', 'all, delete-orphan', 'company_id', 'company_name', 'completed_at', 'connection', 'connection_id', 'created_at', 'daily', 'duration_seconds', 'erp_connections', 'erp_connections.id', 'erp_sync_logs', 'erp_type', 'error', 'error_message', 'id', 'inactive', 'last_sync_at', 'money_s3', 'next_sync_at', 'pohoda', 'records_failed', 'records_synced', 'sap', 'started_at', 'status', 'sync_enabled', 'sync_frequency', 'sync_logs', 'sync_type', 'syncing', 'updated_at', 'users.id']

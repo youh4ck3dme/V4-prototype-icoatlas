@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/erp/money_s3_connector.py
+# hypothesis_version: 6.148.7
+
+[100, 200, 365, '%Y-%m-%d', 'Content-Type', 'X-API-Key', 'address', 'adresa', 'amount', 'api_key', 'application/json', 'base_url', 'castka', 'celkova_castka', 'cislo', 'company_id', 'company_name', 'data', 'datum_do', 'datum_od', 'datum_splatnosti', 'datum_uhrady', 'days_paid_early', 'days_paid_late', 'dni_po_splatnosti', 'dni_pred_platbou', 'dodavatele', 'due_date', 'erp_type', 'error', 'faktury', 'ico', 'id', 'invoice_number', 'message', 'money_s3', 'name', 'nazev', 'paid_date', 'pocet_faktur', 'status', 'stav', 'success', 'total_amount', 'total_invoices']

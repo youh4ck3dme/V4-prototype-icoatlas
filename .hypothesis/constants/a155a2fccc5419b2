@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/stripe_service.py
+# hypothesis_version: 6.148.7
+
+[1999, 9999, 'Customer not found', 'Invalid payload', 'Invalid signature', 'STRIPE_PRO_PRICE_ID', 'STRIPE_SECRET_KEY', 'action', 'cancel_at_period_end', 'cancel_url', 'canceled', 'card', 'created', 'currency', 'current_period_end', 'customer', 'customer_email', 'customer_id', 'data', 'description', 'downgrade_to_free', 'error', 'eur', 'event_type', 'ignored', 'interval', 'line_items', 'message', 'metadata', 'mode', 'month', 'name', 'object', 'payment_method_types', 'price_data', 'price_pro_monthly', 'product_data', 'quantity', 'recurring', 'session_id', 'sk_test_...', 'status', 'subscription', 'success', 'success_url', 'tier', 'type', 'unit_amount', 'url', 'user_id', 'warning']

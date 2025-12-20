@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/auth.py
+# hypothesis_version: 6.148.7
+
+[100, 2000, '1.0', 'ApiKey', 'HS256', 'SECRET_KEY', 'Webhook', 'advanced_features', 'all, delete-orphan', 'api_access', 'auto', 'bcrypt', 'cookies', 'enterprise', 'exp', 'export_limit', 'free', 'privacy', 'pro', 'searches_per_day', 'searches_per_month', 'user', 'users', 'vop']

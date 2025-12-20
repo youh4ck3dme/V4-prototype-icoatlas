@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/metrics.py
+# hypothesis_version: 6.148.7
+
+[0.0, -1000, 100, 1000, ',', 'avg', 'count', 'counters', 'data', 'events_count', 'gauges', 'histograms', 'max', 'min', 'p95', 'p99', 'recent_events', 'timers', 'timestamp', 'type']

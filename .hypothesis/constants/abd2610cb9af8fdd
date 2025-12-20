@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/proxy_rotation.py
+# hypothesis_version: 6.148.7
+
+[',', '://', 'PROXY_LIST', 'PROXY_PASSWORD', 'PROXY_USERNAME', 'available_proxies', 'failed', 'failed_proxies', 'http', 'https', 'last_failed', 'last_used', 'password', 'proxy_stats', 'success', 'total_proxies', 'username']

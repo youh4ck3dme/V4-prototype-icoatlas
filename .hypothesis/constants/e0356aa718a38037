@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/risk_intelligence.py
+# hypothesis_version: 6.148.7
+
+[365.25, '%Y-%m-%d', '+00:00', 'LOCATED_AT', 'MANAGED_BY', 'OWNED_BY', 'T', 'Z', 'address', 'circular_structures', 'company', 'debt', 'enhanced_nodes', 'high_risk_companies', 'id', 'person', 'registration_date', 'risk_score', 'source', 'summary', 'target', 'type', 'virtual_seat_count', 'virtual_seats', 'white_horse_count', 'white_horses']

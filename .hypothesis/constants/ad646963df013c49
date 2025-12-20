@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/error_handler.py
+# hypothesis_version: 6.148.7
+
+[500, 502, 503, 'DATABASE_ERROR', 'EXTERNAL_API_ERROR', 'HTTP_ERROR', 'INTERNAL_ERROR', 'UNEXPECTED_ERROR', 'UNKNOWN_ERROR', 'args', 'client', 'code', 'context', 'error', 'error_message', 'error_type', 'function', 'headers', 'iluminati', 'kwargs', 'logs/iluminati.log', 'message', 'method', 'request', 'timestamp', 'traceback', 'url']

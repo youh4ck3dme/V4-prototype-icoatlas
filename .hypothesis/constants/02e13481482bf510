@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/cache.py
+# hypothesis_version: 6.148.7
+
+[0.0, 1024, 'cache_size_mb', 'cache_type', 'default', 'error', 'expired_items', 'hybrid', 'in_memory', 'redis', 'redis_enabled', 'total_items']

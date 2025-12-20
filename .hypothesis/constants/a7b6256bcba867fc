@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/erp/erp_service.py
+# hypothesis_version: 6.148.7
+
+[365, 1000, 'Connection not found', 'Sync completed', 'company_id', 'company_name', 'daily', 'error', 'ico', 'id', 'identifier', 'incremental', 'message', 'name', 'records_failed', 'records_synced', 'running', 'success', 'sync_log_id', 'weekly']

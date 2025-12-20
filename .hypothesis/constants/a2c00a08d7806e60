@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/sk_rpo.py
+# hypothesis_version: 6.148.7
+
+[200, 365, 404, 3600, '%Y-%m-%d', ', ', '2020-01-15', '52', '811 01', 'Accept', 'Adresa neuvedená', 'Aktívna', 'Bratislava', 'Hlavná ulica 1', 'ILUMINATI-SYSTEM/1.0', 'Neznáma firma', 'SK', 'User-Agent', '^\\d{8}$', 'address', 'application/json', 'cache_ttl_hours', 'cached_items', 'city', 'country', 'datumVzniku', 'executives', 'founded', 'ico', 'konkurz', 'legal_form', 'likvidácia', 'name', 'note', 'obchodneMeno', 'postal_code', 'pravnaForma', 's.r.o.', 'shareholders', 'status', 'stav', 'street', 'virtual', 'zrušená']

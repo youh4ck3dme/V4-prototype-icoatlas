@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/sk_orsr_provider.py
+# hypothesis_version: 6.148.7
+
+[200, '%Y-%m-%d', '%d.%m.%Y', '&', ',', 'Accept', 'Aktívna', 'Deň zápisu:', 'ID=', 'Likvidácia/Konkurz', 'Obchodné meno:', 'Právna forma:', 'SK', 'Spoločníci:', 'Sídlo:', 'User-Agent', '\\b\\d{5}\\b', '\\s*\\(od:.*?\\)', 'a', 'address', 'city', 'country', 'dic', 'district', 'executives', 'financial_data', 'founded', 'href', 'html.parser', 'ic_dph', 'ico', 'konkurz', 'legal_form', 'likvidácia', 'name', 'postal_code', 'region', 'risk_score', 'shareholders', 'status', 'td', 'vypis.asp?ID=', 'štatutárny orgán:']

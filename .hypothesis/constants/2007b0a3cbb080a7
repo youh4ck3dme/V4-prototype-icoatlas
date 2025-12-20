@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/redis_cache.py
+# hypothesis_version: 6.148.7
+
+[100, 3600, '0', '0B', '6379', 'REDIS_DB', 'REDIS_HOST', 'REDIS_PASSWORD', 'REDIS_PORT', 'REDIS_URL', 'available', 'connected', 'error', 'hit_rate', 'hits', 'keyspace_hits', 'keyspace_misses', 'localhost', 'memory_used', 'memory_used_bytes', 'misses', 'total_keys', 'used_memory', 'used_memory_human']

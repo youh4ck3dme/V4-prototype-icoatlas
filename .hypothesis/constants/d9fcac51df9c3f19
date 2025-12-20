@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/erp/pohoda_connector.py
+# hypothesis_version: 6.148.7
+
+[100, 200, 365, 'Authorization', 'Content-Type', 'address', 'amount', 'api_key', 'application/json', 'base_url', 'company_id', 'company_name', 'data', 'days_paid_early', 'days_paid_late', 'due_date', 'end_date', 'erp_type', 'error', 'ico', 'id', 'invoice_count', 'invoice_number', 'message', 'name', 'number', 'paid_date', 'pohoda', 'start_date', 'status', 'success', 'supplier_ico', 'total_amount', 'total_invoices']

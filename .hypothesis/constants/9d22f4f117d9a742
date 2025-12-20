@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/pl_krs.py
+# hypothesis_version: 6.148.7
+
+[200, 365, 404, 3600, '%Y-%m-%d', ', ', '00-001', '2020-01-15', 'Accept', 'Adres nie podano', 'Aktywna', 'ILUMINATI-SYSTEM/1.0', 'Nieznana firma', 'PL', 'Sp. z o.o.', 'User-Agent', 'Warszawa', '^\\d{9,10}$', 'address', 'application/json', 'cache_ttl_hours', 'cached_items', 'city', 'country', 'dataPowstania', 'executives', 'formaPrawna', 'founded', 'krs', 'legal_form', 'likwidacja', 'name', 'nazwa', 'note', 'postal_code', 'shareholders', 'status', 'street', 'ul. Główna 1', 'upadłość', 'zawieszona']

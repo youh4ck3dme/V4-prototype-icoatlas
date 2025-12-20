@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/api_keys.py
+# hypothesis_version: 6.148.7
+
+[255, 'User', 'api_keys', 'created_at', 'expires_at', 'id', 'il', 'ip_whitelist', 'is_active', 'key', 'last_used_at', 'name', 'permissions', 'prefix', 'read', 'usage_count', 'users.id']

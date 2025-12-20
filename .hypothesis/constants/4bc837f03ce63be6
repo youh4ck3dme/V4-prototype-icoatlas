@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/export_service.py
+# hypothesis_version: 6.148.7
+
+['%Y-%m-%d %H:%M:%S', '0B4EA2', 'Adresa', 'Batch Export', 'Celkový počet nodov', 'DIČ', 'Detaily', 'Dátum exportu', 'Dátum vytvorenia', 'Dátum vzniku', 'FFFFFF', 'Hodnota', 'ID', 'IČ DPH', 'IČO/KRS/Adószám', 'Krajina', 'Metrika', 'Názov', 'Poznámky', 'Právna forma', 'Risk Score', 'Source', 'Stav', 'Súhrn', 'Target', 'Typ', 'Typ vzťahu', 'Typy nodov', 'Typy vzťahov', 'Unknown', 'Vzťahy', 'Vzťahy:', 'Váha', 'address', 'center', 'company_data', 'company_identifier', 'company_name', 'country', 'details', 'dic', 'edges', 'establishment_date', 'ic_dph', 'ico', 'id', 'label', 'legal_form', 'name', 'nodes', 'notes', 'risk_score', 'solid', 'source', 'status', 'target', 'type', 'weight']

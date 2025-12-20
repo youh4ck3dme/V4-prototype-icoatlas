@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/erp/sap_connector.py
+# hypothesis_version: 6.148.7
+
+[100, 200, 365, ' and ', '$expand', '$filter', '$top', 'Address', 'CardName', "CardType eq 'S'", 'CompanyDB', 'CompanyName', 'DocDueDate', 'DocNum', 'DocTotal', 'DocumentLines', 'Invalid credentials', 'PaidToDate', 'PaidToDate eq null', 'PaidToDate ne null', 'Password', 'TaxIdNum', 'UserName', 'address', 'amount', 'company_db', 'company_id', 'company_name', 'data', 'days_paid_early', 'days_paid_late', 'due_date', 'erp_type', 'error', 'ico', 'invoice_number', 'message', 'name', 'paid', 'paid_date', 'password', 'sap', 'server_url', 'status', 'success', 'total_amount', 'total_invoices', 'unpaid', 'username', 'value']

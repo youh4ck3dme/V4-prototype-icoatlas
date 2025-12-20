@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/debt_registers.py
+# hypothesis_version: 6.148.7
+
+[0.4, 0.6, 100, '2024-12-31', 'CZ', 'CZK', 'DPH', 'Daň z príjmu', 'Daň z příjmu', 'EUR', 'SK', 'amount', 'country', 'currency', 'data', 'debt_items', 'due_date', 'has_debt', 'identifier', 'last_updated', 'risk_score', 'total_debt', 'type']

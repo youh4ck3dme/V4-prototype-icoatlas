@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/circuit_breaker.py
+# hypothesis_version: 6.148.7
+
+['closed', 'default', 'failure_count', 'failure_threshold', 'half_open', 'last_failure_time', 'name', 'open', 'recovery_timeout', 'state', 'success_count']

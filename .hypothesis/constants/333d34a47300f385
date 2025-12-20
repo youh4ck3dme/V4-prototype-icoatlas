@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/hu_nav.py
+# hypothesis_version: 6.148.7
+
+[200, 365, 404, 3600, '%Y-%m-%d', ', ', '1011', '2020-01-15', 'Accept', 'Aktív', 'Budapest', 'Cím nincs megadva', 'Fő utca 1', 'HU', 'ILUMINATI-SYSTEM/1.0', 'Ismeretlen cég', 'Kft.', 'User-Agent', '^\\d{8,11}$', 'address', 'alapitas', 'allapot', 'application/json', 'cache_ttl_hours', 'cached_items', 'city', 'country', 'csődeljárás', 'executives', 'felszámolás', 'founded', 'jogforma', 'legal_form', 'megszűnt', 'name', 'nev', 'note', 'postal_code', 'shareholders', 'status', 'street', 'tax_number']

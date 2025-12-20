@@ -1,0 +1,4 @@
+# file: /Users/youh4ck3dme/Downloads/V4-prototype-icoatlas/backend/services/pl_biala_lista.py
+# hypothesis_version: 6.148.7
+
+[200, '-', '2020-01-15', 'Accept', 'Aktywny', 'Czynny', 'Nieaktywny', 'Unknown', 'VAT exempt', 'VAT payer', 'Zwolniony', 'account_numbers', 'active', 'aktywny', 'application/json', 'czynny', 'has_vat_exemption', 'is_vat_payer', 'nip', 'status', 'vat_status']
