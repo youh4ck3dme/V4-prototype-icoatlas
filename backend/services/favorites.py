@@ -18,6 +18,7 @@ def add_favorite(
     country: str,
     company_data: Optional[Dict] = None,
     risk_score: Optional[float] = None,
+    risk_factors: Optional[List[str]] = None,
     notes: Optional[str] = None,
 ) -> FavoriteCompany:
     """
@@ -56,6 +57,8 @@ def add_favorite(
             existing.company_data = company_data
         if risk_score is not None:
             existing.risk_score = risk_score
+        if risk_factors:
+            existing.risk_factors = risk_factors
         if notes:
             existing.notes = notes
         db.commit()
@@ -70,6 +73,7 @@ def add_favorite(
         country=country,
         company_data=company_data,
         risk_score=risk_score,
+        risk_factors=risk_factors,
         notes=notes,
     )
     db.add(favorite)

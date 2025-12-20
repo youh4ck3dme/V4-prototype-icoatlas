@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import IluminatiLogo from '../components/IluminatiLogo';
-import { exportBatchToExcel } from '../utils/export';
-import { Download } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import IluminatiLogo from "../components/IluminatiLogo";
+import { exportBatchToExcel } from "../utils/export";
+import { Download } from "lucide-react";
 
 const Dashboard = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -19,42 +19,51 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      
+      const token = localStorage.getItem("access_token");
+
       // Načítať tier limits
-      const limitsResponse = await fetch('http://localhost:8000/api/auth/tier/limits', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const limitsResponse = await fetch(
+        "http://localhost:8000/api/auth/tier/limits",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (limitsResponse.ok) {
         const limits = await limitsResponse.json();
         setTierLimits(limits);
       }
 
       // Načítať search history
-      const historyResponse = await fetch('http://localhost:8000/api/search/history', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const historyResponse = await fetch(
+        "http://localhost:8000/api/search/history",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (historyResponse.ok) {
         const history = await historyResponse.json();
         setSearchHistory(history.slice(0, 10)); // Posledných 10
       }
 
       // Načítať favorites
-      const favoritesResponse = await fetch('http://localhost:8000/api/user/favorites', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const favoritesResponse = await fetch(
+        "http://localhost:8000/api/user/favorites",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (favoritesResponse.ok) {
         const favoritesData = await favoritesResponse.json();
         setFavorites(favoritesData.favorites || []);
       }
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      console.error("Error loading dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -62,13 +71,16 @@ const Dashboard = () => {
 
   const handleUpgrade = async (tier) => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(`http://localhost:8000/api/payment/checkout?tier=${tier}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `http://localhost:8000/api/payment/checkout?tier=${tier}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -77,20 +89,20 @@ const Dashboard = () => {
         }
       }
     } catch (error) {
-      console.error('Error creating checkout:', error);
+      console.error("Error creating checkout:", error);
     }
   };
 
   const getTierColor = (tier) => {
     switch (tier) {
-      case 'free':
-        return 'bg-gray-500';
-      case 'pro':
-        return 'bg-blue-500';
-      case 'enterprise':
-        return 'bg-purple-500';
+      case "free":
+        return "bg-gray-500";
+      case "pro":
+        return "bg-blue-500";
+      case "enterprise":
+        return "bg-purple-500";
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500";
     }
   };
 
@@ -127,17 +139,21 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white mb-2">
-                {user?.full_name || 'User'}
+                {user?.full_name || "User"}
               </h2>
               <p className="text-blue-200">{user?.email}</p>
             </div>
             <div className="text-right">
-              <div className={`inline-block px-4 py-2 rounded-lg text-white font-semibold ${getTierColor(user?.tier)}`}>
-                {user?.tier?.toUpperCase() || 'FREE'}
+              <div
+                className={`inline-block px-4 py-2 rounded-lg text-white font-semibold ${getTierColor(
+                  user?.tier
+                )}`}
+              >
+                {user?.tier?.toUpperCase() || "FREE"}
               </div>
-              {user?.tier === 'free' && (
+              {user?.tier === "free" && (
                 <button
-                  onClick={() => handleUpgrade('pro')}
+                  onClick={() => handleUpgrade("pro")}
                   className="mt-2 block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
                 >
                   Upgrade to PRO
@@ -150,14 +166,18 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Usage Statistics */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
-            <h3 className="text-xl font-bold text-white mb-4">Usage Statistics</h3>
+            <h3 className="text-xl font-bold text-white mb-4">
+              Usage Statistics
+            </h3>
             {tierLimits ? (
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-white mb-2">
                     <span>Searches per day</span>
                     <span className="font-semibold">
-                      {tierLimits.searches_per_day === -1 ? 'Unlimited' : tierLimits.searches_per_day}
+                      {tierLimits.searches_per_day === -1
+                        ? "Unlimited"
+                        : tierLimits.searches_per_day}
                     </span>
                   </div>
                 </div>
@@ -165,7 +185,9 @@ const Dashboard = () => {
                   <div className="flex justify-between text-white mb-2">
                     <span>Max graph nodes</span>
                     <span className="font-semibold">
-                      {tierLimits.max_graph_nodes === -1 ? 'Unlimited' : tierLimits.max_graph_nodes}
+                      {tierLimits.max_graph_nodes === -1
+                        ? "Unlimited"
+                        : tierLimits.max_graph_nodes}
                     </span>
                   </div>
                 </div>
@@ -173,7 +195,7 @@ const Dashboard = () => {
                   <div className="flex justify-between text-white mb-2">
                     <span>PDF Export</span>
                     <span className="font-semibold">
-                      {tierLimits.can_export_pdf ? '✅ Enabled' : '❌ Disabled'}
+                      {tierLimits.can_export_pdf ? "✅ Enabled" : "❌ Disabled"}
                     </span>
                   </div>
                 </div>
@@ -185,7 +207,9 @@ const Dashboard = () => {
 
           {/* Search History */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
-            <h3 className="text-xl font-bold text-white mb-4">Recent Searches</h3>
+            <h3 className="text-xl font-bold text-white mb-4">
+              Recent Searches
+            </h3>
             {searchHistory.length > 0 ? (
               <div className="space-y-2">
                 {searchHistory.map((search, index) => (
@@ -208,7 +232,9 @@ const Dashboard = () => {
 
         {/* Favorite Companies */}
         <div className="mt-6 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
-          <h3 className="text-xl font-bold text-white mb-4">Favorite Companies</h3>
+          <h3 className="text-xl font-bold text-white mb-4">
+            Favorite Companies
+          </h3>
           {favorites.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {favorites.map((favorite) => (
@@ -218,7 +244,9 @@ const Dashboard = () => {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <div className="font-semibold text-lg">{favorite.company_name}</div>
+                      <div className="font-semibold text-lg">
+                        {favorite.company_name}
+                      </div>
                       <div className="text-sm text-blue-200">
                         {favorite.company_identifier} • {favorite.country}
                       </div>
@@ -226,21 +254,23 @@ const Dashboard = () => {
                     <button
                       onClick={async () => {
                         try {
-                          const token = localStorage.getItem('access_token');
+                          const token = localStorage.getItem("access_token");
                           const response = await fetch(
                             `http://localhost:8000/api/user/favorites/${favorite.id}`,
                             {
-                              method: 'DELETE',
+                              method: "DELETE",
                               headers: {
-                                'Authorization': `Bearer ${token}`,
+                                Authorization: `Bearer ${token}`,
                               },
                             }
                           );
                           if (response.ok) {
-                            setFavorites(favorites.filter(f => f.id !== favorite.id));
+                            setFavorites(
+                              favorites.filter((f) => f.id !== favorite.id)
+                            );
                           }
                         } catch (error) {
-                          console.error('Error removing favorite:', error);
+                          console.error("Error removing favorite:", error);
                         }
                       }}
                       className="text-red-400 hover:text-red-300 ml-2"
@@ -250,14 +280,36 @@ const Dashboard = () => {
                     </button>
                   </div>
                   {favorite.risk_score !== null && (
-                    <div className="mt-2">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        favorite.risk_score >= 7 ? 'bg-red-500/20 text-red-300' :
-                        favorite.risk_score >= 4 ? 'bg-orange-500/20 text-orange-300' :
-                        'bg-green-500/20 text-green-300'
-                      }`}>
-                        Risk: {favorite.risk_score.toFixed(1)}
-                      </span>
+                    <div className="mt-3 space-y-2">
+                      {/* Premium Risk Badge with HSL Gradient */}
+                      <div
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-white shadow-sm ${
+                          favorite.risk_score >= 8
+                            ? "bg-gradient-to-r from-red-600 to-rose-500"
+                            : favorite.risk_score >= 5
+                            ? "bg-gradient-to-r from-amber-500 to-orange-400"
+                            : "bg-gradient-to-r from-emerald-500 to-teal-400"
+                        }`}
+                      >
+                        Risk Index: {favorite.risk_score.toFixed(1)}
+                      </div>
+
+                      {/* Risk Factors Context */}
+                      {favorite.risk_factors &&
+                        favorite.risk_factors.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {favorite.risk_factors
+                              .slice(0, 3)
+                              .map((factor, i) => (
+                                <span
+                                  key={i}
+                                  className="text-[10px] bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-blue-100/70"
+                                >
+                                  • {factor}
+                                </span>
+                              ))}
+                          </div>
+                        )}
                     </div>
                   )}
                   {favorite.notes && (
@@ -266,7 +318,9 @@ const Dashboard = () => {
                     </div>
                   )}
                   <button
-                    onClick={() => navigate(`/?q=${favorite.company_identifier}`)}
+                    onClick={() =>
+                      navigate(`/?q=${favorite.company_identifier}`)
+                    }
                     className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
                   >
                     View Details
@@ -275,7 +329,10 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <p className="text-blue-200">No favorite companies yet. Add companies to favorites from search results.</p>
+            <p className="text-blue-200">
+              No favorite companies yet. Add companies to favorites from search
+              results.
+            </p>
           )}
         </div>
 
@@ -284,42 +341,42 @@ const Dashboard = () => {
           <h3 className="text-xl font-bold text-white mb-4">Quick Actions</h3>
           <div className="flex flex-wrap gap-4">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
             >
               New Search
             </button>
-            {user?.tier === 'enterprise' && (
+            {user?.tier === "enterprise" && (
               <>
                 <button
-                  onClick={() => navigate('/api-keys')}
+                  onClick={() => navigate("/api-keys")}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
                 >
                   API Keys
                 </button>
                 <button
-                  onClick={() => navigate('/webhooks')}
+                  onClick={() => navigate("/webhooks")}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors"
                 >
                   Webhooks
                 </button>
                 <button
-                  onClick={() => navigate('/erp-integrations')}
+                  onClick={() => navigate("/erp-integrations")}
                   className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg transition-colors"
                 >
                   ERP Integrations
                 </button>
                 <button
-                  onClick={() => navigate('/analytics')}
+                  onClick={() => navigate("/analytics")}
                   className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg transition-colors"
                 >
                   Analytics
                 </button>
               </>
             )}
-            {user?.tier === 'free' && (
+            {user?.tier === "free" && (
               <button
-                onClick={() => handleUpgrade('pro')}
+                onClick={() => handleUpgrade("pro")}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors"
               >
                 Upgrade to PRO
@@ -333,4 +390,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

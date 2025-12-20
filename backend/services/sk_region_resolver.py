@@ -1,4 +1,4 @@
-"""
+d"""
 RegionResolver - Geolokácia z PSČ
 Mapping PSČ → Kraj/Okres pre Slovensko
 Načítava dáta z CSV súboru alebo používa fallback mapping

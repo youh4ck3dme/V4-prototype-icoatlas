@@ -558,6 +558,7 @@ async def add_favorite_company(
             country=str(country),
             company_data=request.get("company_data"),
             risk_score=request.get("risk_score"),
+            risk_factors=request.get("risk_factors"),
             notes=request.get("notes"),
         )
 

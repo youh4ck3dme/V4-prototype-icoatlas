@@ -935,6 +935,8 @@ export default function HomePageNew() {
                                       company_data: mainCompany,
                                       risk_score:
                                         riskScore > 0 ? riskScore : null,
+                                      risk_factors:
+                                        mainCompany.risk_factors || [],
                                     }),
                                   }
                                 );

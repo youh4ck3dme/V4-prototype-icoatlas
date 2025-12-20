@@ -53,9 +53,13 @@ def export_to_excel(graph_data: Dict, filename: Optional[str] = None) -> bytes:
     header_alignment = Alignment(horizontal="center", vertical="center")
 
     # === SHEET 1: Nodes (Firmy, Osoby, Adresy) ===
-    ws.append(
-        ["Typ", "ID", "Názov", "Krajina", "Risk Score", "Detaily", "Dátum vytvorenia"]
-    )
+    headers = [
+        "Typ", "ID", "Názov", "Krajina", "Risk Score", 
+        "Ulica", "Mesto", "PSČ", "DIČ", "IČ DPH", 
+        "Vložka", "Oddiel", "Základné imanie", 
+        "Dátum vzniku", "Detaily", "Dátum exportu"
+    ]
+    ws.append(headers)
 
     # Stylovanie hlavičky
     for cell in ws[1]:
@@ -73,6 +77,15 @@ def export_to_excel(graph_data: Dict, filename: Optional[str] = None) -> bytes:
                 node.get("label", ""),
                 node.get("country", ""),
                 node.get("risk_score", 0) or 0,
+                node.get("street", ""),
+                node.get("city", ""),
+                node.get("zip", ""),
+                node.get("dic", ""),
+                node.get("ic_dph", ""),
+                node.get("registration_id", ""),
+                node.get("registration_section", ""),
+                node.get("capital", ""),
+                node.get("founded", ""),
                 json.dumps(node.get("details", {}), ensure_ascii=False)
                 if isinstance(node.get("details"), dict)
                 else str(node.get("details", "")),
@@ -204,7 +217,7 @@ def export_to_csv(graph_data: Dict) -> str:
     csv_lines = []
 
     # Nodes
-    csv_lines.append("Typ,ID,Label,Krajina,Risk Score,Detaily")
+    csv_lines.append("Typ,ID,Label,Krajina,Risk Score,Ulica,Mesto,PSČ,DIČ,IČ DPH,Vložka,Oddiel,Imanie,Detaily")
     nodes = graph_data.get("nodes", [])
     for node in nodes:
         details = (
@@ -212,9 +225,23 @@ def export_to_csv(graph_data: Dict) -> str:
             if isinstance(node.get("details"), dict)
             else str(node.get("details", ""))
         )
-        csv_lines.append(
-            f'{node.get("type", "")},{node.get("id", "")},"{node.get("label", "")}",{node.get("country", "")},{node.get("risk_score", 0) or 0},"{details.replace("\"", "\"\"\"")}"'
-        )
+        row = [
+            node.get("type", ""),
+            node.get("id", ""),
+            f'"{node.get("label", "")}"',
+            node.get("country", ""),
+            str(node.get("risk_score", 0) or 0),
+            f'"{node.get("street", "")}"',
+            f'"{node.get("city", "")}"',
+            f'"{node.get("zip", "")}"',
+            f'"{node.get("dic", "")}"',
+            f'"{node.get("ic_dph", "")}"',
+            f'"{node.get("registration_id", "")}"',
+            f'"{node.get("registration_section", "")}"',
+            f'"{node.get("capital", "")}"',
+            f'"{details.replace("\"", "\"\"\"")}"'
+        ]
+        csv_lines.append(",".join(row))
 
     # Edges
     csv_lines.append("")
@@ -263,13 +290,20 @@ def export_batch_to_excel(
         "IČO/KRS/Adószám",
         "Názov",
         "Krajina",
-        "Adresa",
+        "Ulica",
+        "Mesto",
+        "PSČ",
+        "Okres",
+        "Kraj",
         "DIČ",
         "IČ DPH",
         "Právna forma",
         "Risk Score",
         "Dátum vzniku",
         "Stav",
+        "Vložka",
+        "Oddiel",
+        "Základné imanie",
         "Poznámky",
     ]
     ws.append(headers)
@@ -288,13 +322,20 @@ def export_batch_to_excel(
                 company_data.get("ico") or company.get("company_identifier", ""),
                 company_data.get("name") or company.get("company_name", ""),
                 company_data.get("country") or company.get("country", ""),
-                company_data.get("address", ""),
+                company_data.get("street", ""),
+                company_data.get("city", ""),
+                company_data.get("zip", "") or company_data.get("postal_code", ""),
+                company_data.get("district", ""),
+                company_data.get("region", ""),
                 company_data.get("dic", ""),
                 company_data.get("ic_dph", ""),
                 company_data.get("legal_form", ""),
                 company.get("risk_score") or company_data.get("risk_score", 0),
-                company_data.get("establishment_date", ""),
+                company_data.get("establishment_date") or company_data.get("founded", ""),
                 company_data.get("status", ""),
+                company_data.get("registration_id", ""),
+                company_data.get("registration_section", ""),
+                company_data.get("capital", ""),
                 company.get("notes", ""),
             ]
         )

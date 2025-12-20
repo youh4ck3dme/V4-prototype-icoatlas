@@ -126,6 +126,7 @@ class FavoriteCompany(Base):
     country = Column(String(2), nullable=False)
     company_data = Column(JSON)  # Full company data snapshot
     risk_score = Column(Float)
+    risk_factors = Column(JSON)  # List of risk factors
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     notes = Column(Text)  # User notes about this company
 
@@ -137,6 +138,7 @@ class FavoriteCompany(Base):
             "company_name": self.company_name,
             "country": self.country,
             "risk_score": self.risk_score,
+            "risk_factors": self.risk_factors or [],
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "notes": self.notes,
         }
