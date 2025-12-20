@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import IluminatiLogo from "../components/IluminatiLogo";
 import ForceGraph from "../components/ForceGraph";
+import IntelligenceBrief from "../components/IntelligenceBrief";
 import Disclaimer from "../components/Disclaimer";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import PremiumLoader from "../components/PremiumLoader";
@@ -1072,11 +1073,70 @@ export default function HomePageNew() {
                         <FileText size={14} />
                         JSON
                       </button>
+                      <button
+                        onClick={() => {
+                          const originalCanvas =
+                            document.querySelector("canvas");
+                          if (originalCanvas) {
+                            // Create a temporary canvas for watermarking
+                            const tempCanvas = document.createElement("canvas");
+                            tempCanvas.width = originalCanvas.width;
+                            tempCanvas.height = originalCanvas.height;
+                            const tCtx = tempCanvas.getContext("2d");
+
+                            // 1. Draw the original graph
+                            tCtx.drawImage(originalCanvas, 0, 0);
+
+                            // 2. Add Watermark
+                            tCtx.font = "bold 24px Inter, Sans-Serif";
+                            tCtx.fillStyle = "rgba(212, 175, 55, 0.4)"; // Gold with opacity
+                            tCtx.textAlign = "right";
+                            tCtx.fillText(
+                              "ILUMINATI SYSTEM",
+                              tempCanvas.width - 30,
+                              tempCanvas.height - 60
+                            );
+
+                            tCtx.font = "14px Inter, Sans-Serif";
+                            tCtx.fillStyle = "rgba(100, 116, 139, 0.5)";
+                            tCtx.fillText(
+                              "CONFIDENTIAL CORPORATE INTELLIGENCE",
+                              tempCanvas.width - 30,
+                              tempCanvas.height - 35
+                            );
+                            tCtx.fillText(
+                              `EXPORTED: ${new Date().toLocaleString()}`,
+                              tempCanvas.width - 30,
+                              tempCanvas.height - 15
+                            );
+
+                            // 3. Download
+                            const link = document.createElement("a");
+                            link.download = `iluminati-nexus-export-${new Date().getTime()}.png`;
+                            link.href = tempCanvas.toDataURL("image/png");
+                            link.click();
+                          }
+                        }}
+                        className="text-xs bg-blue-600 border border-blue-700 px-3 py-1.5 rounded text-white font-medium hover:bg-blue-700 flex items-center gap-1.5"
+                      >
+                        <Share2 size={14} />
+                        Graf (PNG)
+                      </button>
                     </div>
                   </div>
 
-                  <div className="flex-grow bg-slate-50 p-4">
-                    <ForceGraph data={data} />
+                  <div className="flex-grow bg-slate-50 p-4 relative flex flex-col md:flex-row gap-4">
+                    <div className="flex-grow relative">
+                      <ForceGraph data={data} />
+                    </div>
+                    {data?.nexus_story && (
+                      <div className="md:w-80 flex-shrink-0">
+                        <IntelligenceBrief
+                          story={data.nexus_story}
+                          metadata={data.nexus_metadata}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

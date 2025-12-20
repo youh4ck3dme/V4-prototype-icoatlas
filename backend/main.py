@@ -74,6 +74,10 @@ from services.favorites import (
 from services.favorites import (
     update_favorite_notes as update_favorite_notes_service,
 )
+from services.intelligence_service import (
+    generate_nexus_story,
+    get_nexus_metadata,
+)
 from services.hu_nav import (
     calculate_hu_risk_score,
     fetch_nav_hu,
@@ -223,6 +227,8 @@ class Edge(BaseModel):
 class GraphResponse(BaseModel):
     nodes: List[Node]
     edges: List[Edge]
+    nexus_story: Optional[str] = ""
+    nexus_metadata: Optional[Dict] = {}
 
 
 # Auth Models
@@ -2148,8 +2154,19 @@ async def search_company(
                                     )
                                 )
 
+            # Intelligence Briefing
+            nodes_dicts = [n.dict() for n in nodes]
+            edges_dicts = [e.dict() for e in edges]
+            nexus_story = generate_nexus_story(nodes_dicts, edges_dicts, nodes[0].id if nodes else "")
+            nexus_metadata = get_nexus_metadata(nodes_dicts, edges_dicts)
+
             # Vrátiť výsledky pre CZ
-            return GraphResponse(nodes=nodes, edges=edges)
+            return GraphResponse(
+                nodes=nodes, 
+                edges=edges,
+                nexus_story=nexus_story,
+                nexus_metadata=nexus_metadata
+            )
         else:
             # ARES nevrátil dáta - skúsiť SK
             print(f"⚠️ ARES nevrátil dáta, skúšam SK pre {query_clean}...")
@@ -2673,8 +2690,24 @@ async def search_company(
         except Exception as e:
             print(f"⚠️ Chyba pri risk intelligence: {e}")
 
+    # Intelligence Briefing
+    nexus_story = ""
+    nexus_metadata = {}
+    if nodes:
+        # Považujeme prvú nájdenú firmu za hlavnú, inak prvý uzol
+        main_comp = next((n for n in nodes if n.type == "company"), nodes[0])
+        nodes_dicts = [n.dict() for n in nodes]
+        edges_dicts = [e.dict() for e in edges]
+        nexus_story = generate_nexus_story(nodes_dicts, edges_dicts, main_comp.id)
+        nexus_metadata = get_nexus_metadata(nodes_dicts, edges_dicts)
+
     # Uložiť do cache
-    result = GraphResponse(nodes=nodes, edges=edges)
+    result = GraphResponse(
+        nodes=nodes, 
+        edges=edges,
+        nexus_story=nexus_story,
+        nexus_metadata=nexus_metadata
+    )
     set(cache_key, result.dict())
 
     # Uložiť do databázy (história a cache)
