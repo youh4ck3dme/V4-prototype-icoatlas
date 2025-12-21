@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Hungary Company Data Template",
+  "description": "Standardized JSON template for Hungarian company data from NAV and company register",
+  "type": "object",
+  "properties": {
+    "adoszam": {
+      "type": "string",
+      "description": "Hungarian tax number (Adószám) - 11 digits",
+      "pattern": "^[0-9]{8}-[0-9]-[0-9]{2}$",
+      "example": "10895986-2-44"
+    },
+    "cegjegyzekszam": {
+      "type": "string",
+      "description": "Company registration number (Cégjegyzékszám)",
+      "pattern": "^[0-9]{2}-[0-9]{2}-[0-9]{6}$",
+      "example": "01-09-068792"
+    },
+    "country": {
+      "type": "string",
+      "const": "HU",
+      "description": "Country code for Hungary"
+    },
+    "name": {
+      "type": "string",
+      "description": "Official company name (Cégnév)",
+      "example": "Prezi Korlátolt Felelősségű Társaság"
+    },
+    "short_name": {
+      "type": "string",
+      "description": "Short company name",
+      "example": "Prezi Kft."
+    },
+    "legal_form": {
+      "type": "string",
+      "description": "Legal form of the company (Cégforma)",
+      "example": "Korlátolt felelősségű társaság"
+    },
+    "address": {
+      "type": "string",
+      "description": "Full registered address (Székhely)",
+      "example": "1065 Budapest, Nagymező utca 54-56."
+    },
+    "street": {
+      "type": "string",
+      "description": "Street name and number",
+      "example": "Nagymező utca 54-56."
+    },
+    "city": {
+      "type": "string",
+      "description": "City name (Város)",
+      "example": "Budapest"
+    },
+    "zip": {
+      "type": "string",
+      "description": "Postal code (Irányítószám)",
+      "pattern": "^[0-9]{4}$",
+      "example": "1065"
+    },
+    "postal_code": {
+      "type": "string",
+      "description": "Postal code (alias for zip)",
+      "pattern": "^[0-9]{4}$",
+      "example": "1065"
+    },
+    "county": {
+      "type": "string",
+      "description": "County (Megye)",
+      "example": "Budapest"
+    },
+    "district": {
+      "type": "string",
+      "description": "District (Kerület)",
+      "example": "VI. kerület"
+    },
+    "registration_id": {
+      "type": "string",
+      "description": "Company registration number",
+      "example": "01-09-068792"
+    },
+    "registration_section": {
+      "type": "string",
+      "description": "Registration section",
+      "example": "09"
+    },
+    "registration_source": {
+      "type": "string",
+      "enum": ["NAV", "CEGINFO", "E-CEGJEGYZEK"],
+      "description": "Source register of the data"
+    },
+    "registration_court": {
+      "type": "string",
+      "description": "Registration court (Cégbíróság)",
+      "example": "Fővárosi Törvényszék Cégbírósága"
+    },
+    "capital": {
+      "type": "string",
+      "description": "Share capital (Törzstőke)",
+      "example": "3 000 000 Ft"
+    },
+    "executives": {
+      "type": "array",
+      "description": "List of managing directors (Ügyvezetők)",
+      "items": {
+        "type": "string"
+      },
+      "example": ["Árvai Péter"]
+    },
+    "shareholders": {
+      "type": "array",
+      "description": "List of shareholders (Tulajdonosok)",
+      "items": {
+        "type": "string"
+      },
+      "example": []
+    },
+    "founded": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of registration (Bejegyzés dátuma)",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "example": "2008-04-03"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Működő",
+        "Felszámolás alatt",
+        "Végelszámolás alatt",
+        "Törölt",
+        "Szünetel"
+      ],
+      "description": "Company status",
+      "example": "Működő"
+    },
+    "teaor_code": {
+      "type": "string",
+      "description": "Primary TEÁOR economic activity code",
+      "example": "62.01"
+    },
+    "teaor_description": {
+      "type": "string",
+      "description": "Description of primary economic activity",
+      "example": "Szoftver fejlesztés"
+    },
+    "vat_registered": {
+      "type": "boolean",
+      "description": "Whether company is VAT registered (ÁFA alany)",
+      "example": true
+    },
+    "vat_number": {
+      "type": "string",
+      "description": "EU VAT number",
+      "pattern": "^HU[0-9]{8}$",
+      "example": "HU10895986"
+    },
+    "eu_vat_number": {
+      "type": "string",
+      "description": "EU VAT number with country prefix",
+      "pattern": "^HU[0-9]{8}$",
+      "example": "HU10895986"
+    },
+    "statistical_number": {
+      "type": "string",
+      "description": "Statistical number (Statisztikai számjel)",
+      "example": "10895986-6201-113-01"
+    },
+    "financial_data": {
+      "type": "object",
+      "description": "Financial indicators",
+      "properties": {
+        "year": {
+          "type": "integer",
+          "description": "Reporting year",
+          "example": 2023
+        },
+        "revenue": {
+          "type": "number",
+          "description": "Revenue in HUF",
+          "example": 12500000000
+        },
+        "profit": {
+          "type": "number",
+          "description": "Net profit in HUF",
+          "example": 1800000000
+        },
+        "assets": {
+          "type": "number",
+          "description": "Total assets in HUF",
+          "example": 8500000000
+        },
+        "employees": {
+          "type": "integer",
+          "description": "Number of employees",
+          "example": 350
+        }
+      }
+    },
+    "risk_score": {
+      "type": "number",
+      "description": "Calculated risk score (0-100)",
+      "minimum": 0,
+      "maximum": 100,
+      "example": 18
+    }
+  },
+  "required": ["adoszam", "country", "name"],
+  "additionalProperties": false
+}

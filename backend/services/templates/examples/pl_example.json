@@ -1,0 +1,43 @@
+{
+  "nip": "5260250995",
+  "krs": "0000021784",
+  "regon": "012100784",
+  "country": "PL",
+  "name": "CD PROJEKT SPÓŁKA AKCYJNA",
+  "legal_form": "Spółka akcyjna",
+  "address": "ul. Jagiellońska 74, 03-301 Warszawa",
+  "street": "ul. Jagiellońska 74",
+  "city": "Warszawa",
+  "zip": "03-301",
+  "postal_code": "03-301",
+  "voivodeship": "mazowieckie",
+  "district": "Warszawa",
+  "registration_id": "0000021784",
+  "registration_section": "B",
+  "registration_source": "KRS",
+  "registration_court": "Sąd Rejonowy dla m.st. Warszawy w Warszawie, XII Wydział Gospodarczy Krajowego Rejestru Sądowego",
+  "capital": "100 000 000,00 zł",
+  "executives": [
+    "Adam Kiciński - Prezes Zarządu",
+    "Piotr Nielubowicz - Członek Zarządu"
+  ],
+  "shareholders": [],
+  "founded": "1994-05-27",
+  "status": "Aktywna",
+  "pkd_code": "58.21.Z",
+  "pkd_description": "Wydawanie gier komputerowych",
+  "vat_registered": true,
+  "white_list_vat": true,
+  "bank_accounts": [
+    "PL61109010140000071219812874",
+    "PL27114020040000300201355387"
+  ],
+  "financial_data": {
+    "year": 2023,
+    "revenue": 2800000000,
+    "profit": 850000000,
+    "assets": 4200000000,
+    "employees": 1100
+  },
+  "risk_score": 15
+}

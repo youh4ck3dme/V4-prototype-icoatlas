@@ -1,0 +1,41 @@
+{
+  "ico": "36421928",
+  "country": "SK",
+  "name": "ESET, spol. s r.o.",
+  "legal_form": "Spoločnosť s ručením obmedzeným",
+  "address": "Einsteinova 24, 851 01 Bratislava",
+  "street": "Einsteinova 24",
+  "city": "Bratislava",
+  "zip": "851 01",
+  "postal_code": "851 01",
+  "district": "Bratislava I",
+  "region": "Bratislavský kraj",
+  "dic": "2020372643",
+  "ic_dph": "SK2020372643",
+  "registration_id": "4156/B",
+  "registration_section": "Sro",
+  "registration_source": "ORSR",
+  "capital": "6 638,78 €",
+  "executives": ["Ing. Richard Marko", "Miroslav Trnka"],
+  "shareholders": ["ESET Holding a.s."],
+  "founded": "1992-04-15",
+  "status": "Aktívna",
+  "financial_data": {
+    "year": 2023,
+    "revenue": 125000000,
+    "profit": 15000000,
+    "assets": 80000000,
+    "liabilities": 30000000,
+    "equity": 50000000,
+    "employees": 450
+  },
+  "beneficial_owners": [
+    {
+      "name": "Richard Marko",
+      "birth_date": "1970-05-12",
+      "nationality": "SK",
+      "ownership_percentage": 51.5
+    }
+  ],
+  "risk_score": 25
+}

@@ -203,11 +203,9 @@ async def async_assert_raises(exc_class, coro):
 @pytest.fixture
 def db_session():
     """Database session for testing"""
-    session = next(get_db_session())
-    try:
+    """Database session for testing"""
+    with get_db_session() as session:
         yield session
-    finally:
-        session.close()
 
 
 @pytest.fixture(autouse=True, scope="session")

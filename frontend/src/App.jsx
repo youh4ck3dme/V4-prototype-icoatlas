@@ -1,25 +1,25 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ErrorBoundary from './components/ErrorBoundary';
-import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import HomePageNew from './pages/HomePageNew';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import PaymentCheckout from './pages/PaymentCheckout';
-import PaymentSuccess from './pages/PaymentSuccess';
-import PaymentCancel from './pages/PaymentCancel';
-import ApiKeys from './pages/ApiKeys';
-import Webhooks from './pages/Webhooks';
-import ErpIntegrations from './pages/ErpIntegrations';
-import Analytics from './pages/Analytics';
-import TermsOfService from './pages/TermsOfService';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import DisclaimerPage from './pages/Disclaimer';
-import CookiePolicy from './pages/CookiePolicy';
-import DataProcessingAgreement from './pages/DataProcessingAgreement';
-import License from './pages/License';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import HomePageNew from "./pages/HomePageNew";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
+import Dashboard from "./pages/Dashboard";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
+import ApiKeys from "./pages/ApiKeys";
+import Webhooks from "./pages/Webhooks";
+import ErpIntegrations from "./pages/ErpIntegrations";
+import Analytics from "./pages/Analytics";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DisclaimerPage from "./pages/Disclaimer";
+import CookiePolicy from "./pages/CookiePolicy";
+import DataProcessingAgreement from "./pages/DataProcessingAgreement";
+import License from "./pages/License";
 
 function App() {
   return (
@@ -33,21 +33,21 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<HomePageNew />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/payment/checkout"
-              element={
-                <ProtectedRoute>
-                  <PaymentCheckout />
                 </ProtectedRoute>
               }
             />
@@ -100,4 +100,3 @@ function App() {
 }
 
 export default App;
-

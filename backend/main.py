@@ -117,12 +117,6 @@ from services.sk_rpo import (
     is_slovak_ico,
     parse_rpo_data,
 )
-from services.stripe_service import (
-    cancel_subscription,
-    create_checkout_session,
-    get_subscription_status,
-    handle_webhook,
-)
 from services.webhooks import (
     create_webhook,
     delete_webhook,
@@ -131,6 +125,7 @@ from services.webhooks import (
     get_webhook_stats,
 )
 from routers import v4 as v4_router
+from routers import auth, api_keys
 
 app = FastAPI(
     title="ILUMINATI SYSTEM API",
@@ -143,6 +138,8 @@ app = FastAPI(
 
 # Include V4 Router
 app.include_router(v4_router.router, prefix="/api/v4", tags=["V4 Integration"])
+app.include_router(auth.router)
+app.include_router(api_keys.router)
 
 # Global error handler
 app.add_exception_handler(Exception, error_handler)
@@ -216,6 +213,15 @@ class Node(BaseModel):
     zip: Optional[str] = None
     district: Optional[str] = None
     region: Optional[str] = None
+    # Phase 17: Deep Intelligence Fields
+    shareholders: Optional[List[str]] = []
+    status: Optional[str] = None
+    financials: Optional[Dict] = None
+    employees_count: Optional[int] = None
+    website: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    activity_codes: Optional[List[str]] = []
 
 
 class Edge(BaseModel):
@@ -457,39 +463,139 @@ def read_root():
     return {
         "status": "ILUMINATI SYSTEM API Running",
         "version": "5.0",
+        "description": "Cross-border Business Intelligence Platform for V4 countries",
         "features": [
-            "CZ (ARES)",
-            "SK (RPO)",
-            "PL (KRS)",
-            "HU (NAV)",
-            "Cache",
-            "Risk Scoring",
-            "Authentication",
-            "Stripe Integration",
+            "Multi-Country Search (SK, CZ, PL, HU)",
+            "Real-time Data Aggregation",
+            "Risk Intelligence & Scoring",
+            "Beneficial Ownership (RPO)",
+            "Financial Indicators",
+            "Debt Registers Integration",
+            "Authentication & Authorization",
             "API Keys Management",
-            "Webhooks",
-            "ERP Integrations",
+            "Webhooks Delivery System",
+            "ERP Integrations (SAP, Pohoda, Money S3)",
             "Analytics Dashboard",
             "Favorites System",
+            "Export (Excel, PDF, CSV)",
+            "Rate Limiting by Tier",
+            "Caching (Redis/In-Memory)",
+            "Circuit Breaker Pattern",
+            "Proxy Rotation",
         ],
         "endpoints": {
+            "root": "/",
             "health": "/api/health",
             "docs": "/api/docs",
-            "search": "/api/search",
-            "auth": "/api/auth",
-            "enterprise": "/api/enterprise",
-            "analytics": "/api/analytics",
+            "openapi": "/api/openapi.json",
+            "search": {
+                "main": "/api/search",
+                "by_name": "/api/search/by-name",
+                "history": "/api/search/history",
+            },
+            "auth": {
+                "register": "/api/auth/register",
+                "login": "/api/auth/login",
+                "me": "/api/auth/me",
+                "tier_limits": "/api/auth/tier/limits",
+            },
+            "user": {
+                "favorites": "/api/user/favorites",
+                "check_favorite": "/api/user/favorites/check/{company_identifier}/{country}",
+                "update_notes": "/api/user/favorites/{favorite_id}/notes",
+            },
+            "enterprise": {
+                "api_keys": "/api/enterprise/keys",
+                "key_usage": "/api/enterprise/usage/{key_id}",
+                "webhooks": "/api/enterprise/webhooks",
+                "webhook_stats": "/api/enterprise/webhooks/{webhook_id}/stats",
+                "webhook_logs": "/api/enterprise/webhooks/{webhook_id}/logs",
+                "erp_connections": "/api/enterprise/erp/connections",
+                "erp_logs": "/api/enterprise/erp/{connection_id}/logs",
+                "supplier_payments": "/api/enterprise/erp/{connection_id}/supplier/{supplier_ico}/payments",
+            },
+            "analytics": {
+                "dashboard": "/api/analytics/dashboard",
+                "search_trends": "/api/analytics/search-trends",
+                "risk_distribution": "/api/analytics/risk-distribution",
+                "user_activity": "/api/analytics/user-activity",
+                "api_usage": "/api/analytics/api-usage",
+            },
             "export": {
                 "excel": "/api/export/excel",
                 "batch_excel": "/api/export/batch-excel",
             },
+            "stats": {
+                "cache": "/api/cache/stats",
+                "database": "/api/database/stats",
+                "rate_limiter": "/api/rate-limiter/stats",
+                "circuit_breaker": "/api/circuit-breaker/stats",
+                "metrics": "/api/metrics",
+                "proxy": "/api/proxy/stats",
+            },
+            "v4": {
+                "search": "/api/v4/search",
+                "company": "/api/v4/company/{country}/{identifier}",
+            },
         },
         "supported_formats": ["JSON", "CSV", "PDF", "Excel (XLSX)"],
         "supported_countries": {
-            "SK": "Slovensko (ORSR, ZRSR, RUZ)",
-            "CZ": "Česká republika (ARES)",
-            "PL": "Poľsko (KRS)",
-            "HU": "Maďarsko (NAV)",
+            "SK": {
+                "name": "Slovensko",
+                "sources": ["ORSR", "ZRSR", "RUZ", "RPO"],
+                "identifier": "IČO (8 digits)",
+                "features": ["Company data", "Financial indicators", "Beneficial owners", "Tax info"],
+            },
+            "CZ": {
+                "name": "Česká republika",
+                "sources": ["ARES", "Commercial Register"],
+                "identifier": "IČO (8 digits)",
+                "features": ["Company data", "Economic activity", "Tax info"],
+            },
+            "PL": {
+                "name": "Poľsko",
+                "sources": ["KRS", "CEIDG", "GUS", "VAT White List"],
+                "identifier": "NIP (10 digits) / KRS",
+                "features": ["Company data", "VAT status", "Bank accounts", "Economic activity"],
+            },
+            "HU": {
+                "name": "Maďarsko",
+                "sources": ["NAV", "Company Register"],
+                "identifier": "Adószám (Tax number)",
+                "features": ["Company data", "VAT info", "Economic activity"],
+            },
+        },
+        "tiers": {
+            "free": {
+                "rate_limit": "10 requests/minute",
+                "features": ["Basic search", "Limited exports"],
+            },
+            "basic": {
+                "rate_limit": "50 requests/minute",
+                "features": ["Full search", "Unlimited exports", "Search history"],
+            },
+            "pro": {
+                "rate_limit": "200 requests/minute",
+                "features": ["All Basic features", "API access", "Webhooks", "Analytics"],
+            },
+            "enterprise": {
+                "rate_limit": "1000 requests/minute",
+                "features": ["All Pro features", "ERP integrations", "Custom solutions", "Priority support"],
+            },
+        },
+        "data_sources": {
+            "official_apis": ["ARES (CZ)", "RPO (SK)", "NAV (HU)"],
+            "web_scraping": ["ORSR (SK)", "KRS (PL)", "CEIDG (PL)"],
+            "supplementary": ["ZRSR (SK)", "RUZ (SK)", "GUS (PL)", "VAT White List (PL)"],
+        },
+        "cache": {
+            "type": "Hybrid (Redis + In-Memory)",
+            "ttl": "12 hours",
+            "fallback": "In-memory if Redis unavailable",
+        },
+        "database": {
+            "type": "PostgreSQL / SQLite",
+            "features": ["Company cache", "Search history", "User data", "Analytics"],
         },
     }
 
@@ -1650,82 +1756,7 @@ async def get_analytics_api_usage(
 # --- STRIPE ENDPOINTY ---
 
 
-@app.post("/api/payment/checkout")
-async def create_payment_checkout(
-    tier: str, current_user: User = Depends(get_current_user)
-):
-    """Vytvorí Stripe checkout session pre upgrade tieru"""
-    try:
-        user_tier = UserTier(tier.lower())
-        if user_tier == UserTier.FREE:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cannot upgrade to FREE tier",
-            )
-
-        result = create_checkout_session(
-            user_id=current_user.id,  # type: ignore[arg-type]
-            user_email=current_user.email,  # type: ignore[arg-type]
-            tier=user_tier,
-        )
-
-        if "error" in result:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=result["error"],
-            )
-
-        return result
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid tier: {tier}"
-        )
-
-
-@app.post("/api/payment/webhook")
-async def stripe_webhook(request: FastAPIRequest):
-    """Stripe webhook endpoint pre subscription events"""
-    payload = await request.body()
-    signature = request.headers.get("stripe-signature")
-
-    if not signature:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Missing stripe-signature header",
-        )
-
-    result = handle_webhook(payload, signature)
-
-    if "error" in result:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-        )
-
-    return result
-
-
-@app.get("/api/payment/subscription")
-async def get_subscription(current_user: User = Depends(get_current_user)):
-    """Získa subscription status používateľa"""
-    result = get_subscription_status(current_user.email)  # type: ignore[arg-type]
-
-    if result is None:
-        return {"status": "no_subscription", "tier": current_user.tier.value}
-
-    return result
-
-
-@app.post("/api/payment/cancel")
-async def cancel_user_subscription(current_user: User = Depends(get_current_user)):
-    """Zruší subscription používateľa"""
-    result = cancel_subscription(current_user.email)  # type: ignore[arg-type]
-
-    if "error" in result:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-        )
-
-    return result
+# --- WEBHOOK ENDPOINTY ---
 
 
 @app.get("/api/health")
@@ -2178,25 +2209,29 @@ async def search_company(
         increment("search.by_country", tags={"country": "SK"})
 
         # 1. Skúsiť RPO API (ak je dostupné)
+        print(f"🔍 Trying RPO API for {query_clean}...")
         rpo_data = fetch_rpo_sk(query_clean)
+        print(f"RPO result: {'success' if rpo_data else 'failed'}")
 
         if rpo_data:
             normalized = parse_rpo_data(rpo_data, query_clean)
             risk_score = calculate_sk_risk_score(normalized)
         else:
             # 2. Hybridný model: Cache → DB → Live Scraping (ORSR)
-            print("⚠️ RPO API nedostupné, používam hybridný model (ORSR)...")
+            print("RPO failed, trying ORSR")
             orsr_provider = get_orsr_provider()
             orsr_data = orsr_provider.lookup_by_ico(
                 query_clean, force_refresh=force_refresh
             )
+
+            print(f"ORSR result: {'success' if orsr_data else 'failed'}")
 
             if orsr_data:
                 normalized = orsr_data
                 risk_score = calculate_sk_risk_score(normalized)
             else:
                 # Fallback na ZRSR (Živnostenský register)
-                print(f"⚠️ ORSR scraping vrátil None, skúšam ZRSR pre {query_clean}...")
+                print("ORSR failed, trying ZRSR")
                 zrsr_provider = get_zrsr_provider()
                 zrsr_data = zrsr_provider.lookup_dic_ic_dph(query_clean)
 
@@ -2337,6 +2372,15 @@ async def search_company(
                     main_node.zip = orsr_data.get("zip") or orsr_data.get("postal_code")
                     main_node.district = orsr_data.get("district")
                     main_node.region = orsr_data.get("region")
+                    # Phase 17: Deep Intelligence Fields
+                    main_node.shareholders = orsr_data.get("shareholders") or []
+                    main_node.status = orsr_data.get("status")
+                    main_node.financials = orsr_data.get("financial_data")
+                    main_node.employees_count = orsr_data.get("employees_count")
+                    main_node.website = orsr_data.get("website")
+                    main_node.contact_email = orsr_data.get("contact_email")
+                    main_node.contact_phone = orsr_data.get("contact_phone")
+                    main_node.activity_codes = orsr_data.get("activity_codes") or []
                     
                 main_node.details = f"IČO: {query_clean}, Status: {normalized.get('status', 'Aktívna')}, Forma: {normalized.get('legal_form', 'N/A')}"
 

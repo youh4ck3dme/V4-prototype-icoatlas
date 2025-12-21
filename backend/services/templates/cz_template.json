@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Czech Republic Company Data Template",
+  "description": "Standardized JSON template for Czech company data from ARES API",
+  "type": "object",
+  "properties": {
+    "ico": {
+      "type": "string",
+      "description": "8-digit Czech company registration number (IČO)",
+      "pattern": "^[0-9]{8}$",
+      "example": "27082440"
+    },
+    "country": {
+      "type": "string",
+      "const": "CZ",
+      "description": "Country code for Czech Republic"
+    },
+    "name": {
+      "type": "string",
+      "description": "Official company name (Obchodní jméno)",
+      "example": "Avast Software s.r.o."
+    },
+    "legal_form": {
+      "type": "string",
+      "description": "Legal form of the company (Právní forma)",
+      "example": "Společnost s ručením omezeným"
+    },
+    "address": {
+      "type": "string",
+      "description": "Full registered address (Sídlo)",
+      "example": "Pikrtova 1737/1a, 140 00 Praha 4"
+    },
+    "street": {
+      "type": "string",
+      "description": "Street name and number",
+      "example": "Pikrtova 1737/1a"
+    },
+    "city": {
+      "type": "string",
+      "description": "City name (Město)",
+      "example": "Praha 4"
+    },
+    "zip": {
+      "type": "string",
+      "description": "Postal code (PSČ)",
+      "pattern": "^[0-9]{3}\\s?[0-9]{2}$",
+      "example": "140 00"
+    },
+    "postal_code": {
+      "type": "string",
+      "description": "Postal code (alias for zip)",
+      "pattern": "^[0-9]{3}\\s?[0-9]{2}$",
+      "example": "140 00"
+    },
+    "district": {
+      "type": "string",
+      "description": "District (Okres)",
+      "example": "Praha"
+    },
+    "region": {
+      "type": "string",
+      "description": "Region (Kraj)",
+      "example": "Hlavní město Praha"
+    },
+    "dic": {
+      "type": "string",
+      "description": "Tax identification number (DIČ)",
+      "pattern": "^CZ[0-9]{8,10}$",
+      "example": "CZ27082440"
+    },
+    "ic_dph": {
+      "type": "string",
+      "description": "VAT number (IČ DPH)",
+      "pattern": "^CZ[0-9]{8,10}$",
+      "example": "CZ27082440"
+    },
+    "registration_id": {
+      "type": "string",
+      "description": "Registration number in commercial register",
+      "example": "C 54807"
+    },
+    "registration_section": {
+      "type": "string",
+      "description": "Registration section",
+      "example": "C"
+    },
+    "registration_source": {
+      "type": "string",
+      "enum": ["ARES", "OR"],
+      "description": "Source register of the data"
+    },
+    "registration_court": {
+      "type": "string",
+      "description": "Registration court (Rejstříkový soud)",
+      "example": "Městský soud v Praze"
+    },
+    "capital": {
+      "type": "string",
+      "description": "Share capital (Základní kapitál)",
+      "example": "200 000 Kč"
+    },
+    "executives": {
+      "type": "array",
+      "description": "List of statutory representatives (Statutární orgán)",
+      "items": {
+        "type": "string"
+      },
+      "example": ["Ondřej Vlček", "Jaya Baloo"]
+    },
+    "shareholders": {
+      "type": "array",
+      "description": "List of shareholders/partners (Společníci)",
+      "items": {
+        "type": "string"
+      },
+      "example": ["Gen Digital Inc."]
+    },
+    "founded": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of registration (Datum vzniku)",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "example": "1991-04-05"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["Aktivní", "V likvidaci", "V konkurzu", "Vymazaná", "Zaniklá"],
+      "description": "Company status",
+      "example": "Aktivní"
+    },
+    "nace_code": {
+      "type": "string",
+      "description": "Primary NACE economic activity code",
+      "example": "62.01"
+    },
+    "nace_description": {
+      "type": "string",
+      "description": "Description of primary economic activity",
+      "example": "Počítačové programování"
+    },
+    "financial_data": {
+      "type": "object",
+      "description": "Financial indicators",
+      "properties": {
+        "year": {
+          "type": "integer",
+          "description": "Reporting year",
+          "example": 2023
+        },
+        "revenue": {
+          "type": "number",
+          "description": "Revenue in CZK",
+          "example": 3500000000
+        },
+        "profit": {
+          "type": "number",
+          "description": "Net profit in CZK",
+          "example": 450000000
+        },
+        "assets": {
+          "type": "number",
+          "description": "Total assets in CZK",
+          "example": 2200000000
+        },
+        "employees": {
+          "type": "integer",
+          "description": "Number of employees",
+          "example": 1200
+        }
+      }
+    },
+    "risk_score": {
+      "type": "number",
+      "description": "Calculated risk score (0-100)",
+      "minimum": 0,
+      "maximum": 100,
+      "example": 20
+    }
+  },
+  "required": ["ico", "country", "name"],
+  "additionalProperties": false
+}

@@ -31,60 +31,78 @@ Cieľ: Poskytnúť malým a stredným podnikom (SME) v regióne V4 nástroj podn
 - **Architektúra:** Modulárny monolit pripravený na mikroservisy
 - **Payment:** Stripe integration pre subscriptions
 
-## Inštalácia a Spustenie
+## 🚀 Quick Start
 
-### Predpoklady
+### Prerequisites
 
-- Python 3.10+ s pip
-- Node.js 18+ s npm
-- Git
-- Docker & Docker Compose (voliteľné, pre containerizované spustenie)
-- PostgreSQL (ak nepoužívate Docker)
-- Redis (voliteľné, pre distributed caching)
+**Required:**
 
-### Krok 1: Backend Setup
+- Python 3.14+
+- Node.js 18+
+- npm
+
+**Optional (Recommended for Production):**
+
+- Redis 7+ (caching - fallback: in-memory)
+- PostgreSQL 16+ (database - fallback: SQLite)
+
+### Installation
+
+**Option 1: Automated Setup (Recommended)**
 
 ```bash
+# 1. Check all services
+./check_services.sh
+
+# 2. Start application (auto-installs dependencies)
+./start_dev.sh
+```
+
+**Option 2: Manual Setup**
+
+```bash
+# 1. Backend
 cd backend
-
-# Vytvorenie izolovaného prostredia
-python -m venv venv
-
-# Aktivácia prostredia
-# Mac/Linux:
-source venv/bin/activate
-# Windows:
-# venv\Scripts\activate
-
-# Inštalácia závislostí
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# Spustenie vývojového servera
-python main.py
-```
-
-Backend bude dostupný na `http://localhost:8000`.
-API dokumentácia: `http://localhost:8000/docs`
-
-### Krok 2: Frontend Setup
-
-```bash
-cd frontend
-
-# Inštalácia balíčkov
+# 2. Frontend
+cd ../frontend
 npm install
 
-# Spustenie vývojového servera
-npm run dev
+# 3. Configure environment
+cp ../.env.example .env
+# Edit .env and set SECRET_KEY
+
+# 4. Start services (two terminals)
+# Terminal 1 - Backend:
+cd backend && source venv/bin/activate && uvicorn main:app --reload
+
+# Terminal 2 - Frontend:
+cd frontend && npm run dev
 ```
 
-Frontend bude dostupný na `http://localhost:5173`
+### Access Application
 
-### Krok 3: Testovanie
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/api/docs
 
-1. Otvorte prehliadač na `http://localhost:5173`
-2. Do vyhľadávacieho poľa zadajte názov firmy (napr. "Agrofert")
-3. Skontrolujte konzolu prehliadača (F12) a terminál backendu, či prebehla komunikácia
+### Optional: Install Redis & PostgreSQL
+
+```bash
+# macOS (automated)
+./install_services.sh
+
+# Manual installation - see SETUP.md
+```
+
+### 📖 Documentation
+
+- **[SETUP.md](SETUP.md)** - Complete setup guide
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
+- **[API Documentation](http://localhost:8000/api/docs)** - Interactive API docs
 
 ### Running the full test suite
 

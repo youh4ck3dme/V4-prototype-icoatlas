@@ -23,6 +23,22 @@ logging.basicConfig(
 
 logger = logging.getLogger("iluminati")
 
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:8009",
+    "http://localhost:8010",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8009",
+    "http://127.0.0.1:8010",
+    "http://127.0.0.1:52285",
+    "https://localhost:8009",
+    "https://localhost:8010",
+    "https://127.0.0.1:8009",
+    "https://127.0.0.1:8010",
+]
+
 
 class IluminatiException(Exception):
     """Base exception pre ILUMINATI SYSTEM"""
@@ -89,6 +105,26 @@ async def error_handler(request: Request, exc: Exception):
     # Log error
     log_error(exc, request=request)
     
+    # CORS headers
+
+    origin = request.headers.get("origin")
+
+    cors_headers = {}
+
+    if origin and origin in ALLOWED_ORIGINS:
+
+        cors_headers = {
+
+            "Access-Control-Allow-Origin": origin,
+
+            "Access-Control-Allow-Credentials": "true",
+
+            "Access-Control-Allow-Methods": "*",
+
+            "Access-Control-Allow-Headers": "*",
+
+        }
+    
     # Vrátiť user-friendly error response
     if isinstance(exc, IluminatiException):
         return JSONResponse(
@@ -98,7 +134,8 @@ async def error_handler(request: Request, exc: Exception):
                 "code": exc.code,
                 "message": exc.message,
                 "timestamp": datetime.now().isoformat()
-            }
+            },
+            headers=cors_headers
         )
     elif isinstance(exc, HTTPException):
         return JSONResponse(
@@ -108,7 +145,8 @@ async def error_handler(request: Request, exc: Exception):
                 "code": "HTTP_ERROR",
                 "message": exc.detail,
                 "timestamp": datetime.now().isoformat()
-            }
+            },
+            headers=cors_headers
         )
     else:
         # Generic error
@@ -119,7 +157,8 @@ async def error_handler(request: Request, exc: Exception):
                 "code": "INTERNAL_ERROR",
                 "message": "Vnútorná chyba servera. Skúste to znova neskôr.",
                 "timestamp": datetime.now().isoformat()
-            }
+            },
+            headers=cors_headers
         )
 
 

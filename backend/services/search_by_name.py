@@ -126,36 +126,40 @@ def _search_local_db(query_normalized: str, country: Optional[str], limit: int) 
 
         # Fallback na ILIKE ak full-text search zlyhal
         if not results:
-            # Vytvoriť search pattern
-            search_pattern = f"%{query_normalized}%"
+            try:
+                # Vytvoriť search pattern
+                search_pattern = f"%{query_normalized}%"
 
-            # Základný query
-            db_query = db.query(CompanyCache).filter(
-                or_(
-                    CompanyCache.company_name.ilike(search_pattern),
-                    # Môžeme hľadať aj v JSON dátach (adresa, atď.)
-                    func.cast(CompanyCache.data, Text).ilike(search_pattern),
+                # Základný query
+                db_query = db.query(CompanyCache).filter(
+                    or_(
+                        CompanyCache.company_name.ilike(search_pattern),
+                        # Môžeme hľadať aj v JSON dátach (adresa, atď.)
+                        func.cast(CompanyCache.data, Text).ilike(search_pattern),
+                    )
                 )
-            )
 
-            # Filtrovať podľa krajiny ak je zadaná
-            if country:
-                db_query = db_query.filter(CompanyCache.country == country.upper())
+                # Filtrovať podľa krajiny ak je zadaná
+                if country:
+                    db_query = db_query.filter(CompanyCache.country == country.upper())
 
-            # Zoradiť podľa relevance (názov má prednosť)
-            results = (
-                db_query.order_by(
-                    CompanyCache.company_name.ilike(
-                        f"{query_normalized}%"
-                    ).desc(),  # Začína sa s query
-                    CompanyCache.company_name.ilike(
-                        search_pattern
-                    ).desc(),  # Obsahuje query
-                    CompanyCache.updated_at.desc(),  # Najnovšie aktualizované
+                # Zoradiť podľa relevance (názov má prednosť)
+                results = (
+                    db_query.order_by(
+                        CompanyCache.company_name.ilike(
+                            f"{query_normalized}%"
+                        ).desc(),  # Začína sa s query
+                        CompanyCache.company_name.ilike(
+                            search_pattern
+                        ).desc(),  # Obsahuje query
+                        CompanyCache.updated_at.desc(),  # Najnovšie aktualizované
+                    )
+                    .limit(limit)
+                    .all()
                 )
-                .limit(limit)
-                .all()
-            )
+            except Exception as e:
+                print(f"⚠️ ILIKE search failed: {e}")
+                results = []
 
         # Konvertovať na dict s označením zdroja
         companies = []

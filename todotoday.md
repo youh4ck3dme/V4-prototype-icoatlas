@@ -1,0 +1,5 @@
+- Rozšíriť databázový model o nové polia (executives, financials, atď.) a spustiť migrácie.
+- Aktualizovať endpointy tak, aby vracali tieto nové údaje (JSON aj CSV).
+- Pridať unit a integračné testy pre nové funkcie – zabezpečí, že pri nasadení nebudú prekvapivé chyby.
+- Nasadiť do staging prostredia (Docker Compose) a spustiť E2E testy, aby sme overili, že UI správne zobrazuje nové polia.
+- Dokumentovať nové polia v API_DOCS.md a v README, aby vývojári a externí partneri vedeli, čo môžu očakávať.

@@ -85,7 +85,7 @@ const Dashboard = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.url) {
-          window.location.href = data.url; // Redirect to Stripe Checkout
+          window.location.href = data.url; // Redirect to SumUp Payment
         }
       }
     } catch (error) {
