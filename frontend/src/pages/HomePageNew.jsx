@@ -663,6 +663,18 @@ export default function HomePageNew() {
                       value={mainCompany?.capital || "N/A"}
                     />
                     <DataRow label="DIC" value={mainCompany?.dic || "N/A"} />
+                    {mainCompany?.raw_data?.region && (
+                      <DataRow
+                        label="Region"
+                        value={mainCompany.raw_data.region}
+                      />
+                    )}
+                    {mainCompany?.raw_data?.district && (
+                      <DataRow
+                        label="District"
+                        value={mainCompany.raw_data.district}
+                      />
+                    )}
                   </div>
 
                   {mainCompany?.risk_factors?.length > 0 && (
@@ -681,6 +693,59 @@ export default function HomePageNew() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {/* Executives Section (Phase 17) */}
+                  {mainCompany?.executives &&
+                    mainCompany.executives.length > 0 && (
+                      <div className="mt-6 p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
+                        <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <Users size={14} /> Statutory Body
+                        </h4>
+                        <ul className="space-y-2">
+                          {mainCompany.executives.map((exec, idx) => (
+                            <li
+                              key={idx}
+                              className="text-sm text-slate-300 flex items-start gap-2"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
+                              {exec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                  {/* Financials Section (Phase 17) */}
+                  {mainCompany?.raw_data?.financials && (
+                    <div className="mt-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                      <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <Activity size={14} /> Financial Data (
+                        {mainCompany.raw_data.financials.year || "Latest"})
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Revenue</span>
+                          <span className="text-slate-200 font-medium">
+                            {mainCompany.raw_data.financials.revenue || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Profit</span>
+                          <span
+                            className={`font-medium ${
+                              (
+                                mainCompany.raw_data.financials.profit || ""
+                              ).startsWith("-")
+                                ? "text-red-400"
+                                : "text-emerald-400"
+                            }`}
+                          >
+                            {mainCompany.raw_data.financials.profit || "N/A"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   )}
 
