@@ -105,8 +105,12 @@ class V4Service:
         # Check cache first
         cached_result = get(cache_key)
         if cached_result:
+            from .error_handler import logger
+            logger.info(f"V4 Search: {country}:{identifier} | Cache: True")
             return cached_result
 
+        start_time = datetime.now()
+        cache_hit = False
         try:
             # Perform search based on country
             if country == "SK":
@@ -128,6 +132,10 @@ class V4Service:
                 result = self._normalize_hu(data)
             else:
                 raise V4APIError(f"Unsupported country: {country}")
+
+            duration = (datetime.now() - start_time).total_seconds() * 1000
+            from .error_handler import logger
+            logger.info(f"V4 Search: {country}:{identifier} | Provider: {result.source_api} | Duration: {duration:.2f}ms | Cache: {cache_hit}")
 
             # Cache the result
             cache_set(cache_key, result)
@@ -298,6 +306,9 @@ class V4Service:
 
     def _normalize_sk(self, data: Dict) -> NormalizedCompany:
         # Normalization for Slovak ORSR data
+        # Use address normalizer to split address components
+        from .address_normalizer import normalize_address
+        addr = normalize_address(data.get("address", ""))
         return NormalizedCompany(
             country="SK",
             primary_id=data.get("ico") or data.get("company_id"), # Fallback
@@ -305,9 +316,10 @@ class V4Service:
             legal_name=data.get("name", ""),
             legal_form=data.get("legal_form"),
             status=data.get("status", "active"),
-            street=data.get("street"),
-            city=data.get("city"),
-            postal_code=data.get("zip"),
+            street=addr.get("street"),
+            city=addr.get("city"),
+            city_part=addr.get("city_part"),
+            postal_code=addr.get("postal_code"),
             executives=data.get("executives", []),
             shareholders=data.get("shareholders", []),
             source_api="SK_ORSR",

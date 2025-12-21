@@ -21,6 +21,7 @@ class NormalizedCompany:
     legal_form: Optional[str] = None
     street: Optional[str] = None
     city: Optional[str] = None
+    city_part: Optional[str] = None
     postal_code: Optional[str] = None
     registration_date: Optional[date] = None
     dissolution_date: Optional[date] = None

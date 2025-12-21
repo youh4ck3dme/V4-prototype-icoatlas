@@ -663,6 +663,17 @@ export default function HomePageNew() {
                       value={mainCompany?.capital || "N/A"}
                     />
                     <DataRow label="DIC" value={mainCompany?.dic || "N/A"} />
+                    <DataRow
+                      label="Street"
+                      value={mainCompany?.street || "N/A"}
+                    />
+                    <DataRow label="City" value={mainCompany?.city || "N/A"} />
+                    {mainCompany?.city_part && (
+                      <DataRow
+                        label="City Part"
+                        value={mainCompany.city_part}
+                      />
+                    )}
                     {mainCompany?.raw_data?.region && (
                       <DataRow
                         label="Region"
