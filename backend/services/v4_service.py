@@ -8,6 +8,7 @@ from .v4_clients import (
 from .cache import get, set as cache_set, get_cache_key
 from .rate_limiter import is_allowed, get_client_id
 from .error_handler import log_error, ExternalAPIError
+from .sk_orsr_provider import get_orsr_provider # Import Phase 17 provider
 from fastapi import Request
 
 class V4Service:
@@ -40,8 +41,12 @@ class V4Service:
         
         try:
             if country == "SK":
-                # Assuming query is IČO for simplicty
-                data = await self.sk_client.search_by_ico(query)
+                # Use Phase 17 ORSR Provider
+                # Assuming query is IČO
+                provider = get_orsr_provider()
+                data = provider.lookup_by_ico(query)
+                if not data:
+                    raise NotFoundError(f"Company {query} not found in ORSR")
                 return self._normalize_sk(data)
             
             elif country == "CZ":
@@ -105,7 +110,10 @@ class V4Service:
         try:
             # Perform search based on country
             if country == "SK":
-                data = await self.sk_client.search_by_ico(identifier)
+                provider = get_orsr_provider()
+                data = provider.lookup_by_ico(identifier)
+                if not data:
+                    raise NotFoundError(f"Company {identifier} not found in ORSR")
                 result = self._normalize_sk(data)
             elif country == "CZ":
                 data = await self.cz_client.search_by_ico(identifier)
@@ -289,14 +297,20 @@ class V4Service:
             raise V4APIError(f"Unexpected error during sync: {str(e)}")
 
     def _normalize_sk(self, data: Dict) -> NormalizedCompany:
-        # Normalization for Slovak RPO data
+        # Normalization for Slovak ORSR data
         return NormalizedCompany(
             country="SK",
-            primary_id=data.get("ico"),
+            primary_id=data.get("ico") or data.get("company_id"), # Fallback
             tax_id=data.get("dic"),
             legal_name=data.get("name", ""),
-            status="active",  # Default, would need to parse actual status
-            source_api="SK_RPO",
+            legal_form=data.get("legal_form"),
+            status=data.get("status", "active"),
+            street=data.get("street"),
+            city=data.get("city"),
+            postal_code=data.get("zip"),
+            executives=data.get("executives", []),
+            shareholders=data.get("shareholders", []),
+            source_api="SK_ORSR",
             fetched_at=datetime.now().isoformat(),
             raw_data=data
         )
