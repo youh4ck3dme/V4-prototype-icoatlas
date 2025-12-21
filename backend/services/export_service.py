@@ -57,7 +57,8 @@ def export_to_excel(graph_data: Dict, filename: Optional[str] = None) -> bytes:
         "Typ", "ID", "Názov", "Krajina", "Risk Score", 
         "Ulica", "Mesto", "PSČ", "DIČ", "IČ DPH", 
         "Vložka", "Oddiel", "Základné imanie", 
-        "Dátum vzniku", "Detaily", "Dátum exportu"
+        "Dátum vzniku", "Právna forma", "Stav",
+        "Konatelia", "Spoločníci", "Detaily", "Dátum exportu"
     ]
     ws.append(headers)
 
@@ -86,6 +87,10 @@ def export_to_excel(graph_data: Dict, filename: Optional[str] = None) -> bytes:
                 node.get("registration_section", ""),
                 node.get("capital", ""),
                 node.get("founded", ""),
+                node.get("legal_form", ""),
+                node.get("status", ""),
+                ", ".join(node.get("executives", [])) if isinstance(node.get("executives"), list) else str(node.get("executives", "")),
+                ", ".join(node.get("shareholders", [])) if isinstance(node.get("shareholders"), list) else str(node.get("shareholders", "")),
                 json.dumps(node.get("details", {}), ensure_ascii=False)
                 if isinstance(node.get("details"), dict)
                 else str(node.get("details", "")),
@@ -217,7 +222,7 @@ def export_to_csv(graph_data: Dict) -> str:
     csv_lines = []
 
     # Nodes
-    csv_lines.append("Typ,ID,Label,Krajina,Risk Score,Ulica,Mesto,PSČ,DIČ,IČ DPH,Vložka,Oddiel,Imanie,Detaily")
+    csv_lines.append("Typ,ID,Label,Krajina,Risk Score,Ulica,Mesto,PSČ,DIČ,IČ DPH,Vložka,Oddiel,Imanie,Dátum vzniku,Právna forma,Stav,Konatelia,Spoločníci,Detaily")
     nodes = graph_data.get("nodes", [])
     for node in nodes:
         details = (
@@ -225,6 +230,8 @@ def export_to_csv(graph_data: Dict) -> str:
             if isinstance(node.get("details"), dict)
             else str(node.get("details", ""))
         )
+        # CSV quote escaping: double the quotes
+        safe_details = details.replace('"', '""')
         row = [
             node.get("type", ""),
             node.get("id", ""),
@@ -239,7 +246,12 @@ def export_to_csv(graph_data: Dict) -> str:
             f'"{node.get("registration_id", "")}"',
             f'"{node.get("registration_section", "")}"',
             f'"{node.get("capital", "")}"',
-            f'"{details.replace("\"", "\"\"\"")}"'
+            f'"{node.get("founded", "")}"',
+            f'"{node.get("legal_form", "")}"',
+            f'"{node.get("status", "")}"',
+            f'"{", ".join(node.get("executives", [])) if isinstance(node.get("executives"), list) else str(node.get("executives", ""))}"',
+            f'"{", ".join(node.get("shareholders", [])) if isinstance(node.get("shareholders"), list) else str(node.get("shareholders", ""))}"',
+            f'"{safe_details}"'
         ]
         csv_lines.append(",".join(row))
 
@@ -304,6 +316,9 @@ def export_batch_to_excel(
         "Vložka",
         "Oddiel",
         "Základné imanie",
+        "Konatelia",
+        "Spoločníci",
+        "Finančné dáta",
         "Poznámky",
     ]
     ws.append(headers)
@@ -336,6 +351,9 @@ def export_batch_to_excel(
                 company_data.get("registration_id", ""),
                 company_data.get("registration_section", ""),
                 company_data.get("capital", ""),
+                ", ".join(company_data.get("executives", [])) if isinstance(company_data.get("executives"), list) else "",
+                ", ".join(company_data.get("shareholders", [])) if isinstance(company_data.get("shareholders"), list) else "",
+                json.dumps(company_data.get("financials", {}) or {}, ensure_ascii=False),
                 company.get("notes", ""),
             ]
         )

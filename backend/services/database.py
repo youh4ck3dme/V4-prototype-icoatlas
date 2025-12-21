@@ -80,6 +80,19 @@ class CompanyCache(Base):
     last_synced_at = Column(DateTime, default=datetime.utcnow, index=True)  # Posledná synchronizácia
     expires_at = Column(DateTime, index=True)
 
+    # New granular fields (Phase 17)
+    executives = Column(JSON)
+    shareholders = Column(JSON)
+    establishment_date = Column(DateTime) # Using DateTime for consistency with others, though Date would suffice
+    legal_form = Column(String(100))
+    activity_codes = Column(JSON)
+    financials = Column(JSON)
+    contact_email = Column(String(255))
+    contact_phone = Column(String(100))
+    website = Column(String(500))
+    employees_count = Column(Integer)
+    status = Column(String(50))
+
     def to_dict(self) -> Dict:
         return {
             "id": self.id,
@@ -89,7 +102,19 @@ class CompanyCache(Base):
             "risk_score": self.risk_score,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
+            "executives": self.executives,
+            "shareholders": self.shareholders,
+            "establishment_date": self.establishment_date.isoformat() if self.establishment_date else None,
+            "legal_form": self.legal_form,
+            "activity_codes": self.activity_codes,
+            "financials": self.financials,
+            "contact_email": self.contact_email,
+            "contact_phone": self.contact_phone,
+            "website": self.website,
+            "employees_count": self.employees_count,
+            "status": self.status,
         }
 
 

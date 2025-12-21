@@ -109,8 +109,28 @@ class OrsrProvider:
                         company.risk_score = live_data.get("risk_score")
                         company.last_synced_at = datetime.utcnow()
                         company.updated_at = datetime.utcnow()
+                        
+                        # Phase 17: Deep Intelligence Fields update
+                        company.executives = live_data.get("executives")
+                        company.shareholders = live_data.get("shareholders")
+                        company.legal_form = live_data.get("legal_form")
+                        company.status = live_data.get("status")
+                        company.financials = live_data.get("financial_data")
+                        if live_data.get("founded"):
+                            try:
+                                company.establishment_date = datetime.strptime(live_data.get("founded"), "%Y-%m-%d")
+                            except (ValueError, TypeError):
+                                pass
+
                     else:
                         # Vytvoriť nový záznam
+                        establishment_date = None
+                        if live_data.get("founded"):
+                            try:
+                                establishment_date = datetime.strptime(live_data.get("founded"), "%Y-%m-%d")
+                            except (ValueError, TypeError):
+                                pass
+
                         company = CompanyCache(
                             identifier=ico,
                             country="SK",
@@ -119,6 +139,13 @@ class OrsrProvider:
                             company_name=live_data.get("name"),
                             risk_score=live_data.get("risk_score"),
                             last_synced_at=datetime.utcnow(),
+                            # Phase 17: Deep Intelligence Fields
+                            executives=live_data.get("executives"),
+                            shareholders=live_data.get("shareholders"),
+                            legal_form=live_data.get("legal_form"),
+                            status=live_data.get("status"),
+                            financials=live_data.get("financial_data"),
+                            establishment_date=establishment_date,
                         )
                         db.add(company)
 
