@@ -1,6 +1,6 @@
 """
-Playwright-based NAV service for Hungary.
-Uses headless Chromium to scrape Hungarian company registry.
+Playwright-based service for Hungary using companyregister.hu.
+Uses headless Chromium to search Hungarian company registry.
 """
 import asyncio
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
@@ -9,92 +9,86 @@ from ..models.company import Company
 
 
 class NAVPlaywrightService:
-    """Service for fetching Hungarian company data via Playwright headless browser."""
+    """Service for fetching Hungarian company data via companyregister.hu."""
     
     async def fetch_company(self, cegjegyzek_szam: str) -> Company:
         """
-        Fetch company data from Hungarian registry using Playwright.
+        Fetch company data from companyregister.hu using Playwright.
         
         Args:
-            cegjegyzek_szam: Hungarian company registration number (e.g., "01-10-041585")
+            cegjegyzek_szam: Hungarian company registration number (e.g., "01-09-707490")
             
         Returns:
             Company object with extracted data
         """
-        # Normalize format (ensure dashes)
-        clean_id = cegjegyzek_szam.replace("-", "").replace(" ", "")
-        if len(clean_id) >= 10:
+        # Normalize format (ensure dashes, remove CG. prefix)
+        clean_id = cegjegyzek_szam.replace("CG.", "").replace(" ", "")
+        if "-" not in clean_id and len(clean_id) >= 10:
             formatted = f"{clean_id[:2]}-{clean_id[2:4]}-{clean_id[4:]}"
         else:
-            formatted = cegjegyzek_szam
+            formatted = clean_id
             
-        # Try ceginfo.hu first
-        url = f"https://www.ceginfo.hu/{formatted}"
-        
         try:
             async with async_playwright() as p:
                 browser = await p.chromium.launch(headless=True)
                 context = await browser.new_context(
+                    ignore_https_errors=True,
                     user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
                 )
                 page = await context.new_page()
                 
-                # Navigate and wait
-                await page.goto(url, wait_until="networkidle", timeout=30000)
+                # Navigate to companyregister.hu
+                await page.goto('https://companyregister.hu/', wait_until='domcontentloaded', timeout=20000)
                 await asyncio.sleep(2)
                 
-                # Check for 404/not found
-                page_content = await page.content()
-                if "nem található" in page_content.lower() or "404" in await page.title():
-                    # Try e-cegjegyzek.hu as fallback
-                    alt_url = f"https://www.e-cegjegyzek.hu/?cegkereses"
-                    await page.goto(alt_url, wait_until="networkidle", timeout=30000)
+                # Find and fill search input
+                search_input = page.locator('input[type="text"], input[type="search"], input#search').first
+                if await search_input.count() > 0:
+                    await search_input.fill(formatted)
+                    await asyncio.sleep(1)
                     
-                    # Fill search form
-                    try:
-                        await page.fill('input[name="cegjegyzekszam"]', formatted)
-                        await page.click('button[type="submit"]')
-                        await page.wait_for_load_state("networkidle")
-                    except:
-                        pass
+                    # Click search button or press Enter
+                    search_btn = page.locator('button:has-text("Search"), button[type="submit"]').first
+                    if await search_btn.count() > 0:
+                        await search_btn.click()
+                    else:
+                        await page.keyboard.press('Enter')
+                    
+                    await asyncio.sleep(3)
+                    await page.wait_for_load_state("networkidle", timeout=15000)
                 
-                # Extract company name
+                # Extract data from table rows
                 name = ""
-                name_selectors = ["h1", "h2", ".ceg-nev", ".company-name", "[class*='name']"]
-                for sel in name_selectors:
-                    try:
-                        el = page.locator(sel).first
-                        if await el.count() > 0:
-                            text = await el.text_content()
-                            if text and len(text.strip()) > 3:
-                                name = text.strip()
-                                break
-                    except:
-                        continue
-                
-                # Extract address
                 address = ""
-                addr_selectors = [
-                    "text=Székhely >> xpath=../following-sibling::*",
-                    "[class*='address']",
-                    "text=Cím >> xpath=../following-sibling::*"
-                ]
-                for sel in addr_selectors:
-                    try:
-                        el = page.locator(sel).first
-                        if await el.count() > 0:
-                            text = await el.text_content()
-                            if text:
-                                address = text.strip()
-                                break
-                    except:
-                        continue
-                
-                # Extract status
                 status = "AKTÍV"
-                if "megszűnt" in page_content.lower() or "törölt" in page_content.lower():
+                
+                try:
+                    trs = await page.locator('tr').all()
+                    for tr in trs:
+                        txt = await tr.text_content()
+                        if not txt:
+                            continue
+                        txt = txt.strip()
+                        
+                        if 'Company name:' in txt:
+                            # Extract company name after the label
+                            parts = txt.split('Company name:')
+                            if len(parts) > 1:
+                                name = parts[1].strip()
+                        
+                        elif 'registered seat:' in txt.lower() or 'Székhely' in txt:
+                            parts = txt.split(':')
+                            if len(parts) > 1:
+                                address = ':'.join(parts[1:]).strip()
+                
+                except Exception as e:
+                    pass
+                
+                # Get page content for status
+                page_content = await page.content()
+                if "megszűnt" in page_content.lower() or "törölt" in page_content.lower() or "dissolved" in page_content.lower():
                     status = "MEGSZŰNT"
-                elif "felszámolás" in page_content.lower():
+                elif "felszámolás" in page_content.lower() or "liquidation" in page_content.lower():
                     status = "FELSZÁMOLÁS ALATT"
                 
                 await browser.close()
@@ -107,7 +101,7 @@ class NAVPlaywrightService:
                     name=name,
                     address=address or "Nincs adat",
                     status=status,
-                    raw_data={"source": "HU Registry via Playwright"}
+                    raw_data={"source": "companyregister.hu via Playwright"}
                 )
                 
         except PlaywrightTimeout:
