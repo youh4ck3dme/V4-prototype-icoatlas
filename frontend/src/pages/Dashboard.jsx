@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import IluminatiLogo from "../components/IluminatiLogo";
 import { exportBatchToExcel } from "../utils/export";
 import { Download } from "lucide-react";
+import { ENDPOINTS } from "../config/api";
 
 const Dashboard = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -23,7 +24,7 @@ const Dashboard = () => {
 
       // Načítať tier limits
       const limitsResponse = await fetch(
-        "http://localhost:8000/api/auth/tier/limits",
+        ENDPOINTS.AUTH.LIMITS,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,7 +38,7 @@ const Dashboard = () => {
 
       // Načítať search history
       const historyResponse = await fetch(
-        "http://localhost:8000/api/search/history",
+        ENDPOINTS.USER.HISTORY,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +52,7 @@ const Dashboard = () => {
 
       // Načítať favorites
       const favoritesResponse = await fetch(
-        "http://localhost:8000/api/user/favorites",
+        ENDPOINTS.USER.FAVORITES,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +74,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `http://localhost:8000/api/payment/checkout?tier=${tier}`,
+        `${ENDPOINTS.API_URL}/api/payment/checkout?tier=${tier}`,
         {
           method: "POST",
           headers: {
@@ -256,7 +257,7 @@ const Dashboard = () => {
                         try {
                           const token = localStorage.getItem("access_token");
                           const response = await fetch(
-                            `http://localhost:8000/api/user/favorites/${favorite.id}`,
+                            `${ENDPOINTS.USER.FAVORITES}/${favorite.id}`,
                             {
                               method: "DELETE",
                               headers: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles, Globe, Share2, Info } from "lucide-react";
+import { Sparkles, Globe, Share, Info } from "lucide-react";
 
 const IntelligenceBrief = ({ story, metadata }) => {
   if (!story) return null;
@@ -67,7 +67,7 @@ const IntelligenceBrief = ({ story, metadata }) => {
       </div>
 
       <div className="bg-blue-600/10 px-5 py-3 flex items-center gap-2 text-[10px] text-blue-400 font-bold border-t border-white/5 uppercase tracking-widest">
-        <Share2 className="w-3.5 h-3.5" />
+        <Share className="w-3.5 h-3.5" />
         <span>Nexus Analytics Engine v5.0</span>
       </div>
     </div>

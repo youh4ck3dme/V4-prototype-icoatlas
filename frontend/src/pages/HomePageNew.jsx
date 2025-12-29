@@ -31,6 +31,7 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  Share,
 } from "lucide-react";
 import IluminatiLogo from "../components/IluminatiLogo";
 import ForceGraph from "../components/ForceGraph";
@@ -51,7 +52,7 @@ import { useOffline } from "../hooks/useOffline";
 import RateLimitIndicator from "../components/RateLimitIndicator";
 import { useAuth } from "../contexts/AuthContext";
 import SEOHead from "../components/SEOHead";
-import { API_URL } from "../config/api";
+import { API_URL, ENDPOINTS } from "../config/api";
 
 /**
  * ILUMINATI SYSTEM v5.0 - SLOVAK ENTERPRISE EDITION
@@ -137,86 +138,73 @@ export default function HomePageNew() {
       setData(null);
       setShowResults(false);
 
-      const startTime = Date.now();
-
       try {
-        // Build query params with filters
-        const params = new URLSearchParams({ q: query });
-        if (filters.country) params.append("country", filters.country);
-        if (filters.minRiskScore)
-          params.append("min_risk_score", filters.minRiskScore);
-        if (filters.maxRiskScore)
-          params.append("max_risk_score", filters.maxRiskScore);
+        // V4 Logic: Select endpoint based on country filter
+        const country = filters.country || "CZ";
+        let searchUrl = "";
+        
+        switch(country) {
+          case "SK": searchUrl = `${ENDPOINTS.SEARCH.SK}/${query}`; break;
+          case "PL": searchUrl = `${ENDPOINTS.SEARCH.PL}/${query}`; break;
+          case "HU": searchUrl = `${ENDPOINTS.SEARCH.HU}/${query}`; break;
+          default:   searchUrl = `${ENDPOINTS.SEARCH.CZ}/${query}`;
+        }
 
-        // Fetch and 3s delay in parallel
+        // Fetch and 3s delay in parallel for premium feel
         const [response] = await Promise.all([
-          fetch(`${API_URL}/api/search?${params.toString()}`),
-          new Promise((resolve) => setTimeout(resolve, 3000)),
+          fetch(searchUrl),
+          new Promise((resolve) => setTimeout(resolve, 2000)),
         ]);
 
-        if (!response.ok)
-          throw new Error(
-            `Chyba pri komunikácii so serverom: ${response.status} ${response.statusText}`
-          );
-
-        const result = await response.json();
-
-        // Apply client-side filtering if backend doesn't support it
-        let filteredResult = result;
-        if (result.nodes && result.nodes.length > 0) {
-          let filteredNodes = result.nodes;
-          let filteredEdges = result.edges || [];
-
-          // Filter by country
-          if (filters.country) {
-            filteredNodes = filteredNodes.filter(
-              (n) => n.country === filters.country
-            );
-            // Keep edges where both nodes are in filtered list
-            const nodeIds = new Set(filteredNodes.map((n) => n.id));
-            filteredEdges = filteredEdges.filter(
-              (e) => nodeIds.has(e.source) && nodeIds.has(e.target)
-            );
-          }
-
-          // Filter by risk score
-          if (filters.minRiskScore || filters.maxRiskScore) {
-            const minRisk = filters.minRiskScore
-              ? parseFloat(filters.minRiskScore)
-              : 0;
-            const maxRisk = filters.maxRiskScore
-              ? parseFloat(filters.maxRiskScore)
-              : 10;
-            filteredNodes = filteredNodes.filter((n) => {
-              const risk = n.risk_score || 0;
-              return risk >= minRisk && risk <= maxRisk;
-            });
-            // Update edges again
-            const nodeIds = new Set(filteredNodes.map((n) => n.id));
-            filteredEdges = filteredEdges.filter(
-              (e) => nodeIds.has(e.source) && nodeIds.has(e.target)
-            );
-          }
-
-          filteredResult = {
-            ...result,
-            nodes: filteredNodes,
-            edges: filteredEdges,
-          };
+        if (!response.ok) {
+           if (response.status === 404) {
+             throw new Error("Subjekt s týmto identifikátorom sa nenašiel.");
+           }
+           throw new Error(`Chyba pri vyhľadávaní: ${response.status}`);
         }
 
-        if (filteredResult.nodes.length === 0) {
-          setError("Nenašli sa žiadne výsledky pre zadaný dopyt a filtre.");
-        } else {
-          setData(filteredResult);
-          setShowResults(true);
-          // Scroll to results
-          setTimeout(() => {
-            document
-              .getElementById("results-section")
-              ?.scrollIntoView({ behavior: "smooth" });
-          }, 100);
-        }
+        const companyData = await response.json();
+        console.log("V4 Backend Response:", companyData);
+
+        // Transform V4 Company profile to Graph structure
+        const result = {
+          nodes: [
+            {
+              id: `company_${companyData.ico}`,
+              label: companyData.name,
+              type: "company",
+              ico: companyData.ico,
+              country: country,
+              status: companyData.status,
+              street: companyData.address,
+              risk_score: 0,
+              risk_factors: [],
+              legal_form: "N/A",
+              founded: companyData.raw_data?.registration_date || "N/A",
+              capital: "N/A",
+              city: companyData.address?.split(",").pop().trim() || "N/A",
+              raw_data: companyData.raw_data,
+            }
+          ],
+          edges: [],
+          nexus_story: `Intelligence report for ${companyData.name} (${companyData.ico}). The entity is currently ${companyData.status} in the ${country} business registry. No high-risk relationship patterns detected in the initial scan.`,
+          nexus_metadata: {
+            node_count: 1,
+            edge_count: 0,
+            involved_countries: [country],
+            is_cross_border: false
+          }
+        };
+
+        console.log("Transformed Graph Data:", result);
+        setData(result);
+        setShowResults(true);
+        // Scroll to results
+        setTimeout(() => {
+          document
+            .getElementById("results-section")
+            ?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
       } catch (err) {
         setError(err.message || "Nastala chyba pri vyhľadávaní.");
       } finally {
@@ -444,6 +432,18 @@ export default function HomePageNew() {
                     onSubmit={handleSearch}
                     className="flex flex-col md:flex-row gap-2"
                   >
+                    <div className="md:w-32">
+                        <select
+                          className="w-full h-full bg-white/5 border border-white/10 rounded-xl py-4 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer font-bold text-center"
+                          value={filters.country}
+                          onChange={(e) => setFilters({...filters, country: e.target.value})}
+                        >
+                          <option value="CZ">🇨🇿 CZ</option>
+                          <option value="SK">🇸🇰 SK</option>
+                          <option value="PL">🇵🇱 PL</option>
+                          <option value="HU">🇭🇺 HU</option>
+                        </select>
+                      </div>
                     <div className="flex-grow relative group">
                       <Search
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-400 transition-colors"
@@ -455,6 +455,7 @@ export default function HomePageNew() {
                         placeholder="Insert IČO, ID or Company Name..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
+                        ref={searchInputRef}
                       />
                     </div>
                     <button
@@ -621,7 +622,7 @@ export default function HomePageNew() {
                             : "bg-blue-500/20 text-blue-400"
                         }`}
                       >
-                        {riskStatus.label} Risk
+                        {riskStatus.text} Risk
                       </span>
                       <h2 className="text-2xl font-bold text-white tracking-tight">
                         {mainCompany?.label || "Unknown Entity"}
@@ -861,7 +862,7 @@ export default function HomePageNew() {
                 <div className="glass-card flex-grow overflow-hidden relative flex flex-col">
                   <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-white uppercase tracking-wider text-xs">
-                      <Share2 size={16} className="text-blue-400" />{" "}
+                      <Share size={16} className="text-blue-400" />{" "}
                       Relationship Visualization
                     </div>
                     <div className="flex gap-2">
@@ -1092,10 +1093,10 @@ function FeatureCard({ icon, title, desc }) {
   );
 }
 
-function DataRow({ label, value, valueClass = "text-slate-900 font-medium" }) {
+function DataRow({ label, value, valueClass = "text-white font-medium text-right ml-4 flex-1" }) {
   return (
-    <div className="flex justify-between items-center py-1">
-      <span className="text-slate-500">{label}</span>
+    <div className="flex justify-between items-start py-1 border-b border-white/5 last:border-0">
+      <span className="text-slate-400 text-xs uppercase tracking-wider whitespace-nowrap pt-0.5">{label}</span>
       <span className={valueClass}>{value}</span>
     </div>
   );

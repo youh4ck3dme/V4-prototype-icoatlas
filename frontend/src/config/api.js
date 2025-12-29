@@ -21,10 +21,28 @@ const getApiUrl = () => {
   }
 
   // Inak použij HTTP
-  return "http://localhost:8000";
+  return "http://127.0.0.1:8000";
 };
 
 export const API_URL = getApiUrl();
 
-// Export pre použitie v komponentoch
+export const ENDPOINTS = {
+  SEARCH: {
+    CZ: `${API_URL}/api/company`,
+    SK: `${API_URL}/api/sk/company`,
+    PL: `${API_URL}/api/pl/company`,
+    HU: `${API_URL}/api/hu/company`,
+  },
+  AUTH: {
+    LOGIN: `${API_URL}/api/auth/login`,
+    REGISTER: `${API_URL}/api/auth/register`,
+    ME: `${API_URL}/api/auth/me`,
+    LIMITS: `${API_URL}/api/auth/tier/limits`,
+  },
+  USER: {
+    HISTORY: `${API_URL}/api/search/history`,
+    FAVORITES: `${API_URL}/api/user/favorites`,
+  }
+};
+
 export default API_URL;

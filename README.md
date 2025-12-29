@@ -2,7 +2,7 @@
 
 **Verzia:** 5.0.0-PROTOTYPE (Enterprise Edition)
 **Status:** ✅ 100% DOKONČENÉ (Pripravené na Testovaciu Prevádzku) | **Test Coverage:** >90%
-**Posledná aktualizácia:** 20. December 2024
+**Posledná aktualizácia:** December 29, 2024
 
 ## Vízia Produktu
 
@@ -112,7 +112,6 @@ cd frontend && npm run dev
    cd backend
    source venv/bin/activate
    ```
-
 2. Run all tests with coverage:
 
    ```bash
@@ -120,7 +119,6 @@ cd frontend && npm run dev
    ```
 
    This will execute `pytest` with the configuration from `pytest.ini` and display a coverage report.
-
 3. Alternatively, you can run pytest directly:
 
    ```bash
@@ -128,6 +126,13 @@ cd frontend && npm run dev
    ```
 
    The `pytest.ini` file ensures coverage for the `backend/services` package.
+4. **Final Deployment Verification:**
+
+   Run the comprehensive verification script to check health, search, and rate limiting:
+
+   ```bash
+   python3 verify_deployment_final.py
+   ```
 
 ## Štruktúra Projektu
 
@@ -198,54 +203,54 @@ DIMITRI-CHECKER/
 
 ### Fáza 1: MVP ✅ DOKONČENÉ
 
-- [x] Frontend: Funkčný React UI
-- [x] Backend: FastAPI server
-- [x] Integrácia: ARES (CZ)
-- [x] Lokálne prepojenie: CORS, porty
-- [x] Právne dokumenty: VOP, Privacy Policy, Disclaimer, Cookie Policy, DPA
-- [x] Footer s linkmi na dokumenty
-- [x] Disclaimer pod grafom
+- [X] Frontend: Funkčný React UI
+- [X] Backend: FastAPI server
+- [X] Integrácia: ARES (CZ)
+- [X] Lokálne prepojenie: CORS, porty
+- [X] Právne dokumenty: VOP, Privacy Policy, Disclaimer, Cookie Policy, DPA
+- [X] Footer s linkmi na dokumenty
+- [X] Disclaimer pod grafom
 
 ### Fáza 2: Persistence & Graph ✅ DOKONČENÉ
 
-- [x] Databáza: PostgreSQL
-- [x] SK Integrácia: RPO cez Ekosystém Slovensko.Digital
-- [x] PL Integrácia: KRS + CEIDG + Biała Lista
-- [x] HU Integrácia: NAV Online
-- [x] Vizualizácia: react-force-graph-2d
+- [X] Databáza: PostgreSQL
+- [X] SK Integrácia: RPO cez Ekosystém Slovensko.Digital
+- [X] PL Integrácia: KRS + CEIDG + Biała Lista
+- [X] HU Integrácia: NAV Online
+- [X] Vizualizácia: react-force-graph-2d
 
 ### Fáza 3: Risk Intelligence ✅ DOKONČENÉ
 
-- [x] Dlhové registre: Finančná správa SK/CZ
-- [x] Fraud Detection: White Horse Detector
-- [x] Reporting: PDF reporty
-- [x] Enhanced risk scoring algoritmus
+- [X] Dlhové registre: Finančná správa SK/CZ
+- [X] Fraud Detection: White Horse Detector
+- [X] Reporting: PDF reporty
+- [X] Enhanced risk scoring algoritmus
 
 ### Fáza 4: Monetizácia a Škálovanie ✅ DOKONČENÉ
 
-- [x] Platby: Stripe integrácia
-- [x] Auth: Používateľské účty (JWT)
-- [x] Subscription tiers: Free/Pro/Enterprise
-- [x] User Dashboard
-- [x] Rate limiting podľa tieru
-- [x] Obľúbené firmy (Favorites) ✅ DOKONČENÉ
+- [X] Platby: Stripe integrácia
+- [X] Auth: Používateľské účty (JWT)
+- [X] Subscription tiers: Free/Pro/Enterprise
+- [X] User Dashboard
+- [X] Rate limiting podľa tieru
+- [X] Obľúbené firmy (Favorites) ✅ DOKONČENÉ
 
 ### Fáza 5: Enterprise Features ✅ DOKONČENÉ
 
-- [x] API Keys Management (backend + frontend)
-- [x] Webhooks Delivery System (backend + frontend)
-- [x] User Dashboard s Enterprise features
-- [x] HMAC SHA256 signatures pre webhooks
-- [x] IP whitelisting pre API keys
-- [x] ERP integrácie (SAP, Pohoda, Money S3) ✅ DOKONČENÉ
-- [x] Analytics Dashboard (backend + frontend) ✅ DOKONČENÉ
+- [X] API Keys Management (backend + frontend)
+- [X] Webhooks Delivery System (backend + frontend)
+- [X] User Dashboard s Enterprise features
+- [X] HMAC SHA256 signatures pre webhooks
+- [X] IP whitelisting pre API keys
+- [X] ERP integrácie (SAP, Pohoda, Money S3) ✅ DOKONČENÉ
+- [X] Analytics Dashboard (backend + frontend) ✅ DOKONČENÉ
 
 ### Fáza 6: Optimization & Verification ✅ DOKONČENÉ
 
-- [x] **Smart Risk Scoring:** Company Age factors (+/- skóre + vysvetlenie)
-- [x] **Performance:** Database Connection Pooling (20/40), GZip Compression
-- [x] **Testing:** Advanced Framework (Mock, Property, Integration)
-- [x] **Audit:** Kompletné overenie systému (pozri `PROJECT_AUDIT.md`)
+- [X] **Smart Risk Scoring:** Company Age factors (+/- skóre + vysvetlenie)
+- [X] **Performance:** Database Connection Pooling (20/40), GZip Compression
+- [X] **Testing:** Advanced Framework (Mock, Property, Integration)
+- [X] **Audit:** Kompletné overenie systému (pozri `PROJECT_AUDIT.md`)
 
 ## Bezpečnosť
 
