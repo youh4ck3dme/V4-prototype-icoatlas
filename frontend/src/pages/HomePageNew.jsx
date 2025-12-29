@@ -1093,9 +1093,9 @@ function FeatureCard({ icon, title, desc }) {
   );
 }
 
-function DataRow({ label, value, valueClass = "text-white font-medium text-right ml-4 flex-1" }) {
+function DataRow({ label, value, valueClass = "text-white font-medium text-right" }) {
   return (
-    <div className="flex justify-between items-start py-1 border-b border-white/5 last:border-0">
+    <div className="flex justify-between items-start py-2 border-b border-white/5 last:border-0 gap-4">
       <span className="text-slate-400 text-xs uppercase tracking-wider whitespace-nowrap pt-0.5">{label}</span>
       <span className={valueClass}>{value}</span>
     </div>
