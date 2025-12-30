@@ -32,6 +32,7 @@ export const ENDPOINTS = {
     SK: `${API_URL}/api/sk/company`,
     PL: `${API_URL}/api/pl/company`,
     HU: `${API_URL}/api/hu/company`,
+    V4: `${API_URL}/api/v4/search`,
   },
   AUTH: {
     LOGIN: `${API_URL}/api/auth/login`,

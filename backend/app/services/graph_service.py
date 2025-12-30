@@ -154,6 +154,12 @@ class GraphService:
         self.conn.commit()
 
     # ---------- Ingest company relationships ----------
+    def _generate_person_key(self, name: str, country: str, extra: str = "") -> str:
+        """Generates a stable unique key for a person."""
+        raw = f"PERSON|{country}|{name.strip().lower()}|{extra.strip().lower()}"
+        import hashlib
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+
     def ingest_company_relationships(
         self,
         atlas_id: str,
@@ -199,9 +205,12 @@ class GraphService:
             name = ex.get("name") or ""
             if not name:
                 continue
+            
+            # Use the new _generate_person_key for deduplication
+            person_key_extra = ex.get("birth_date") or ex.get("reg_id") or ex.get("role") or ""
             person_node = self.get_or_create_node(
                 node_type="PERSON",
-                key_hash=self.person_key(country, name, ex.get("birth_date"), ex.get("reg_id")),
+                key_hash=self._generate_person_key(name, country, person_key_extra),
                 label=name,
                 country=country,
                 data={"name": name, "birth_date": ex.get("birth_date"), "reg_id": ex.get("reg_id")},

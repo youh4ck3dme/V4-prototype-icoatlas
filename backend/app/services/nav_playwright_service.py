@@ -3,6 +3,7 @@ Playwright-based service for Hungary using companyregister.hu.
 Uses headless Chromium to search Hungarian company registry.
 """
 import asyncio
+import re
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
 from fastapi import HTTPException
 from ..models.company import Company
@@ -14,13 +15,10 @@ class NAVPlaywrightService:
     async def fetch_company(self, cegjegyzek_szam: str) -> Company:
         """
         Fetch company data from companyregister.hu using Playwright.
-        
-        Args:
-            cegjegyzek_szam: Hungarian company registration number (e.g., "01-09-707490")
-            
-        Returns:
-            Company object with extracted data
         """
+        import time
+        start_time = time.time()
+        
         # Normalize format (ensure dashes, remove CG. prefix)
         clean_id = cegjegyzek_szam.replace("CG.", "").replace(" ", "")
         if "-" not in clean_id and len(clean_id) >= 10:
@@ -33,76 +31,90 @@ class NAVPlaywrightService:
                 browser = await p.chromium.launch(headless=True)
                 context = await browser.new_context(
                     ignore_https_errors=True,
-                    user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                 )
                 page = await context.new_page()
                 
                 # Navigate to companyregister.hu
                 await page.goto('https://companyregister.hu/', wait_until='domcontentloaded', timeout=20000)
-                await asyncio.sleep(2)
+                # Wait for initial page load
+                await page.wait_for_selector('input', timeout=5000)
                 
                 # Find and fill search input
-                search_input = page.locator('input[type="text"], input[type="search"], input#search').first
+                # Try visible search input first
+                search_input = page.locator('input[placeholder*="Search"], input[placeholder*="Keresés"], input#search, input[type="text"]').first
                 if await search_input.count() > 0:
                     await search_input.fill(formatted)
-                    await asyncio.sleep(1)
-                    
-                    # Click search button or press Enter
-                    search_btn = page.locator('button:has-text("Search"), button[type="submit"]').first
-                    if await search_btn.count() > 0:
-                        await search_btn.click()
-                    else:
-                        await page.keyboard.press('Enter')
-                    
-                    await asyncio.sleep(3)
-                    await page.wait_for_load_state("networkidle", timeout=15000)
+                    await asyncio.sleep(0.5)
+                    await page.keyboard.press('Enter')
+                else:
+                    # Fallback if no input found
+                    await browser.close()
+                    raise HTTPException(status_code=502, detail="Search input not found on HU site")
                 
-                # Extract data from table rows
+                # Wait for results or "not found"
+                try:
+                    # Target both results table or a "not found" message
+                    await page.wait_for_selector('table, .alert, .not-found, text=Company name:', timeout=10000)
+                except:
+                    pass
+                
+                # Extract data from table rows and key-value pairs
                 name = ""
                 address = ""
                 status = "AKTÍV"
                 
-                try:
-                    trs = await page.locator('tr').all()
-                    for tr in trs:
-                        txt = await tr.text_content()
-                        if not txt:
-                            continue
-                        txt = txt.strip()
-                        
-                        if 'Company name:' in txt:
-                            # Extract company name after the label
-                            parts = txt.split('Company name:')
-                            if len(parts) > 1:
-                                name = parts[1].strip()
-                        
-                        elif 'registered seat:' in txt.lower() or 'Székhely' in txt:
-                            parts = txt.split(':')
-                            if len(parts) > 1:
-                                address = ':'.join(parts[1:]).strip()
+                # Snapshot of all text for status check
+                page_text = await page.evaluate("() => document.body.innerText")
                 
-                except Exception as e:
-                    pass
-                
-                # Get page content for status
-                page_content = await page.content()
-                if "megszűnt" in page_content.lower() or "törölt" in page_content.lower() or "dissolved" in page_content.lower():
+                # Try all rows
+                trs = await page.locator('tr').all()
+                for tr in trs:
+                    txt = await tr.text_content()
+                    if not txt: continue
+                    txt = txt.strip()
+                    
+                    # Robust Name detection
+                    if any(key in txt for key in ['Company name:', 'Cégnév:', 'A cég megnevezése:']):
+                        parts = re.split(r'Company name:|Cégnév:|A cég megnevezése:', txt, flags=re.IGNORECASE)
+                        if len(parts) > 1 and not name:
+                            name = parts[1].strip().split('\n')[0].strip()
+                    
+                    # Robust Address detection
+                    if any(key.lower() in txt.lower() for key in ['registered seat:', 'registered office:', 'Székhely:', 'A cég székhelye:']):
+                        parts = re.split(r'seat:|office:|Székhely:|székhelye:', txt, flags=re.IGNORECASE)
+                        if len(parts) > 1 and not address:
+                            address = parts[1].strip().split('\n')[0].strip()
+
+                # Status check from whole page content
+                page_content = page_text.lower()
+                if any(x in page_content for x in ["megszűnt", "törölt", "dissolved", "cancelled"]):
                     status = "MEGSZŰNT"
-                elif "felszámolás" in page_content.lower() or "liquidation" in page_content.lower():
+                elif any(x in page_content for x in ["felszámolás", "liquidation", "liquidation"]):
                     status = "FELSZÁMOLÁS ALATT"
+                elif any(x in page_content for x in ["kényszertörlés", "compulsory strike-off"]):
+                    status = "KÉNYSZERTÖRLÉS"
                 
                 await browser.close()
                 
+                latency_ms = int((time.time() - start_time) * 1000)
+                
                 if not name:
-                    raise HTTPException(status_code=404, detail=f"Cégjegyzékszám {cegjegyzek_szam} nem található")
+                    # Record fail health metrics if we had a system to do so
+                    raise HTTPException(status_code=404, detail=f"HU Company {cegjegyzek_szam} not found")
                 
                 return Company(
                     ico=cegjegyzek_szam,
                     name=name,
                     address=address or "Nincs adat",
                     status=status,
-                    raw_data={"source": "companyregister.hu via Playwright"}
+                    raw_data={
+                        "source": "companyregister.hu",
+                        "provider_latency_ms": latency_ms,
+                        "provider_ok": True
+                    }
                 )
+
                 
         except PlaywrightTimeout:
             raise HTTPException(status_code=504, detail="Timeout pri načítaní HU dát")

@@ -20,6 +20,7 @@ import DisclaimerPage from "./pages/Disclaimer";
 import CookiePolicy from "./pages/CookiePolicy";
 import DataProcessingAgreement from "./pages/DataProcessingAgreement";
 import License from "./pages/License";
+import V4SearchPage from "./pages/V4SearchPage";
 
 function App() {
   return (
@@ -48,6 +49,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/v4"
+              element={
+                <ProtectedRoute>
+                  <V4SearchPage />
                 </ProtectedRoute>
               }
             />
