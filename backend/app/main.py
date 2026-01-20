@@ -52,4 +52,4 @@ app.include_router(api_router, prefix="/api")
 
 @app.get("/health", tags=["health"])
 async def health_check():
-    return {"status": "healthy", "version": "5.0.0"}
+    return {"status": "healthy", "version": app.version}

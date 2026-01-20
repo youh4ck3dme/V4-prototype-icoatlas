@@ -24,6 +24,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         
         # Content Security Policy (basic)
+        # Note: 'unsafe-inline' is allowed for backwards compatibility with existing inline scripts/styles
+        # TODO: Consider migrating to nonce-based CSP for stronger XSS protection
         response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
         
         # HSTS (only in production with HTTPS)
@@ -49,6 +51,12 @@ class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
+    """Rate limiting middleware.
+    
+    Note: Uses in-memory storage for simplicity. For production deployments with
+    multiple instances, consider using Redis or another distributed cache for
+    consistent rate limiting across all application instances.
+    """
     def __init__(self, app, requests_per_minute: int = 60):
         super().__init__(app)
         self.requests_per_minute = requests_per_minute
