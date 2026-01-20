@@ -6,6 +6,11 @@ from typing import Dict, Any
 import httpx
 import asyncio
 
+try:
+    import redis
+except ImportError:
+    redis = None
+
 router = APIRouter()
 
 
@@ -22,12 +27,14 @@ async def check_database() -> Dict[str, Any]:
 
 async def check_redis() -> Dict[str, Any]:
     """Check Redis connectivity."""
+    if redis is None:
+        return {"status": "skipped", "message": "Redis library not installed"}
+    
     try:
-        import redis
         from ...core.config import settings
         
         # Try to connect to Redis if configured
-        if hasattr(settings, 'REDIS_URL') and settings.REDIS_URL:
+        if settings.REDIS_URL:
             r = redis.from_url(settings.REDIS_URL)
             r.ping()
             return {"status": "ok", "message": "Redis is reachable"}
@@ -40,10 +47,9 @@ async def check_redis() -> Dict[str, Any]:
 async def check_sentry() -> Dict[str, Any]:
     """Check Sentry configuration."""
     try:
-        import sentry_sdk
         from ...core.config import settings
         
-        if hasattr(settings, 'SENTRY_DSN') and settings.SENTRY_DSN:
+        if settings.SENTRY_DSN:
             return {"status": "ok", "message": "Sentry is configured"}
         else:
             return {"status": "skipped", "message": "Sentry not configured"}
@@ -84,7 +90,7 @@ async def health_check():
     
     return {
         "status": "ok",
-        "env": getattr(settings, 'ENV', 'development'),
+        "env": settings.ENV,
         "version": "5.0.0"
     }
 
@@ -130,7 +136,7 @@ async def detailed_health_check():
     
     return {
         "status": overall_status,
-        "env": getattr(settings, 'ENV', 'development'),
+        "env": settings.ENV,
         "version": "5.0.0",
         "checks": checks
     }
