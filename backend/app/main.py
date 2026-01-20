@@ -4,10 +4,20 @@ from contextlib import asynccontextmanager
 from .api import router as api_router
 from .core.config import settings
 from .db.session import engine, Base
+from .core.monitoring import init_sentry
+from .middleware.monitoring import PrometheusMiddleware, SentryMiddleware
+from .api.endpoints.metrics import router as metrics_router
+from .api.endpoints.health import router as health_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: create tables
+    # Startup: Initialize Sentry
+    init_sentry(
+        dsn=settings.SENTRY_DSN,
+        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+        environment=settings.ENV
+    )
+    # create tables
     # async with engine.begin() as conn:
     #     await conn.run_sync(Base.metadata.create_all)
     yield
@@ -20,6 +30,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Add monitoring middleware
+app.add_middleware(PrometheusMiddleware)
+app.add_middleware(SentryMiddleware)
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +44,8 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api")
+app.include_router(metrics_router, prefix="/api")
+app.include_router(health_router)
 
 @app.get("/health", tags=["health"])
 async def health_check():
