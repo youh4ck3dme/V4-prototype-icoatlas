@@ -34,3 +34,24 @@ _Na tvoju odpoveď čakám vo forme checklistu pre funkcionalitu aj bezpečnosť
 5. Opakuj audit po veľkých zmenách, merge, deploy.
 
 ---
+
+## 📡 Monitoring & Observability
+
+The project includes integrated monitoring with **Sentry** (error tracking) and **Prometheus + Grafana** (metrics and dashboards).
+
+- **Sentry**: Captures backend and frontend errors with context, filters sensitive data, and provides performance tracing.
+- **Prometheus**: Collects HTTP request metrics, search counts, cache performance, and database query stats from the backend.
+- **Grafana**: Visualizes Prometheus metrics with customizable dashboards.
+
+### Quick Setup
+
+1. Set `SENTRY_DSN` and `VITE_SENTRY_DSN` in `.env` (see `.env.example`).
+2. Start the monitoring stack:
+   ```bash
+   docker-compose -f docker-compose.monitoring.yml up -d
+   ```
+3. Access Grafana at http://localhost:3001 (default credentials: `admin`/`admin`).
+
+For full details, see [MONITORING.md](MONITORING.md).
+
+---

@@ -86,6 +86,40 @@ npm run dev
 
 ---
 
+## 📡 Monitoring Setup (Voliteľné)
+
+### Sentry (Error Tracking)
+
+1. Vytvorte projekty na https://sentry.io (backend: FastAPI, frontend: React).
+2. Pridajte DSN do `.env`:
+   ```bash
+   SENTRY_DSN=https://your-backend-key@sentry.io/project-id
+   VITE_SENTRY_DSN=https://your-frontend-key@sentry.io/project-id
+   ```
+
+### Prometheus & Grafana (Metriky)
+
+```bash
+docker-compose -f docker-compose.monitoring.yml up -d
+```
+
+- **Prometheus:** http://localhost:9090
+- **Grafana:** http://localhost:3001 (predvolené: `admin`/`admin`)
+
+### Overenie
+
+```bash
+# Skontrolujte metriky
+curl http://localhost:8000/api/metrics
+
+# Skontrolujte detailný health check
+curl http://localhost:8000/health/detailed
+```
+
+Viac informácií: [MONITORING.md](MONITORING.md)
+
+---
+
 ## 📋 Požiadavky
 
 ### Backend
@@ -168,6 +202,7 @@ npm test
 
 - **README.md** - Hlavná dokumentácia projektu
 - **QUICK_START.md** - Rýchly štart
+- **MONITORING.md** - Monitoring (Sentry, Prometheus, Grafana)
 - **docs/** - Detailná dokumentácia
 - **TEST_REPORT.md** - Test report
 - **SPECIAL_TESTS_REPORT.md** - Špeciálne testy
@@ -187,6 +222,8 @@ npm test
    - Frontend: 8009
    - PostgreSQL: 5432
    - Redis: 6379
+   - Prometheus: 9090 (ak je spustený monitoring)
+   - Grafana: 3001 (ak je spustený monitoring)
 
 ---
 

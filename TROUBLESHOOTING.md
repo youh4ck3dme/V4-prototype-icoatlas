@@ -9,6 +9,7 @@ Common issues and solutions for ICO Atlas V4.
 - [Runtime Errors](#runtime-errors)
 - [Performance Issues](#performance-issues)
 - [Data Quality Issues](#data-quality-issues)
+- [Monitoring Issues](#monitoring-issues)
 
 ---
 
@@ -422,6 +423,69 @@ curl http://localhost:8000/api/search?query=36421928&country=SK | jq '.nodes[0].
    - `backend/services/sk_rpo.py`
    - `backend/services/pl_krs.py`
    - `backend/services/hu_nav.py`
+
+---
+
+## Monitoring Issues
+
+### Sentry Not Receiving Backend Events
+
+**Symptom:** No errors appearing in Sentry dashboard.
+
+**Solutions:**
+
+1. Verify `SENTRY_DSN` is set correctly in `.env`:
+   ```bash
+   grep SENTRY_DSN .env
+   ```
+
+2. Check the detailed health endpoint:
+   ```bash
+   curl http://localhost:8000/health/detailed | jq '.checks.sentry'
+   ```
+
+3. Verify network connectivity to Sentry:
+   ```bash
+   curl -s https://sentry.io > /dev/null && echo "OK" || echo "FAIL"
+   ```
+
+### Frontend Sentry Not Working
+
+**Symptom:** No frontend errors in Sentry.
+
+**Solutions:**
+
+1. Verify `VITE_SENTRY_DSN` is set in `.env`.
+2. Rebuild frontend after changing env vars: `cd frontend && npm run build`
+3. Check browser console for "Sentry initialized successfully" message.
+
+### Prometheus Not Scraping Metrics
+
+**Symptom:** No metrics in Prometheus UI (http://localhost:9090/targets).
+
+**Solutions:**
+
+1. Verify the backend metrics endpoint is accessible:
+   ```bash
+   curl http://localhost:8000/api/metrics
+   ```
+
+2. Ensure the monitoring stack is running:
+   ```bash
+   docker-compose -f docker-compose.monitoring.yml ps
+   ```
+
+3. Check `monitoring/prometheus.yml` target configuration.
+
+### Grafana Shows No Data
+
+**Symptom:** Empty panels in Grafana dashboards.
+
+**Solutions:**
+
+1. Verify Prometheus data source is configured (Configuration → Data Sources → Prometheus, URL: `http://prometheus:9090`).
+2. Check Prometheus is scraping metrics at http://localhost:9090/targets.
+3. Verify the time range in Grafana panel matches when metrics were collected.
 
 ---
 
