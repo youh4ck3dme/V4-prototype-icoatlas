@@ -1,0 +1,32 @@
+[Unit]
+Description=V4 ICO Atlas – Docker Compose production stack
+Documentation=https://github.com/youh4ck3dme/V4-prototype-icoatlas
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+WorkingDirectory=/opt/v4-icoatlas
+
+# Pull latest images / rebuild if Dockerfile changed
+ExecStartPre=/usr/bin/docker compose -f docker-compose.prod.yml pull --quiet --ignore-pull-failures
+ExecStart=/usr/bin/docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+
+ExecStop=/usr/bin/docker compose -f docker-compose.prod.yml down
+
+# On failure, wait 10 s then retry
+Restart=on-failure
+RestartSec=10s
+
+# Give containers 120 s to stop gracefully before SIGKILL
+TimeoutStopSec=120
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=v4-icoatlas
+
+[Install]
+WantedBy=multi-user.target
