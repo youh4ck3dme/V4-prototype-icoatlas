@@ -18,11 +18,17 @@ async def lifespan(app: FastAPI):
         traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
         environment=settings.ENV
     )
+    # Initialize cache service Redis client
+    from .services.cache_service import cache_service
+    cache_service.init_redis()
+    
     # create tables
     # async with engine.begin() as conn:
     #     await conn.run_sync(Base.metadata.create_all)
     yield
-    # Shutdown logic if needed
+    # Shutdown logic
+    if cache_service.redis_client:
+        await cache_service.redis_client.close()
 
 app = FastAPI(
     title="iCOAtlas v5 API",

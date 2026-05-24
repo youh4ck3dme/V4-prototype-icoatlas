@@ -87,11 +87,27 @@ async def search_v4(
     
     # Fetch company from appropriate provider
     company = None
+    cache_hit = False
+    cache_key = f"company_v4:{detected_country or 'COLLISION'}:{classification.digits}"
+    
+    from ...services.cache_service import cache_service
+    
+    try:
+        cached_data = await cache_service.get(cache_key)
+        if cached_data:
+            company = cached_data
+            cache_hit = True
+            logger.info(f"Cache hit for {cache_key}")
+    except Exception as e:
+        logger.warning(f"Failed to fetch from cache: {e}")
+        
     error = None
     tried_providers = []
     
     try:
-        if detected_country == "SK" or (not detected_country and detected_type == "ICO"):
+        if company:
+            pass
+        elif detected_country == "SK" or (not detected_country and detected_type == "ICO"):
             from ...services.ruz_service import RuzService
             import httpx
             tried_providers.append("SK:RUZ")
@@ -310,6 +326,14 @@ async def search_v4(
                         raise
             else:
                 raise HTTPException(status_code=400, detail=f"Cannot classify identifier: {raw_id}")
+        
+        # Save successful response to cache
+        if company and not cache_hit and company.get("raw_data", {}).get("provider_ok"):
+            try:
+                await cache_service.set(cache_key, company, expire_seconds=86400)
+                logger.info(f"Successfully cached data for {cache_key}")
+            except Exception as e:
+                logger.warning(f"Failed to save to cache: {e}")
     
     except HTTPException:
         raise
