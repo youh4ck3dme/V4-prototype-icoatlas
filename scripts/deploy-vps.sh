@@ -22,20 +22,20 @@ echo "Building containers..."
 docker compose build --no-cache
 
 echo "Starting services..."
-docker compose up -d
+docker compose up -d backend frontend
 
 echo "Service status:"
 docker compose ps
 
 echo "Backend health:"
-curl -fsS "http://127.0.0.1:8000/health" || {
+curl -fsS "http://127.0.0.1:8005/health" || {
   echo "Backend healthcheck failed"
   docker compose logs --tail=100 backend
   exit 1
 }
 
 echo "Frontend health:"
-curl -fsS "http://127.0.0.1:3000/health" || {
+curl -fsS "http://127.0.0.1:3005/health" || {
   echo "Frontend healthcheck failed"
   docker compose logs --tail=100 frontend
   exit 1
