@@ -249,6 +249,8 @@ export default function HomePageNew() {
                 executives: companyData.executives || [],
                 owners: companyData.owners || [],
                 activities: companyData.activities || [],
+                provider_status: companyData.provider_status || "live",
+                provider_error: companyData.provider_error,
               }
             ],
             edges: [],
@@ -695,20 +697,50 @@ export default function HomePageNew() {
                 >
                   <div className="flex justify-between items-start mb-6">
                     <div>
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-2 ${
-                          riskStatus.color === "red"
-                            ? "bg-red-50 border border-red-200 text-red-700"
-                            : riskStatus.color === "orange"
-                            ? "bg-amber-50 border border-amber-200 text-amber-700"
-                            : "bg-blue-50 border border-blue-200 text-[#0B4EA2]"
-                        }`}
-                      >
-                        {riskStatus.text} Risk
-                      </span>
+                      <div className="flex flex-wrap gap-2 items-center mb-2">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            riskStatus.color === "red"
+                              ? "bg-red-50 border border-red-200 text-red-700"
+                              : riskStatus.color === "orange"
+                              ? "bg-amber-50 border border-amber-200 text-amber-700"
+                              : "bg-blue-50 border border-blue-200 text-[#0B4EA2]"
+                          }`}
+                        >
+                          {riskStatus.text} Risk
+                        </span>
+                        {mainCompany?.provider_status && (
+                          <span
+                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                              mainCompany.provider_status === "live"
+                                ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+                                : mainCompany.provider_status === "cached"
+                                ? "bg-indigo-50 border border-indigo-200 text-indigo-700"
+                                : "bg-amber-50 border border-amber-200 text-amber-700"
+                            }`}
+                          >
+                            {mainCompany.provider_status === "live"
+                              ? "Live Registry"
+                              : mainCompany.provider_status === "cached"
+                              ? "Cached Data"
+                              : "Fallback Mode"}
+                          </span>
+                        )}
+                      </div>
                       <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
                         {mainCompany?.label || "Unknown Entity"}
                       </h2>
+                      {mainCompany?.provider_status === "fallback" && (
+                        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 flex items-start gap-2 max-w-sm">
+                          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                          <div>
+                            <p className="font-bold">Záložné dáta (Fallback Mode)</p>
+                            <p className="mt-0.5">
+                              Pripojenie k registru zlyhalo (chyba: {mainCompany.provider_error?.error_code || "neznáma"}). Zobrazujú sa simulované údaje.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                       {mainCompany?.ico && (
                         <p className="text-sm text-slate-500 mt-1">
                           ICO: {mainCompany.ico}

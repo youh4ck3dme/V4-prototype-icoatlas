@@ -141,3 +141,5 @@ class NAVPlaywrightService:
                 if attempt == max_attempts:
                     raise HTTPException(status_code=502, detail=f"Chyba Playwright: {str(e)}")
                 await asyncio.sleep(1.0)
+                
+        raise HTTPException(status_code=502, detail="NAV query failed to complete")

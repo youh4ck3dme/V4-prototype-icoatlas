@@ -76,7 +76,7 @@ class KRSPlaywrightService:
                             trs = await page.locator('tr, .info-row, dt').all()
                             for tr in trs:
                                 txt = await tr.text_content()
-                                if 'Adres' in txt or 'Siedziba' in txt:
+                                if txt and ('Adres' in txt or 'Siedziba' in txt):
                                     parts = txt.split(':')
                                     if len(parts) > 1:
                                         address = parts[1].strip().split('\n')[0].strip()
@@ -138,3 +138,5 @@ class KRSPlaywrightService:
                 if attempt == max_attempts:
                     raise HTTPException(status_code=502, detail=f"Chyba Playwright: {str(e)}")
                 await asyncio.sleep(1.0)
+                
+        raise HTTPException(status_code=502, detail="KRS query failed to complete")

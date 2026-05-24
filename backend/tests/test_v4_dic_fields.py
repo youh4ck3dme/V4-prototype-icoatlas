@@ -75,6 +75,9 @@ async def test_v4_search_dic_hu():
 @pytest.mark.asyncio
 async def test_v4_search_dic_hu_maps_adoszam_from_scraper(monkeypatch):
     """Mocked unit test for Hungary (HU) mapping logic without real API calls"""
+    from backend.app.services.cache_service import cache_service
+    cache_service.in_memory.clear()
+    
     captured_lookup_value = None
 
     async def fake_fetch_company(self, lookup_value: str):
@@ -160,3 +163,59 @@ async def test_v4_search_cache_hit(monkeypatch):
         r2 = await ac.get(f"/api/v4/search/{raw}", params={"country": "SK"})
         assert r2.status_code == 200
         assert call_count == 1  # Verify no extra call was made
+
+
+@pytest.mark.asyncio
+async def test_v4_health_registries():
+    """Test the registries health check endpoint structure"""
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as ac:
+        r = await ac.get("/api/v4/health/registries")
+        assert r.status_code == 200
+        data = r.json()
+        
+    assert "status" in data
+    assert "registries" in data
+    assert "SK" in data["registries"]
+    assert "CZ" in data["registries"]
+    assert "PL" in data["registries"]
+    assert "HU" in data["registries"]
+
+
+@pytest.mark.asyncio
+async def test_v4_search_reliability_fields():
+    """Test that provider_status is returned properly"""
+    raw = "88888888"  # SK mock
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as ac:
+        # 1. First call (should be live or cached)
+        r = await ac.get(f"/api/v4/search/{raw}", params={"country": "SK"})
+        assert r.status_code == 200
+        data = r.json()
+        assert data.get("provider_status") in ("live", "cached")
+
+
+@pytest.mark.asyncio
+async def test_v4_search_fallback_param_disables_fallback(monkeypatch):
+    """Test that fallback=0 parameter propagates errors directly instead of mocking"""
+    from backend.app.services.krs_playwright_service import KRSPlaywrightService
+    
+    async def fake_fetch_failed(self, digits: str):
+        raise httpx.ConnectTimeout("Mocked connection timeout to Polish registry")
+        
+    monkeypatch.setattr(KRSPlaywrightService, "fetch_company", fake_fetch_failed)
+    
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as ac:
+        # With fallback=0, should return 504 Gateway Timeout or 502 with structured detail
+        r = await ac.get("/api/v4/search/5260250995", params={"country": "PL", "fallback": 0})
+        assert r.status_code in (504, 502)
+        data = r.json()
+        assert "detail" in data
+        assert data["detail"]["error_code"] == "timeout"
+        assert "PL:biznes.gov.pl" in data["detail"]["tried_providers"]
+        
+        # With fallback=1 (default), should return 200 OK fallback data
+        r_fallback = await ac.get("/api/v4/search/5260250995", params={"country": "PL", "fallback": 1})
+        assert r_fallback.status_code == 200
+        data_fb = r_fallback.json()
+        assert data_fb["provider_status"] == "fallback"
+        assert data_fb["provider_error"]["error_code"] == "timeout"
+
