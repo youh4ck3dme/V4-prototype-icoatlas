@@ -17,13 +17,13 @@ class AutoformService:
         # If no mock matched and we have a token, call the Autoform API
         if settings.AUTOFORM_API_TOKEN:
             try:
-                headers = {
-                    "Authorization": f"Bearer {settings.AUTOFORM_API_TOKEN}",
-                    "Accept": "application/json"
+                params = {
+                    "q": f"name:{query}",
+                    "limit": 10,
+                    "private_access_token": settings.AUTOFORM_API_TOKEN
                 }
-                params = {"q": f"name:{query}", "limit": 10}
                 
-                resp = await self.client.get(self.BASE_URL, headers=headers, params=params, timeout=5.0)
+                resp = await self.client.get(self.BASE_URL, params=params, timeout=5.0)
                 if resp.status_code == 200:
                     data = resp.json()
                     # Map autoform response to our standard format
@@ -32,7 +32,7 @@ class AutoformService:
                             "id": item.get("cin"),  # IČO
                             "name": item.get("name"),
                             "address": item.get("formatted_address", ""),
-                            "status": "AKTÍVNA" if item.get("status") == "active" else "ZANIKNUTÁ"
+                            "status": "AKTÍVNA" if not item.get("terminated_on") else "ZANIKNUTÁ"
                         }
                         for item in data
                     ]
@@ -41,6 +41,77 @@ class AutoformService:
                 
         # If API failed or no token, return empty if no mocks matched
         return []
+
+    async def fetch_company(self, ico: str) -> Dict[str, Any] | None:
+        """
+        Fetches detailed company info from Autoform API.
+        """
+        # Mock fallback for test IČO to test all 7 features
+        if ico == "88888888":
+            return {
+                "id": 88888888,
+                "cin": "88888888",
+                "tin": 2020202020,
+                "vatin": "SK2020202020",
+                "vatin_paragraph": "§ 7a",
+                "name": "Testovacia Firma, s.r.o.",
+                "formatted_address": "Mlynské Nivy 205/18, 841 04 Bratislava",
+                "street": "Mlynské Nivy",
+                "building_number": "18",
+                "postal_code": "841 04",
+                "municipality": "Bratislava",
+                "country": "Slovenská republika",
+                "established_on": "2020-01-01",
+                "terminated_on": None,
+                "legal_form": "Spoločnosť s ručením obmedzeným",
+                "main_economic_activity": {
+                    "code": "62010",
+                    "name": "Počítačové programovanie"
+                },
+                "statutory": [
+                    {
+                        "type": "konateľ",
+                        "first_name": "Jozef",
+                        "last_name": "Mrkvička",
+                        "formatted_name": "Jozef Mrkvička",
+                        "street": "Hlavná",
+                        "building_number": "5",
+                        "municipality": "Košice",
+                        "country": "Slovenská republika"
+                    },
+                    {
+                        "type": "konateľ",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "formatted_name": "John Doe",
+                        "street": "Unknown Street",
+                        "building_number": "12",
+                        "municipality": "London",
+                        "country": "United Kingdom"
+                    }
+                ],
+                "datahub_corporate_body": {
+                    "id": 88888888,
+                    "url": "https://datahub.ekosystem.slovensko.digital/api/datahub/corporate_bodies/88888888"
+                }
+            }
+
+        if not settings.AUTOFORM_API_TOKEN:
+            return None
+
+        try:
+            params = {
+                "q": f"cin:{ico}",
+                "private_access_token": settings.AUTOFORM_API_TOKEN
+            }
+            resp = await self.client.get(self.BASE_URL, params=params, timeout=5.0)
+            if resp.status_code == 200:
+                data = resp.json()
+                if isinstance(data, list) and len(data) > 0:
+                    return data[0]
+        except Exception as e:
+            print(f"Autoform fetch_company error: {e}")
+        return None
 
     def _get_mock_fallbacks(self, query: str) -> List[Dict[str, Any]]:
         query_lower = query.lower()

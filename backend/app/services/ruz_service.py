@@ -14,15 +14,51 @@ class RuzService:
         if not re.match(r'^\d{8}$', ico):
             raise HTTPException(status_code=400, detail="IČO musí mať 8 číslic")
 
-        # Mock fallback for test IČO
-        if ico == "88888888":
-            return Company(
-                ico="88888888",
-                name="Testovacia Firma, s.r.o.",
-                address="Mlynské Nivy 1, Bratislava",
-                status="AKTÍVNA",
-                raw_data={"source": "Mock Data"}
-            )
+        # 1. Try Autoform first
+        from ..core.config import settings
+        from .autoform_service import AutoformService
+        
+        autoform_service = AutoformService(self.client)
+        try:
+            autoform_data = await autoform_service.fetch_company(ico)
+            if autoform_data:
+                # Map Autoform statutory to RÚZ executives structure
+                executives = []
+                for s in autoform_data.get("statutory", []):
+                    executives.append({
+                        "name": s.get("formatted_name") or f"{s.get('first_name', '')} {s.get('last_name', '')}".strip(),
+                        "role": s.get("type") or "konateľ",
+                        "address": f"{s.get('street', '')} {s.get('building_number', '') or s.get('reg_number', '') or ''}, {s.get('municipality', '') or ''}, {s.get('country', '') or ''}".strip(),
+                        "since": s.get("since", "")
+                    })
+                
+                # Fetch UBOs from Datahub
+                ubos = []
+                dh_body = autoform_data.get("datahub_corporate_body", {})
+                if dh_body and dh_body.get("url"):
+                    from .datahub_service import DatahubService
+                    ubos = await DatahubService.fetch_ubo_partners(dh_body.get("url"))
+
+                raw_data = {
+                    "source": "Autoform API",
+                    "registration_date": autoform_data.get("established_on"),
+                    "vatin": autoform_data.get("vatin"),
+                    "vatin_paragraph": autoform_data.get("vatin_paragraph"),
+                    "main_economic_activity": autoform_data.get("main_economic_activity"),
+                    "executives": executives,
+                    "ubos": ubos,
+                    "owners": [] # UBOs are used instead of ORSR owners when using Autoform
+                }
+                
+                return Company(
+                    ico=ico,
+                    name=autoform_data.get("name") or f"Firma {ico}",
+                    address=autoform_data.get("formatted_address") or "Neznáma adresa",
+                    status="AKTÍVNA" if not autoform_data.get("terminated_on") else "ZANIKNUTÁ",
+                    raw_data=raw_data
+                )
+        except Exception as e:
+            print(f"Autoform lookup failed, falling back to RÚZ scraper: {e}")
 
         try:
             # 1. Resolve ID via Suggestion API

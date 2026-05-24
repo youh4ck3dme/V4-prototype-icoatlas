@@ -10,6 +10,7 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
+  Crown,
 } from "lucide-react";
 
 const ForceGraph = ({ data }) => {
@@ -32,11 +33,25 @@ const ForceGraph = ({ data }) => {
   // Farba uzla podľa typu
   const getNodeColor = (node) => {
     if (!node || !node.type) return "#D4AF37";
-    switch (node.type) {
+    const type = node.type.toLowerCase();
+    switch (type) {
       case "company":
-        return (node.risk_score || 0) > 5 ? "#ef4444" : "#D4AF37";
+        if (node.nace_category) {
+          switch (node.nace_category.toLowerCase()) {
+            case "it": return "#22d3ee"; // Cyan
+            case "stavebníctvo": return "#b45309"; // Brown
+            case "poľnohospodárstvo": return "#22c55e"; // Green
+            case "obchod": return "#a855f7"; // Purple
+            case "financie": return "#eab308"; // Gold/Yellow
+            case "preprava": return "#3b82f6"; // Blue
+            default: break;
+          }
+        }
+        return (node.risk_score || 0) > 5 ? "#ef4444" : "#94a3b8";
       case "person":
         return "#60a5fa";
+      case "ubo":
+        return "#fbbf24"; // Bright gold for UBO
       case "address":
         return "#34d399";
       case "debt":
@@ -49,27 +64,34 @@ const ForceGraph = ({ data }) => {
   // Veľkosť uzla podľa typu
   const getNodeSize = (node) => {
     if (!node || !node.type) return 8;
-    switch (node.type) {
+    const type = node.type.toLowerCase();
+    switch (type) {
       case "company":
-        return 12;
+        return 14;
       case "person":
-        return 8;
-      case "address":
-        return 6;
-      case "debt":
         return 10;
-      default:
+      case "ubo":
+        return 12; // UBO node size
+      case "address":
         return 8;
+      case "debt":
+        return 12;
+      default:
+        return 10;
     }
   };
 
   // Ikona uzla
   const getNodeIcon = (node) => {
-    switch (node.type) {
+    if (!node || !node.type) return Building2;
+    const type = node.type.toLowerCase();
+    switch (type) {
       case "company":
         return Building2;
       case "person":
         return User;
+      case "ubo":
+        return Crown;
       case "address":
         return MapPin;
       case "debt":
@@ -86,6 +108,9 @@ const ForceGraph = ({ data }) => {
     switch (linkType) {
       case "OWNED_BY":
         return "#D4AF37";
+      case "UBO_OF":
+      case "SKUTOČNÝ_MAJITEĽ":
+        return "#fbbf24";
       case "MANAGED_BY":
         return "#60a5fa";
       case "LOCATED_AT":
@@ -93,7 +118,7 @@ const ForceGraph = ({ data }) => {
       case "HAS_DEBT":
         return "#ef4444";
       default:
-        return "#D4AF37";
+        return "#94a3b8";
     }
   };
 
@@ -237,8 +262,34 @@ const ForceGraph = ({ data }) => {
             ctx.fillStyle = color;
             ctx.shadowBlur = 10 / globalScale;
             ctx.shadowColor = color;
+            
+            // Draw red pulsing border for restricted VAT
+            if (node.type && node.type.toLowerCase() === "company" && node.vat_status === "restricted") {
+              ctx.strokeStyle = "#ef4444";
+              ctx.lineWidth = (3 + Math.sin(Date.now() / 200) * 1.5) / globalScale;
+              ctx.stroke();
+            }
+            
             ctx.fill();
             ctx.shadowBlur = 0; // Reset shadow
+
+            // Draw emoji symbols inside nodes for premium aesthetics
+            let emoji = "";
+            if (node.type && node.type.toLowerCase() === "company" && node.is_virtual_hq) {
+              emoji = "📦";
+            } else if (node.type && node.type.toLowerCase() === "person" && node.potential_nominee) {
+              emoji = "🕵️";
+            } else if (node.type && node.type.toLowerCase() === "ubo") {
+              emoji = "👑";
+            }
+
+            if (emoji) {
+              ctx.font = `${size * 1.1}px Sans-Serif`;
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillStyle = "#ffffff";
+              ctx.fillText(emoji, node.x, node.y);
+            }
 
             // 2. Draw Label
             ctx.font = `${fontSize}px Sans-Serif`;

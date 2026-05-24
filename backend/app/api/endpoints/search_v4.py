@@ -247,7 +247,13 @@ async def search_v4(
             detail=f"Company not found. Tried: {tried_providers}. Error: {error}"
         )
         
-    # --- Debt Intelligence (Datahub) ---
+    # --- Debt & Risk Intelligence (Autoform & Datahub) ---
+    if "risk_factors" not in company:
+        company["risk_factors"] = []
+        
+    if "risk_score" not in company:
+        company["risk_score"] = 0
+
     try:
         from ...services.datahub_service import DatahubService
         debts = await DatahubService.check_debts(company["atlas_id"])
@@ -256,21 +262,72 @@ async def search_v4(
             company["raw_data"] = {}
         company["raw_data"]["debts"] = debts
         
-        if "risk_factors" not in company:
-            company["risk_factors"] = []
-            
-        if "risk_score" not in company:
-            company["risk_score"] = 0
-            
         for debt in debts:
             company["risk_factors"].append(f"Záväzok voči štátu ({debt['institution']}): {debt['amount']} €")
             company["risk_score"] += 4
             
     except Exception as e:
-        # Graceful fallback if datahub check fails
         print(f"Datahub error: {e}")
-    # -----------------------------------
 
+    # 1. Economic Activity (SK-NACE)
+    activity = company.get("raw_data", {}).get("main_economic_activity") if company.get("raw_data") else None
+    if activity:
+        code = activity.get("code", "")
+        name = activity.get("name", "")
+        company["nace_code"] = code
+        company["nace_name"] = name
+        
+        # Map NACE code to Category
+        cat = "Iné"
+        if code:
+            if code.startswith(("62", "63")):
+                cat = "IT"
+            elif code.startswith(("41", "42", "43")):
+                cat = "Stavebníctvo"
+            elif code.startswith(("64", "65", "66")):
+                cat = "Financie"
+            elif code.startswith(("49", "50", "51", "52", "53")):
+                cat = "Preprava"
+            elif code.startswith(("01", "02", "03")):
+                cat = "Poľnohospodárstvo"
+            elif code.startswith(("45", "46", "47")):
+                cat = "Obchod"
+        company["nace_category"] = cat
+
+    # 2. Virtual HQ Detector
+    addr = (company.get("street") or "").lower()
+    import unicodedata
+    def strip_accents(s):
+        return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
+    
+    addr_normalized = strip_accents(addr)
+    vhq_patterns = ["karpatske namestie 10", "kopcianska 10", "plynarenska 7", "michalska 7", "stare grunty 18"]
+    is_vhq = False
+    for p in vhq_patterns:
+        if p in addr_normalized:
+            is_vhq = True
+            break
+    if is_vhq:
+        company["is_virtual_hq"] = True
+        company["risk_factors"].append("Sídlo na masovej virtuálnej adrese (riziko schránkovej firmy)")
+        company["risk_score"] += 25
+
+    # 3. VAT paragraph checks
+    vatin_p = company.get("raw_data", {}).get("vatin_paragraph") if company.get("raw_data") else None
+    vatin = company.get("raw_data", {}).get("vatin") if company.get("raw_data") else None
+    if vatin_p:
+        company["vatin_paragraph"] = vatin_p
+        if "§ 7" in vatin_p or "§7" in vatin_p:
+            company["vat_status"] = "restricted"
+            company["risk_factors"].append(f"Obmedzená registrácia pre DPH podľa {vatin_p} (riziko karuselových podvodov)")
+            company["risk_score"] += 15
+        else:
+            company["vat_status"] = "active"
+    elif vatin:
+        company["vat_status"] = "active"
+    else:
+        company["vat_status"] = "none"
+    # -----------------------------------------------------
     
     # Build response
     response = {
@@ -286,9 +343,16 @@ async def search_v4(
         "tried_providers": tried_providers,
     }
     
+    # Optional: Copy executives and ubos from raw_data if using Autoform
+    if company.get("raw_data"):
+        if "executives" in company["raw_data"] and company["raw_data"]["executives"]:
+            company["executives"] = company["raw_data"]["executives"]
+        if "ubos" in company["raw_data"] and company["raw_data"]["ubos"]:
+            company["ubos"] = company["raw_data"]["ubos"]
+
     # Optional: People enrichment (SK-specific from ORSR)
-    executives = []
-    owners = []
+    executives = company.get("executives", [])
+    owners = company.get("owners", [])
     if company["country"] == "SK":
         try:
             from ...services.orsr_people_integration import ensure_sk_people_for_company
@@ -296,20 +360,35 @@ async def search_v4(
         except Exception:
             pass
 
+    # 4. Foreign Nominee ("Biely kôň") check on executives
+    if "executives" in company:
+        for ex in company["executives"]:
+            addr_str = ex.get("address", "")
+            if addr_str:
+                addr_country = addr_str.split(",")[-1].strip().lower()
+                if addr_country and not any(x in addr_country for x in ["slovenská republika", "slovensko", "slovakia", "sr"]):
+                    ex["potential_nominee"] = True
+                    company["risk_factors"].append(f"Zahraničný štatutár (potenciálny biely kôň): {ex.get('name')} ({ex.get('address')})")
+                    company["risk_score"] += 40
+
     # Optional: Include relationship graph
     if graph == 1:
         if company["atlas_id"] == "88888888":
             response["graph"] = {
                 "nodes": [
-                    {"id": "88888888", "label": "Testovacia Firma, s.r.o.", "type": "company", "country": "SK", "status": "AKTÍVNA"},
+                    {"id": "88888888", "label": "Testovacia Firma, s.r.o.", "type": "company", "country": "SK", "status": "AKTÍVNA", "is_virtual_hq": True, "vat_status": "restricted", "nace_category": "IT", "nace_code": "62010", "nace_name": "Počítačové programovanie", "risk_score": 80},
                     {"id": "person_1", "label": "Jozef Mrkvička", "type": "person", "role": "Konateľ"},
-                    {"id": "address_1", "label": "Mlynské Nivy 1, Bratislava", "type": "address"},
+                    {"id": "person_2", "label": "John Doe", "type": "person", "role": "Konateľ", "potential_nominee": True},
+                    {"id": "ubo_1", "label": "Kráľovský Majiteľ", "type": "ubo", "role": "UBO"},
+                    {"id": "address_1", "label": "Mlynské Nivy 205/18, Bratislava", "type": "address"},
                     {"id": "12345678", "label": "Materská Spoločnosť a.s.", "type": "company", "country": "SK", "status": "AKTÍVNA"}
                 ],
-                "links": [
-                    {"source": "88888888", "target": "address_1", "label": "SÍDLI_NA"},
-                    {"source": "person_1", "target": "88888888", "label": "JE_ŠTATUTÁR"},
-                    {"source": "12345678", "target": "88888888", "label": "VLASTNÍ"}
+                "edges": [
+                    {"source": "88888888", "target": "address_1", "type": "SÍDLI_NA"},
+                    {"source": "person_1", "target": "88888888", "type": "JE_ŠTATUTÁR"},
+                    {"source": "person_2", "target": "88888888", "type": "JE_ŠTATUTÁR (NOMINEE)"},
+                    {"source": "ubo_1", "target": "88888888", "type": "SKUTOČNÝ_MAJITEĽ"},
+                    {"source": "12345678", "target": "88888888", "type": "VLASTNÍ"}
                 ]
             }
         elif has_db():
@@ -330,6 +409,7 @@ async def search_v4(
                         executives=executives,
                         owners=owners,
                         source=company.get("source_api", "V4"),
+                        ubos=company.get("ubos"),
                     )
                     # Build graph with related companies
                     response["graph"] = gs.build_company_graph(

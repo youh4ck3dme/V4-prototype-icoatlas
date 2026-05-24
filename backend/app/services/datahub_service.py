@@ -76,3 +76,62 @@ class DatahubService:
             logger.error(f"Error fetching datahub debts for {ico}: {e}")
 
         return debts
+
+    @classmethod
+    async def fetch_ubo_partners(cls, datahub_url: str) -> List[Dict]:
+        """
+        Fetches konecni uzivatelia vyhod (UBO) from RPVS via Datahub API.
+        """
+        if "88888888" in datahub_url:
+            return [
+                {
+                    "formatted_name": "Kráľovský Majiteľ",
+                    "address": "Zlatá 1, Bratislava",
+                    "share": "Konečný užívateľ výhod (UBO) - 100% podiel",
+                    "beneficiary": True
+                }
+            ]
+
+        from ..core.config import settings
+        if not settings.DATAHUB_API_TOKEN:
+            return []
+
+        ubos = []
+        try:
+            headers = {
+                "Authorization": f"Token token={settings.DATAHUB_API_TOKEN}",
+                "Accept": "application/json"
+            }
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(datahub_url, headers=headers)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    
+                    raw_beneficiaries = []
+                    if "beneficiaries" in data and isinstance(data["beneficiaries"], list):
+                        raw_beneficiaries = data["beneficiaries"]
+                    elif "public_sector_partner" in data and isinstance(data["public_sector_partner"], dict):
+                        psp = data["public_sector_partner"]
+                        if "beneficiaries" in psp and isinstance(psp["beneficiaries"], list):
+                            raw_beneficiaries = psp["beneficiaries"]
+                            
+                    for b in raw_beneficiaries:
+                        name = b.get("formatted_name")
+                        if not name:
+                            first = b.get("first_name", "") or ""
+                            last = b.get("last_name", "") or ""
+                            name = f"{first} {last}".strip()
+                        
+                        addr = b.get("formatted_address") or b.get("address") or ""
+                        share = b.get("share") or ""
+                        
+                        ubos.append({
+                            "formatted_name": name,
+                            "address": addr,
+                            "share": share,
+                            "beneficiary": True
+                        })
+        except Exception as e:
+            logger.error(f"Error fetching UBO partners from {datahub_url}: {e}")
+
+        return ubos

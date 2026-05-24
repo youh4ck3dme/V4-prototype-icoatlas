@@ -178,6 +178,7 @@ class GraphService:
         executives: Optional[List[Dict[str, Any]]] = None,
         owners: Optional[List[Dict[str, Any]]] = None,
         source: str = "V4",
+        ubos: Optional[List[Dict[str, Any]]] = None,
     ) -> str:
         """
         Create COMPANY node and connect PERSON/ADDRESS nodes.
@@ -249,6 +250,27 @@ class GraphService:
                 edge_type="OWNER_OF",
                 weight=5.0,
                 data={"share": ow.get("share"), "since": ow.get("since"), "until": ow.get("until")},
+                source=source,
+            )
+
+        # UBOs
+        for ub in (ubos or []):
+            name = ub.get("formatted_name") or ub.get("name") or ""
+            if not name:
+                continue
+            person_node = self.get_or_create_node(
+                node_type="UBO",
+                key_hash=self.person_key(country, name, ub.get("birth_date"), ub.get("reg_id")),
+                label=name,
+                country=country,
+                data={"name": name, "birth_date": ub.get("birth_date"), "reg_id": ub.get("reg_id"), "is_ubo": True},
+            )
+            self.upsert_edge(
+                from_node=person_node,
+                to_node=company_node,
+                edge_type="UBO_OF",
+                weight=6.0,
+                data={"share": ub.get("share"), "role": "UBO"},
                 source=source,
             )
 

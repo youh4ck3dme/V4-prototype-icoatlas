@@ -32,6 +32,7 @@ import {
   ChevronUp,
   Sparkles,
   Share,
+  Crown,
 } from "lucide-react";
 import IluminatiLogo from "../components/IluminatiLogo";
 import ForceGraph from "../components/ForceGraph";
@@ -753,6 +754,26 @@ export default function HomePageNew() {
                       value={mainCompany?.capital || "N/A"}
                     />
                     <DataRow label="DIC" value={mainCompany?.dic || "N/A"} />
+                    {mainCompany?.vatin && (
+                      <DataRow
+                        label="IČ DPH"
+                        value={
+                          mainCompany.vat_status === "restricted" ? (
+                            <span className="text-amber-400 font-semibold flex items-center gap-1">
+                              {mainCompany.vatin} (Obmedzená reg. §7/7a)
+                            </span>
+                          ) : (
+                            mainCompany.vatin
+                          )
+                        }
+                      />
+                    )}
+                    {mainCompany?.nace_code && (
+                      <DataRow
+                        label="SK-NACE Odvetvie"
+                        value={`${mainCompany.nace_code} - ${mainCompany.nace_name} (${mainCompany.nace_category})`}
+                      />
+                    )}
                     <DataRow
                       label="Street"
                       value={mainCompany?.street || "N/A"}
@@ -834,10 +855,25 @@ export default function HomePageNew() {
                                 </span>
                               )}
                             </div>
+                            {exec.potential_nominee && (
+                              <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/25 text-amber-400 border border-amber-500/30">
+                                ⚠️ Možný biely kôň (zahraničná adresa)
+                              </div>
+                            )}
                             {exec.address && (
-                              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                                {exec.address}
-                              </p>
+                              <div className="mt-1.5">
+                                <p className="text-xs text-slate-400 leading-relaxed">
+                                  {exec.address}
+                                </p>
+                                <a
+                                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(exec.address)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] text-blue-400 hover:text-blue-300 hover:underline mt-0.5 inline-block"
+                                >
+                                  Zobraziť na Google Maps
+                                </a>
+                              </div>
                             )}
                             {exec.since && (
                               <p className="text-[10px] text-slate-500 mt-1 font-mono">
@@ -870,6 +906,37 @@ export default function HomePageNew() {
                             {owner.address && (
                               <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
                                 {owner.address}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Koneční užívatelia výhod (RPVS / UBOs) */}
+                  {mainCompany?.ubos && mainCompany.ubos.length > 0 && (
+                    <div className="mt-6 p-5 rounded-xl bg-yellow-500/5 border border-yellow-500/10 shadow-lg animate-fade-in">
+                      <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Crown size={16} className="text-yellow-400" /> Koneční užívatelia výhod (RPVS)
+                      </h4>
+                      <div className="space-y-4">
+                        {mainCompany.ubos.map((ubo, idx) => (
+                          <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                            <div className="flex justify-between items-start">
+                              <span className="font-semibold text-white text-sm">{ubo.formatted_name}</span>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                                UBO
+                              </span>
+                            </div>
+                            {ubo.share && (
+                              <p className="text-xs font-semibold text-emerald-400 mt-1">
+                                {ubo.share}
+                              </p>
+                            )}
+                            {ubo.address && (
+                              <p className="text-xs text-slate-400 mt-1">
+                                {ubo.address}
                               </p>
                             )}
                           </div>
