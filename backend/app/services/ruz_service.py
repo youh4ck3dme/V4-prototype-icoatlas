@@ -42,6 +42,7 @@ class RuzService:
                 raw_data = {
                     "source": "Autoform API",
                     "registration_date": autoform_data.get("established_on"),
+                    "tin": autoform_data.get("tin"),
                     "vatin": autoform_data.get("vatin"),
                     "vatin_paragraph": autoform_data.get("vatin_paragraph"),
                     "main_economic_activity": autoform_data.get("main_economic_activity"),

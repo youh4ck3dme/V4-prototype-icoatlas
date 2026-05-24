@@ -243,6 +243,7 @@ export default function HomePageNew() {
                 legal_form: companyData.legal_form || "N/A",
                 founded: companyData.raw_data?.registration_date || "N/A",
                 capital: companyData.capital || "N/A",
+                dic: companyData.dic || "N/A",
                 city: companyData.city || companyData.address?.split(",").pop().trim() || "N/A",
                 raw_data: companyData.raw_data,
                 executives: companyData.executives || [],

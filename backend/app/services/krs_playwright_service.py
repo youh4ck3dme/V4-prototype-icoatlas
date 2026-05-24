@@ -94,12 +94,33 @@ class KRSPlaywrightService:
                 if not name:
                     raise HTTPException(status_code=404, detail=f"NIP/KRS {nip_or_krs} nie znaleziono")
                 
+                import re
+                def pl_nip_checksum_ok(nip10: str) -> bool:
+                    if not re.fullmatch(r"\d{10}", nip10):
+                        return False
+                    weights = [6, 5, 7, 2, 3, 4, 5, 6, 7]
+                    total = sum(int(nip10[i]) * weights[i] for i in range(9))
+                    chk = total % 11
+                    if chk == 10:
+                        return False
+                    return chk == int(nip10[9])
+
+                nip_val = None
+                for m in re.finditer(r'\b\d{10}\b', page_content):
+                    candidate = m.group(0)
+                    if pl_nip_checksum_ok(candidate):
+                        nip_val = candidate
+                        break
+
                 return Company(
                     ico=nip_or_krs,
                     name=name,
                     address=address or "Brak danych",
                     status=status,
-                    raw_data={"source": "biznes.gov.pl via Playwright"}
+                    raw_data={
+                        "source": "biznes.gov.pl via Playwright",
+                        "nip": nip_val
+                    }
                 )
                 
         except PlaywrightTimeout:

@@ -327,6 +327,28 @@ async def search_v4(
         company["vat_status"] = "active"
     else:
         company["vat_status"] = "none"
+    # Extract DIČ (Tax ID) based on country
+    if company.get("country") == "SK":
+        dic_val = company.get("raw_data", {}).get("dic") or company.get("raw_data", {}).get("tin")
+        if not dic_val:
+            vatin = company.get("raw_data", {}).get("vatin")
+            if vatin and isinstance(vatin, str) and vatin.startswith("SK"):
+                dic_val = vatin[2:]
+        company["dic"] = dic_val or "N/A"
+    elif company.get("country") == "CZ":
+        company["dic"] = company.get("raw_data", {}).get("dic") or "N/A"
+    elif company.get("country") == "PL":
+        dic_val = company.get("raw_data", {}).get("nip")
+        if not dic_val and detected_type == "NIP":
+            dic_val = classification.digits
+        company["dic"] = dic_val or "N/A"
+    elif company.get("country") == "HU":
+        dic_val = company.get("raw_data", {}).get("adoszam")
+        if not dic_val and detected_type == "ADOSZAM":
+            dic_val = raw_id
+        company["dic"] = dic_val or "N/A"
+    else:
+        company["dic"] = "N/A"
     # -----------------------------------------------------
     
     # Build response

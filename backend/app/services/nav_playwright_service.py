@@ -103,6 +103,11 @@ class NAVPlaywrightService:
                     # Record fail health metrics if we had a system to do so
                     raise HTTPException(status_code=404, detail=f"HU Company {cegjegyzek_szam} not found")
                 
+                adoszam = None
+                adoszam_match = re.search(r'\b\d{8}-\d-\d{2}\b', page_text)
+                if adoszam_match:
+                    adoszam = adoszam_match.group(0)
+
                 return Company(
                     ico=cegjegyzek_szam,
                     name=name,
@@ -111,7 +116,8 @@ class NAVPlaywrightService:
                     raw_data={
                         "source": "companyregister.hu",
                         "provider_latency_ms": latency_ms,
-                        "provider_ok": True
+                        "provider_ok": True,
+                        "adoszam": adoszam
                     }
                 )
 

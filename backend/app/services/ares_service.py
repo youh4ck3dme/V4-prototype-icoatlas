@@ -31,7 +31,8 @@ class ARESService:
                 ico=data["ico"],
                 name=data.get("obchodniJmeno", ""),
                 address=data.get("sidlo", {}).get("textovaAdresa", ""),
-                status=data.get("seznamRegistraci", {}).get("stavZdrojeRos", "UNKNOWN")
+                status=data.get("seznamRegistraci", {}).get("stavZdrojeRos", "UNKNOWN"),
+                raw_data=data
             )
         except (KeyError, TypeError) as e:
             raise HTTPException(status_code=502, detail=f"Unexpected ARES response format: {e}")
