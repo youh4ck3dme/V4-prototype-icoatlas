@@ -61,6 +61,18 @@ def ensure_sk_people_for_company(
         company["executives"] = ex
         company["owners"] = ow
         
+        # Enrich additional ORSR fields
+        if parsed.get("capital"):
+            company["capital"] = parsed["capital"]
+        if parsed.get("activities"):
+            company["activities"] = parsed["activities"]
+        if parsed.get("address"):
+            addr = parsed["address"]
+            if addr.get("street") and (not company.get("street") or len(company.get("street")) < len(addr["street"])):
+                company["street"] = addr["street"]
+            if addr.get("postal_code") and not company.get("postal_code"):
+                company["postal_code"] = addr["postal_code"]
+        
         return ex, ow
     except Exception as e:
         company["people_source"] = f"PARSE_ERROR:{type(e).__name__}"

@@ -116,6 +116,12 @@ def classify_identifier(value: str, country_hint: Optional[str] = None) -> IdCla
         # Could be: PL NIP, PL KRS, SK DIČ, HU cegjegyzekszam (digits-only) – but HU ceg is safer when user included separators.
         formatted["ten_digits"] = digits
 
+        # If hint strongly indicates HU
+        if hint == "HU":
+            formatted["cegjegyzekszam"] = f"{digits[:2]}-{digits[2:4]}-{digits[4:]}"
+            formatted["cegjegyzekszam_digits"] = digits
+            return IdClassification(raw, s, digits, "HU", "CEGJEGYZEKSZAM", 0.9, [], formatted)
+
         # If hint strongly indicates SK
         if hint == "SK":
             candidates = [

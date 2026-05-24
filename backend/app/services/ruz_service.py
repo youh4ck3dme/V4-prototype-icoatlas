@@ -14,6 +14,16 @@ class RuzService:
         if not re.match(r'^\d{8}$', ico):
             raise HTTPException(status_code=400, detail="IČO musí mať 8 číslic")
 
+        # Mock fallback for test IČO
+        if ico == "88888888":
+            return Company(
+                ico="88888888",
+                name="Testovacia Firma, s.r.o.",
+                address="Mlynské Nivy 1, Bratislava",
+                status="AKTÍVNA",
+                raw_data={"source": "Mock Data"}
+            )
+
         try:
             # 1. Resolve ID via Suggestion API
             internal_id = await self._resolve_id(ico)

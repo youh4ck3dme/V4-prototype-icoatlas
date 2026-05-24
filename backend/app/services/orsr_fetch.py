@@ -24,9 +24,8 @@ def _get(url: str, timeout: int = 15) -> httpx.Response:
     # Note: we use sync client for simplicity as it matches original requests logic
     with httpx.Client(follow_redirects=True, timeout=timeout) as client:
         r = client.get(url, headers={"User-Agent": UA})
-        # Try to detect cp1250 if not specified
-        if not r.encoding or r.encoding.lower() == "iso-8859-1":
-            r.encoding = "windows-1250"
+        # ORSR is always windows-1250. Force it to avoid auto-detection issues.
+        r.encoding = "windows-1250"
         return r
 
 def resolve_vypis_url(ico: str) -> str | None:

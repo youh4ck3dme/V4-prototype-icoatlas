@@ -59,10 +59,19 @@ class GraphService:
     """
 
     def __init__(self, dsn: Optional[str] = None):
-        self.dsn = dsn or os.getenv("DATABASE_URL") or os.getenv("DB_DSN")
+        if not dsn:
+            from ..core.config import settings
+            dsn = settings.DATABASE_URL
+        self.dsn = dsn
         if not self.dsn:
             raise RuntimeError("Missing DATABASE_URL / DB_DSN for GraphService")
         
+        # Normalize DSN for psycopg compatibility
+        if self.dsn.startswith("postgresql+asyncpg://"):
+            self.dsn = self.dsn.replace("postgresql+asyncpg://", "postgresql://", 1)
+        elif self.dsn.startswith("postgres+asyncpg://"):
+            self.dsn = self.dsn.replace("postgres+asyncpg://", "postgresql://", 1)
+
         if PSYCOPG_VERSION == 3:
             self.conn = psycopg.connect(self.dsn, row_factory=dict_row)
         else:
@@ -206,11 +215,9 @@ class GraphService:
             if not name:
                 continue
             
-            # Use the new _generate_person_key for deduplication
-            person_key_extra = ex.get("birth_date") or ex.get("reg_id") or ex.get("role") or ""
             person_node = self.get_or_create_node(
                 node_type="PERSON",
-                key_hash=self._generate_person_key(name, country, person_key_extra),
+                key_hash=self.person_key(country, name, ex.get("birth_date"), ex.get("reg_id")),
                 label=name,
                 country=country,
                 data={"name": name, "birth_date": ex.get("birth_date"), "reg_id": ex.get("reg_id")},

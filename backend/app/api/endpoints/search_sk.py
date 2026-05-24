@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from httpx import AsyncClient
+from typing import List, Dict, Any
 from ...services.ruz_service import RuzService
+from ...services.autoform_service import AutoformService
 from ...models.company import Company
 
 router = APIRouter()
@@ -16,3 +18,11 @@ async def lookup_company_sk(
 ):
     service = RuzService(client)
     return await service.fetch_company(ico)
+
+@router.get("/autocomplete", summary="Search for companies (Autocomplete)")
+async def autocomplete_sk(
+    q: str = Query(..., min_length=2, description="Search query"),
+    client: AsyncClient = Depends(get_httpx_client)
+):
+    service = AutoformService(client)
+    return await service.autocomplete(q)

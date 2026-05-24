@@ -120,7 +120,7 @@ const Footer = () => {
 
         <div className="border-t border-[#D4AF37]/20 mt-6 pt-6">
           <p className="text-center text-sm text-gray-400 w-full">
-            &copy; 2025 Iluminati Corp s.r.o.
+            &copy; {new Date().getFullYear()} Iluminati Corp s.r.o.
           </p>
         </div>
       </div>

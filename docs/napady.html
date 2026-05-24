@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap Vylepšení & Integrácie Autoform · ICO Atlas V4</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #3a67e8;
+      --primary-hover: #2a52cb;
+      --primary-light: #eef2ff;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+    }
+
+    .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, var(--primary), #6366f1);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(58, 103, 232, 0.3);
+    }
+
+    .nav-badge {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .hero h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, #1e293b, var(--primary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Grid Section */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title span.count {
+      background-color: var(--text);
+      color: white;
+      font-size: 0.9rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: var(--border);
+      transition: background-color 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(58, 103, 232, 0.2);
+    }
+
+    .card.primary-feat::before { background-color: var(--primary); }
+    .card.ux-feat::before { background-color: #a855f7; }
+    .card.warning-feat::before { background-color: var(--warning); }
+    .card.danger-feat::before { background-color: var(--danger); }
+    .card.success-feat::before { background-color: var(--success); }
+
+    .card-icon {
+      font-size: 1.75rem;
+      margin-bottom: 1.25rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg);
+    }
+
+    .card.primary-feat .card-icon { background-color: var(--primary-light); color: var(--primary); }
+    .card.ux-feat .card-icon { background-color: #f3e8ff; color: #a855f7; }
+    .card.warning-feat .card-icon { background-color: var(--warning-light); color: var(--warning); }
+    .card.danger-feat .card-icon { background-color: var(--danger-light); color: var(--danger); }
+    .card.success-feat .card-icon { background-color: var(--success-light); color: var(--success); }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 500;
+      background-color: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* Live Interactive Sandbox */
+    .sandbox {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 4rem;
+    }
+
+    .sandbox-header {
+      margin-bottom: 2rem;
+    }
+
+    .sandbox-header h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .sandbox-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sandbox-tab {
+      background: none;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .sandbox-tab.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Autocomplete Simulation */
+    .autocomplete-sim {
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(58, 103, 232, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .dropdown-sim {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      z-index: 10;
+      display: none;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .dropdown-sim.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--bg);
+      transition: background-color 0.15s;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--bg);
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .item-details {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .item-ico {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+
+    /* Risk Graph Visualizer Sim */
+    .graph-sim {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+      background-color: var(--bg);
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .node-wrapper {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .node-wrapper:hover {
+      transform: scale(1.1);
+    }
+
+    .graph-node {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background-color: white;
+      border: 3px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      z-index: 2;
+    }
+
+    .node-icon {
+      font-size: 1.5rem;
+    }
+
+    .node-label {
+      position: absolute;
+      top: 80px;
+      white-space: nowrap;
+      background-color: var(--text);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* Flashing / Warning effects for nodes */
+    .graph-node.danger-node {
+      border-color: var(--danger);
+      animation: pulse-red 2s infinite;
+    }
+
+    .graph-node.warning-node {
+      border-color: var(--warning);
+      animation: pulse-yellow 2s infinite;
+    }
+
+    .graph-node.ubo-node {
+      border-color: #fbbf24;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+    }
+
+    @keyframes pulse-red {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    @keyframes pulse-yellow {
+      0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+
+    .connection-line {
+      position: absolute;
+      height: 3px;
+      background-color: var(--border);
+      width: 150px;
+      z-index: 1;
+      transform-origin: left center;
+    }
+
+    .connection-line.danger-line {
+      background: repeating-linear-gradient(
+        90deg,
+        var(--danger),
+        var(--danger) 8px,
+        #fca5a5 8px,
+        #fca5a5 16px
+      );
+      animation: slide-line 15s linear infinite;
+    }
+
+    @keyframes slide-line {
+      from { background-position: 0 0; }
+      to { background-position: 100px 0; }
+    }
+
+    /* Simulation Control panel */
+    .sim-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .sim-btn {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sim-btn:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border-color: rgba(58, 103, 232, 0.3);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="#" class="brand">
+        <div class="brand-logo">🕵️</div>
+        <span>ICO Atlas V4</span>
+      </a>
+      <span class="nav-badge">Autoform Ecosystem Integration</span>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    
+    <!-- Hero Header -->
+    <header class="hero">
+      <h1>Roadmap Vylepšení & Integrácií</h1>
+      <p>Prehľad navrhovaných vylepšení pre platformu ICO Atlas V4 za použitia agregovaných a čistených dát z ekosystému Slovensko.digital Autoform.</p>
+    </header>
+
+    <!-- SECTION A: Základné vylepšenia -->
+    <section class="section-title">
+      <span class="count">2</span>
+      <h2>Základné Vylepšenia Systému</h2>
+    </section>
+
+    <div class="grid">
+      
+      <!-- Idea 1: Autocomplete Search -->
+      <div class="card ux-feat">
+        <div class="card-icon">🔍</div>
+        <h3 class="card-title">1. Inteligentné dopĺňanie (Autocomplete)</h3>
+        <p class="card-desc">Implementácia inteligentného vyhľadávacieho panelu „Search-as-you-type“. Užívateľ nemusí poznať presné IČO, stačí zadať časť názvu firmy. Systém na základe dotazov na Autoform okamžite napovie zhodné firmy.</p>
+        <div class="card-tags">
+          <span class="tag">UX / UI</span>
+          <span class="tag">Autoform API</span>
+          <span class="tag">React Autocomplete</span>
+        </div>
+      </div>
+
+      <!-- Idea 2: Hybrid SK Provider -->
+      <div class="card success-feat">
+        <div class="card-icon">⚡</div>
+        <h3 class="card-title">2. Rýchly Fallback & Anti-Scraping Shield</h3>
+        <p class="card-desc">Slovenské firmy sa budú primárne dopytovať cez extrémne rýchle a štruktúrované Autoform API. Náš pomalší a nestabilný scraper pre ORSR (Obchodný register) sa použije len ako fallback, čím sa zvýši úspešnosť a odozva systému pod 1s.</p>
+        <div class="card-tags">
+          <span class="tag">Backend</span>
+          <span class="tag">Spoľahlivosť</span>
+          <span class="tag">Dátová čistota</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECTION B: Pokročilé Enterprise Funkcie -->
+    <section class="section-title">
+      <span class="count">5</span>
+      <h2>Enterprise Risk & Forensic Analýzy</h2>
+    </section>
+
+    <div class="grid">
+      
+      <!-- Risk Feat 1: Virtual HQ -->
+      <div class="card warning-feat">
+        <div class="card-icon">📦</div>
+        <h3 class="card-title">1. Detektor schránkových firiem</h3>
+        <p class="card-desc">Porovnaním presne štruktúrovanej adresy z Autoformu s našou databázou hromadných virtuálnych adries (napr. Karpatské námestie 10, Plynárenská 7/B) automaticky detegujeme virtuálne sídla a zvýšime rizikové skóre subjektu.</p>
+        <div class="card-tags">
+          <span class="tag">Risk Scoring</span>
+          <span class="tag">Virtuálne sídla</span>
+          <span class="tag">Dátová anomália</span>
+        </div>
+      </div>
+
+      <!-- Risk Feat 2: Nominee / Cross-border -->
+      <div class="card danger-feat">
+        <div class="card-icon">🕵️‍♂️</div>
+        <h3 class="card-title">2. Geografický detektor „Bielych koní“</h3>
+        <p class="card-desc">Analýza adries trvalého bydliska štatutárov (pole <code>statutory.country</code>). Ak v slovenskej firme figuruje konateľ z malej prihraničnej dediny v Maďarsku, Rumunsku alebo na Ukrajine, systém to označí za rizikovú cezhraničnú anomáliu nastrčeného konateľa.</p>
+        <div class="card-tags">
+          <span class="tag">Forenzná analýza</span>
+          <span class="tag">Cezhraničné vzťahy</span>
+          <span class="tag">Biele kone</span>
+        </div>
+      </div>
+
+      <!-- Risk Feat 3: VAT Carousel -->
+      <div class="card danger-feat">
+        <div class="card-icon">💸</div>
+        <h3 class="card-title">3. DPH Skener & Karuselový varovný prst</h3>
+        <p class="card-desc">Skenovanie registračného stavu DPH (pole <code>vatin_paragraph</code>) v kombinácii s DPH dlžníkmi. Systém identifikuje, či firma spĺňa podmienky podozrenia na zapojenie do daňového kolotoča (napr. zrušená registrácia k DPH u prepojených firiem).</p>
+        <div class="card-tags">
+          <span class="tag">DPH / Dane</span>
+          <span class="tag">Karuselové podvody</span>
+          <span class="tag">Registrácia DPH</span>
+        </div>
+      </div>
+
+      <!-- Risk Feat 4: NACE Analysis -->
+      <div class="card success-feat">
+        <div class="card-icon">📊</div>
+        <h3 class="card-title">4. Odvetvový filter anomálií prepojení</h3>
+        <p class="card-desc">Farebné odlíšenie uzlov grafu podľa SK-NACE kódu činnosti (pole <code>main_economic_activity.code</code>). Automatická detekcia nelogických transakčných prepojení (napr. spoločník prepája IT firmu s poľnohospodárskym družstvom a stavebnou firmou bez zjavného synergického zmyslu).</p>
+        <div class="card-tags">
+          <span class="tag">SK-NACE</span>
+          <span class="tag">Optimalizácia nákladov</span>
+          <span class="tag">Vizualizácia</span>
+        </div>
+      </div>
+
+      <!-- Risk Feat 5: UBO Tracker -->
+      <div class="card primary-feat">
+        <div class="card-icon">👑</div>
+        <h3 class="card-title">5. Identifikácia skutočných majiteľov (UBO)</h3>
+        <p class="card-desc">Využitie odkazu na Datahub (`datahub_corporate_body.url`) k priamemu dopytu na Register partnerov verejného sektora (RPVS). V grafe tak nevykreslíme len papierových konateľov, ale priamo zlatý uzol s konečným užívateľom výhod.</p>
+        <div class="card-tags">
+          <span class="tag">RPVS</span>
+          <span class="tag">Skutočný majiteľ</span>
+          <span class="tag">UBO / KUV</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INTERACTIVE SIMULATION SANDBOX -->
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <h3>Live Simulátor Vylepšení (UI/UX Mockup)</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Kliknite na záložky a vyskúšajte si, ako by tieto vylepšenia fungovali v praxi.</p>
+      </div>
+
+      <div class="sandbox-tabs">
+        <button class="sandbox-tab active" onclick="switchTab('autocomplete')">1. Našepkávač (Autocomplete)</button>
+        <button class="sandbox-tab" onclick="switchTab('graph')">2. Analytický Graf Prepojení</button>
+      </div>
+
+      <!-- Autocomplete Tab Content -->
+      <div id="sim-autocomplete" class="tab-content" style="display: block;">
+        <div class="autocomplete-sim">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="sim-search" class="search-input" placeholder="Začnite písať (napr. websupport, slovensko, agrofert)..." oninput="handleSearch(this.value)">
+          </div>
+          <div id="sim-dropdown" class="dropdown-sim">
+            <!-- Items injected by JS -->
+          </div>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">Skúste napísať <strong>"web"</strong>, <strong>"slov"</strong>, <strong>"agro"</strong> alebo čísla ako <strong>"36"</strong>.</p>
+      </div>
+
+      <!-- Graph Tab Content -->
+      <div id="sim-graph" class="tab-content" style="display: none;">
+        <div class="graph-sim" id="graph-canvas">
+          <!-- Central Node -->
+          <div class="node-wrapper" style="position: absolute; left: 220px; top: 110px;" onclick="selectNode('central')">
+            <div class="graph-node" id="central-node">
+              <span class="node-icon">🏢</span>
+              <div class="node-label" id="central-label">Subjekt: Websupport</div>
+            </div>
+          </div>
+          
+          <!-- Connected Node -->
+          <div class="connection-line" id="line-1" style="left: 280px; top: 145px; transform: rotate(-40deg); width: 140px;"></div>
+          <div class="node-wrapper" style="position: absolute; right: 200px; top: 30px;" onclick="selectNode('statutory')">
+            <div class="graph-node" id="statutory-node">
+              <span class="node-icon">👤</span>
+              <div class="node-label" id="statutory-label">Konateľ: Švédske kráľovstvo</div>
+            </div>
+          </div>
+
+          <!-- Connected Node 2 (VAT Risk / Virtual HQ) -->
+          <div class="connection-line" id="line-2" style="left: 280px; top: 145px; transform: rotate(40deg); width: 140px;"></div>
+          <div class="node-wrapper" style="position: absolute; right: 200px; bottom: 30px;" onclick="selectNode('risk')">
+            <div class="graph-node" id="risk-node">
+              <span class="node-icon">🚩</span>
+              <div class="node-label" id="risk-label">Riziko: DPH §4</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="sim-controls">
+          <button class="sim-btn" onclick="triggerGraphState('virtual')">Simulovať Virtuálne Sídlo 📦</button>
+          <button class="sim-btn" onclick="triggerGraphState('nominee')">Simulovať Bieleho Koňa 🕵️‍♂️</button>
+          <button class="sim-btn" onclick="triggerGraphState('vat')">Simulovať DPH Karusel 💸</button>
+          <button class="sim-btn" onclick="triggerGraphState('ubo')">Simulovať Skutočného Majiteľa (UBO) 👑</button>
+          <button class="sim-btn" onclick="resetGraph()">Resetovať Graf 🔄</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>ICO Atlas V4 - Forensic Risk Intelligence Blueprint · 2026</p>
+  </footer>
+
+  <!-- Script for Simulators -->
+  <script>
+    // Data representation of Autoform search results
+    const companiesDatabase = [
+      { name: "Websupport, s.r.o.", address: "Staré Grunty 12, Bratislava", ico: "36 421 928", status: "AKTÍVNA" },
+      { name: "Slovensko.Digital", address: "Staré Grunty 205/18, Bratislava", ico: "50 158 635", status: "AKTÍVNA" },
+      { name: "Agrofert Holding a.s.", address: "Vlčie hrdlo 1, Bratislava", ico: "31 333 501", status: "AKTÍVNA" },
+      { name: "Agrofert, a.s. (CZ)", address: "Pyšelská 2327/2, Praha", ico: "27 074 358", status: "AKTÍVNA" },
+      { name: "Fiktívna Firma, s.r.o. - V LIQUIDÁCII", address: "Karpatské námestie 10, Bratislava", ico: "12 345 678", status: "NEAKTÍVNA" }
+    ];
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.sandbox-tab').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+      
+      const activeBtn = Array.from(document.querySelectorAll('.sandbox-tab')).find(btn => btn.textContent.toLowerCase().includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      document.getElementById('sim-' + tabId).style.display = 'block';
+    }
+
+    function handleSearch(val) {
+      const dropdown = document.getElementById('sim-dropdown');
+      if (!val || val.length < 2) {
+        dropdown.classList.remove('show');
+        return;
+      }
+      
+      const query = val.toLowerCase();
+      const results = companiesDatabase.filter(c => 
+        c.name.toLowerCase().includes(query) || 
+        c.ico.replace(/\s/g, '').includes(query)
+      );
+
+      dropdown.innerHTML = '';
+      if (results.length > 0) {
+        results.forEach(res => {
+          const item = document.createElement('div');
+          item.className = 'dropdown-item';
+          item.onclick = () => selectCompany(res);
+          item.innerHTML = `
+            <div class="item-info">
+              <span class="item-name">${res.name}</span>
+              <span class="item-details">${res.address}</span>
+            </div>
+            <span class="item-ico">IČO ${res.ico}</span>
+          `;
+          dropdown.appendChild(item);
+        });
+        dropdown.classList.add('show');
+      } else {
+        dropdown.innerHTML = '<div style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.85rem;">Žiadne výsledky pre SK databázu</div>';
+        dropdown.classList.add('show');
+      }
+    }
+
+    function selectCompany(company) {
+      document.getElementById('sim-search').value = company.name;
+      document.getElementById('sim-dropdown').classList.remove('show');
+      alert(`Zvolili ste firmu: ${company.name}\nIČO: ${company.ico}\nSystém Autoform automaticky vyplnil detaily a spustil prepojenia.`);
+    }
+
+    // Graph simulator script
+    const centralNode = document.getElementById('central-node');
+    const centralLabel = document.getElementById('central-label');
+    const statutoryNode = document.getElementById('statutory-node');
+    const statutoryLabel = document.getElementById('statutory-label');
+    const riskNode = document.getElementById('risk-node');
+    const riskLabel = document.getElementById('risk-label');
+    const line1 = document.getElementById('line-1');
+    const line2 = document.getElementById('line-2');
+
+    function resetGraph() {
+      centralNode.className = 'graph-node';
+      centralNode.querySelector('.node-icon').textContent = '🏢';
+      centralLabel.textContent = 'Subjekt: Websupport';
+
+      statutoryNode.className = 'graph-node';
+      statutoryNode.querySelector('.node-icon').textContent = '👤';
+      statutoryLabel.textContent = 'Konateľ: Švédske kráľovstvo';
+
+      riskNode.className = 'graph-node';
+      riskNode.querySelector('.node-icon').textContent = '🚩';
+      riskLabel.textContent = 'Riziko: Nízke';
+
+      line1.className = 'connection-line';
+      line2.className = 'connection-line';
+    }
+
+    function triggerGraphState(state) {
+      resetGraph();
+      if (state === 'virtual') {
+        centralNode.className = 'graph-node warning-node';
+        centralNode.querySelector('.node-icon').textContent = '📦';
+        centralLabel.textContent = 'Sídlo: Karpatské Námestie (Virtuálne)';
+        
+        riskNode.className = 'graph-node warning-node';
+        riskNode.querySelector('.node-icon').textContent = '🚩';
+        riskLabel.textContent = 'Virtual HQ Risk Detekovaný';
+      } 
+      else if (state === 'nominee') {
+        statutoryNode.className = 'graph-node danger-node';
+        statutoryNode.querySelector('.node-icon').textContent = '🕵️‍♂️';
+        statutoryLabel.textContent = 'Konateľ: Rumunská obec (Podozrenie)';
+        
+        line1.className = 'connection-line danger-line';
+        
+        riskNode.className = 'graph-node danger-node';
+        riskLabel.textContent = 'Biele Kôň Alert';
+      } 
+      else if (state === 'vat') {
+        riskNode.className = 'graph-node danger-node';
+        riskNode.querySelector('.node-icon').textContent = '💸';
+        riskLabel.textContent = 'DPH registrácia Zrušená';
+        
+        line2.className = 'connection-line danger-line';
+        
+        centralNode.className = 'graph-node danger-node';
+        centralLabel.textContent = 'Rizikový VAT článok';
+      } 
+      else if (state === 'ubo') {
+        statutoryNode.className = 'graph-node ubo-node';
+        statutoryNode.querySelector('.node-icon').textContent = '👑';
+        statutoryLabel.textContent = 'Skutočný Vlastník (UBO)';
+        
+        centralLabel.textContent = 'Central Target';
+      }
+    }
+
+    function selectNode(type) {
+      if (type === 'central') {
+        alert("Subjekt: Vyhľadaný z Autoformu.\nUlica: Staré Grunty\nSúpisné číslo: 12\nObec: Bratislava");
+      } else if (type === 'statutory') {
+        alert("Konateľ / UBO:\nMeno: Sara Maria Laurell\nTrvalý pobyt: Karlavägen 68, Štokholm, Švédske kráľovstvo");
+      } else {
+        alert("Sekcia rizika:\nAnalýza prepojení odhalila daňovú zhodu alebo zmenu sídla.");
+      }
+    }
+  </script>
+</body>
+</html>

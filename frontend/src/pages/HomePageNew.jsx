@@ -68,6 +68,9 @@ export default function HomePageNew() {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const searchInputRef = useRef(null);
   const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -88,6 +91,33 @@ export default function HomePageNew() {
     link.rel = "stylesheet";
     document.head.appendChild(link);
   }, []);
+
+  // Autocomplete fetcher
+  useEffect(() => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setSuggestionLoading(true);
+      try {
+        const res = await fetch(`${ENDPOINTS.SEARCH.AUTOCOMPLETE}?q=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const fetchedSuggestions = await res.json();
+          setSuggestions(fetchedSuggestions);
+          setShowSuggestions(fetchedSuggestions.length > 0);
+        }
+      } catch (err) {
+        console.error("Autocomplete error:", err);
+      } finally {
+        setSuggestionLoading(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -139,16 +169,9 @@ export default function HomePageNew() {
       setShowResults(false);
 
       try {
-        // V4 Logic: Select endpoint based on country filter
-        const country = filters.country || "CZ";
-        let searchUrl = "";
-        
-        switch(country) {
-          case "SK": searchUrl = `${ENDPOINTS.SEARCH.SK}/${query}`; break;
-          case "PL": searchUrl = `${ENDPOINTS.SEARCH.PL}/${query}`; break;
-          case "HU": searchUrl = `${ENDPOINTS.SEARCH.HU}/${query}`; break;
-          default:   searchUrl = `${ENDPOINTS.SEARCH.CZ}/${query}`;
-        }
+        // V4 Logic: Use unified search endpoint with graph=1
+        const countryParam = filters.country || "";
+        const searchUrl = `${ENDPOINTS.SEARCH.V4}/${encodeURIComponent(query)}?country=${countryParam}&graph=1`;
 
         // Fetch and 3s delay in parallel for premium feel
         const [response] = await Promise.all([
@@ -163,38 +186,77 @@ export default function HomePageNew() {
            throw new Error(`Chyba pri vyhľadávaní: ${response.status}`);
         }
 
-        const companyData = await response.json();
-        console.log("V4 Backend Response:", companyData);
+        const searchData = await response.json();
+        console.log("V4 Backend Response:", searchData);
+        
+        const companyData = searchData.company;
+        const graphData = searchData.graph;
 
-        // Transform V4 Company profile to Graph structure
-        const result = {
-          nodes: [
-            {
-              id: `company_${companyData.ico}`,
-              label: companyData.name,
-              type: "company",
-              ico: companyData.ico,
-              country: country,
-              status: companyData.status,
-              street: companyData.address,
-              risk_score: 0,
-              risk_factors: [],
-              legal_form: "N/A",
-              founded: companyData.raw_data?.registration_date || "N/A",
-              capital: "N/A",
-              city: companyData.address?.split(",").pop().trim() || "N/A",
-              raw_data: companyData.raw_data,
+        let result;
+        if (graphData && graphData.nodes) {
+          result = {
+            nodes: graphData.nodes.map(n => {
+              const lowerType = (n.type || "").toLowerCase();
+              const isMainCompany = lowerType === "company" && (n.data?.atlas_id === companyData.atlas_id || n.id === companyData.atlas_id);
+              if (isMainCompany) {
+                return {
+                  ...n,
+                  ...companyData,
+                  type: "company",
+                  label: companyData.legal_name || companyData.name || n.label,
+                  risk_score: companyData.risk_score || 0,
+                  risk_factors: companyData.risk_factors || [],
+                };
+              }
+              return { 
+                ...n, 
+                type: lowerType,
+                risk_score: 0, 
+                risk_factors: [] 
+              };
+            }),
+            edges: graphData.links || [],
+            nexus_story: `Intelligence report for ${companyData.legal_name || companyData.name} (${companyData.atlas_id}). The entity is currently ${companyData.status} in the ${companyData.country} business registry. No high-risk relationship patterns detected in the initial scan.`,
+            nexus_metadata: {
+              node_count: graphData.nodes.length,
+              edge_count: (graphData.links || []).length,
+              involved_countries: [companyData.country],
+              is_cross_border: false
             }
-          ],
-          edges: [],
-          nexus_story: `Intelligence report for ${companyData.name} (${companyData.ico}). The entity is currently ${companyData.status} in the ${country} business registry. No high-risk relationship patterns detected in the initial scan.`,
-          nexus_metadata: {
-            node_count: 1,
-            edge_count: 0,
-            involved_countries: [country],
-            is_cross_border: false
-          }
-        };
+          };
+        } else {
+          result = {
+            nodes: [
+              {
+                id: `company_${companyData.atlas_id}`,
+                label: companyData.legal_name || companyData.name,
+                type: "company",
+                ico: companyData.atlas_id,
+                country: companyData.country,
+                status: companyData.status,
+                street: companyData.street || companyData.address,
+                risk_score: companyData.risk_score || 0,
+                risk_factors: companyData.risk_factors || [],
+                legal_form: companyData.legal_form || "N/A",
+                founded: companyData.raw_data?.registration_date || "N/A",
+                capital: companyData.capital || "N/A",
+                city: companyData.city || companyData.address?.split(",").pop().trim() || "N/A",
+                raw_data: companyData.raw_data,
+                executives: companyData.executives || [],
+                owners: companyData.owners || [],
+                activities: companyData.activities || [],
+              }
+            ],
+            edges: [],
+            nexus_story: `Intelligence report for ${companyData.legal_name || companyData.name} (${companyData.atlas_id}). The entity is currently ${companyData.status} in the ${companyData.country} business registry. No high-risk relationship patterns detected in the initial scan.`,
+            nexus_metadata: {
+              node_count: 1,
+              edge_count: 0,
+              involved_countries: [companyData.country],
+              is_cross_border: false
+            }
+          };
+        }
 
         console.log("Transformed Graph Data:", result);
         setData(result);
@@ -455,8 +517,35 @@ export default function HomePageNew() {
                         placeholder="Insert IČO, ID or Company Name..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                        onFocus={() => { if(suggestions.length > 0) setShowSuggestions(true); }}
                         ref={searchInputRef}
                       />
+                      {suggestionLoading && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Loader2 className="animate-spin text-slate-400" size={16} />
+                        </div>
+                      )}
+                      {showSuggestions && suggestions.length > 0 && (
+                        <div className="absolute z-50 w-full mt-2 bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl max-h-80 overflow-y-auto text-left">
+                          {suggestions.map((sug, idx) => (
+                            <div 
+                              key={idx} 
+                              className="px-4 py-3 hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0"
+                              onClick={() => {
+                                setQuery(sug.id);
+                                setShowSuggestions(false);
+                              }}
+                            >
+                              <div className="flex justify-between items-center">
+                                <span className="font-bold text-white">{sug.name}</span>
+                                <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">{sug.id}</span>
+                              </div>
+                              <div className="text-sm text-slate-400 mt-1">{sug.address}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <button
                       type="submit"
@@ -708,27 +797,105 @@ export default function HomePageNew() {
                     </div>
                   )}
 
-                  {/* Executives Section (Phase 17) */}
-                  {mainCompany?.executives &&
-                    mainCompany.executives.length > 0 && (
-                      <div className="mt-6 p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                        <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                          <Users size={14} /> Statutory Body
-                        </h4>
-                        <ul className="space-y-2">
-                          {mainCompany.executives.map((exec, idx) => (
-                            <li
-                              key={idx}
-                              className="text-sm text-slate-300 flex items-start gap-2"
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
-                              {exec}
-                            </li>
-                          ))}
-                        </ul>
+                  {/* Debts Section */}
+                  {mainCompany?.raw_data?.debts && mainCompany.raw_data.debts.length > 0 && (
+                    <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                      <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <AlertTriangle size={14} /> Záväzky voči štátu
+                      </h4>
+                      <div className="space-y-3">
+                        {mainCompany.raw_data.debts.map((debt, idx) => (
+                          <div key={idx} className="flex justify-between items-center text-sm border-b border-red-500/10 pb-2 last:border-0 last:pb-0">
+                            <div className="flex flex-col">
+                              <span className="text-slate-200 font-medium">{debt.institution}</span>
+                              <span className="text-slate-400 text-xs">Evidované k: {debt.published_on}</span>
+                            </div>
+                            <span className="text-red-400 font-bold text-lg">{Number(debt.amount).toFixed(2)} €</span>
+                          </div>
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
 
+                  {/* Štatutárny orgán (Executives) */}
+                  {mainCompany?.executives && mainCompany.executives.length > 0 && (
+                    <div className="mt-6 p-5 rounded-xl bg-blue-500/5 border border-blue-500/10 shadow-lg">
+                      <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Users size={16} /> Štatutárny orgán
+                      </h4>
+                      <div className="space-y-4">
+                        {mainCompany.executives.map((exec, idx) => (
+                          <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                            <div className="flex justify-between items-start">
+                              <span className="font-semibold text-white text-sm">{exec.name}</span>
+                              {exec.role && (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                  {exec.role}
+                                </span>
+                              )}
+                            </div>
+                            {exec.address && (
+                              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                                {exec.address}
+                              </p>
+                            )}
+                            {exec.since && (
+                              <p className="text-[10px] text-slate-500 mt-1 font-mono">
+                                Vznik funkcie: {exec.since}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Spoločníci / Vlastníci (Owners) */}
+                  {mainCompany?.owners && mainCompany.owners.length > 0 && (
+                    <div className="mt-6 p-5 rounded-xl bg-indigo-500/5 border border-indigo-500/10 shadow-lg">
+                      <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Building2 size={16} /> Spoločníci a vlastné imanie
+                      </h4>
+                      <div className="space-y-4">
+                        {mainCompany.owners.map((owner, idx) => (
+                          <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                            <div className="flex flex-col gap-1">
+                              <span className="font-semibold text-white text-sm">{owner.name}</span>
+                              {owner.share && (
+                                <span className="text-xs font-semibold text-emerald-400">
+                                  {owner.share}
+                                </span>
+                              )}
+                            </div>
+                            {owner.address && (
+                              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                                {owner.address}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Predmety podnikania (Activities) */}
+                  {mainCompany?.activities && mainCompany.activities.length > 0 && (
+                    <div className="mt-6 p-5 rounded-xl bg-slate-800/20 border border-white/5 shadow-lg">
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Activity size={16} /> Predmety podnikania
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {mainCompany.activities.map((act, idx) => (
+                          <span 
+                            key={idx} 
+                            className="bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg text-xs text-slate-300 transition-all cursor-default leading-normal"
+                          >
+                            {act}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {/* Financials Section (Phase 17) */}
                   {mainCompany?.raw_data?.financials && (
                     <div className="mt-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
