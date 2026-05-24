@@ -1,6 +1,9 @@
 import pytest
+import re
 import httpx
 from backend.app.main import app
+from backend.app.models.company import Company
+from backend.app.services.nav_playwright_service import NAVPlaywrightService
 
 @pytest.mark.asyncio
 async def test_v4_search_dic_sk():
@@ -49,7 +52,7 @@ async def test_v4_search_dic_pl():
 @pytest.mark.asyncio
 async def test_v4_search_dic_hu():
     """Test that DIČ/Adószám is resolved correctly for Hungary (HU)"""
-    raw = "10902090" # A HU Cegjegyzékszám
+    raw = "01-09-562739" # Real Hungarian Cégjegyzékszám
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as ac:
         r = await ac.get(f"/api/v4/search/{raw}", params={"country": "HU"})
         assert r.status_code in [200, 404]
@@ -57,4 +60,62 @@ async def test_v4_search_dic_hu():
             data = r.json()
             assert "company" in data
             comp = data["company"]
-            assert "dic" in comp
+            assert comp.get("dic")
+            assert comp["dic"] != "N/A"
+            assert re.fullmatch(r"\d{8}-\d-\d{2}", comp["dic"])
+
+
+@pytest.mark.asyncio
+async def test_v4_search_dic_hu_maps_adoszam_from_scraper(monkeypatch):
+    """Mocked unit test for Hungary (HU) mapping logic without real API calls"""
+    captured_lookup_value = None
+
+    async def fake_fetch_company(self, lookup_value: str):
+        nonlocal captured_lookup_value
+        captured_lookup_value = lookup_value
+        return Company(
+            ico=lookup_value,
+            name="Teszt Kft.",
+            address="Budapest",
+            status="AKTÍV",
+            raw_data={
+                "source": "companyregister.hu",
+                "provider_ok": True,
+                "adoszam": "14906428-2-06",
+            },
+        )
+
+    monkeypatch.setattr(
+        NAVPlaywrightService,
+        "fetch_company",
+        fake_fetch_company,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        # 1. Search with Cégjegyzékszám
+        r = await ac.get(
+            "/api/v4/search/01-09-562739",
+            params={"country": "HU"},
+        )
+        assert r.status_code == 200
+        comp = r.json()["company"]
+        assert comp["country"] == "HU"
+        assert comp["dic"] == "14906428-2-06"
+        assert re.fullmatch(r"\d{8}-\d-\d{2}", comp["dic"])
+        assert captured_lookup_value == "01-09-562739"
+
+        # 2. Search with 11-digit unformatted Adószám
+        r2 = await ac.get(
+            "/api/v4/search/14906428206",
+            params={"country": "HU"},
+        )
+        assert r2.status_code == 200
+        comp2 = r2.json()["company"]
+        assert comp2["country"] == "HU"
+        assert comp2["dic"] == "14906428-2-06"
+        assert re.fullmatch(r"\d{8}-\d-\d{2}", comp2["dic"])
+        assert captured_lookup_value == "14906428-2-06"
+

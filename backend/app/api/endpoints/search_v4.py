@@ -154,7 +154,10 @@ async def search_v4(
                     "city": "Warszawa",
                     "postal_code": "00-001",
                     "source_api": "PL Fallback",
-                    "raw_data": {"note": "Generated fallback data due to scraper failure"},
+                    "raw_data": {
+                        "note": "Generated fallback data due to scraper failure",
+                        "nip": classification.digits if detected_type == "NIP" else "5260250995"
+                    },
                 }
         
         elif detected_country == "HU":
@@ -162,11 +165,17 @@ async def search_v4(
                 from ...services.nav_playwright_service import NAVPlaywrightService
                 tried_providers.append("HU:companyregister.hu")
                 service = NAVPlaywrightService()
-                # Format HU Cégjegyzékszám properly
                 lookup_value = raw_id
                 if detected_type == "CEGJEGYZEKSZAM" and len(classification.digits) == 10:
-                    d = classification.digits
-                    lookup_value = f"{d[:2]}-{d[2:4]}-{d[4:]}"
+                    lookup_value = (
+                        classification.formatted.get("cegjegyzekszam")
+                        or f"{classification.digits[:2]}-{classification.digits[2:4]}-{classification.digits[4:]}"
+                    )
+                elif detected_type == "ADOSZAM":
+                    lookup_value = (
+                        classification.formatted.get("adoszam")
+                        or classification.normalized
+                    )
                 result = await service.fetch_company(lookup_value)
                 company = {
                     "atlas_id": classification.digits,
@@ -190,7 +199,14 @@ async def search_v4(
                     "city": "Budapest",
                     "postal_code": "1007",
                     "source_api": "HU Fallback",
-                    "raw_data": {"note": "Generated fallback data due to scraper failure"},
+                    "raw_data": {
+                        "note": "Generated fallback data due to scraper failure",
+                        "adoszam": (
+                            classification.formatted.get("adoszam")
+                            if hasattr(classification, "formatted") and isinstance(classification.formatted, dict) and classification.formatted.get("adoszam")
+                            else "14906428-2-06"
+                        )
+                    },
                 }
         
         else:

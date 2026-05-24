@@ -21,8 +21,13 @@ class NAVPlaywrightService:
         
         # Normalize format (ensure dashes, remove CG. prefix)
         clean_id = cegjegyzek_szam.replace("CG.", "").replace(" ", "")
-        if "-" not in clean_id and len(clean_id) >= 10:
-            formatted = f"{clean_id[:2]}-{clean_id[2:4]}-{clean_id[4:]}"
+        if "-" not in clean_id:
+            if len(clean_id) == 10:
+                formatted = f"{clean_id[:2]}-{clean_id[2:4]}-{clean_id[4:]}"
+            elif len(clean_id) == 11:
+                formatted = f"{clean_id[:8]}-{clean_id[8]}-{clean_id[9:]}"
+            else:
+                formatted = clean_id
         else:
             formatted = clean_id
             
@@ -104,9 +109,9 @@ class NAVPlaywrightService:
                     raise HTTPException(status_code=404, detail=f"HU Company {cegjegyzek_szam} not found")
                 
                 adoszam = None
-                adoszam_match = re.search(r'\b\d{8}-\d-\d{2}\b', page_text)
+                adoszam_match = re.search(r'\b(\d{8})\s*[-–]\s*(\d)\s*[-–]\s*(\d{2})\b', page_text)
                 if adoszam_match:
-                    adoszam = adoszam_match.group(0)
+                    adoszam = f"{adoszam_match.group(1)}-{adoszam_match.group(2)}-{adoszam_match.group(3)}"
 
                 return Company(
                     ico=cegjegyzek_szam,
