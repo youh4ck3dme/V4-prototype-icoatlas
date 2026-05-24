@@ -86,7 +86,7 @@ async def search_v4(
     confidence = classification.confidence
     
     # Fetch company from appropriate provider
-    company = None
+    company: Optional[Dict[str, Any]] = None
     cache_hit = False
     cache_key = f"company_v4:{detected_country or 'COLLISION'}:{classification.digits}"
     

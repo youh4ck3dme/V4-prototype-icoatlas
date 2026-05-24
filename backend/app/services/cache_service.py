@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 import time
@@ -18,10 +19,10 @@ class InMemoryCache:
         if time.time() > expire_at:
             del self._cache[key]
             return None
-        return value
+        return copy.deepcopy(value)
 
     def set(self, key: str, value: Any, expire_seconds: int = 86400):
-        self._cache[key] = (time.time() + expire_seconds, value)
+        self._cache[key] = (time.time() + expire_seconds, copy.deepcopy(value))
 
     def clear(self):
         self._cache.clear()
