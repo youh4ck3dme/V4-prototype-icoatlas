@@ -745,7 +745,16 @@ export default function HomePageNew() {
                       label="Capital"
                       value={mainCompany?.capital || "N/A"}
                     />
-                    <DataRow label="DIC" value={mainCompany?.dic || "N/A"} />
+                    <DataRow 
+                      label="DIC" 
+                      value={
+                        !mainCompany?.dic || mainCompany.dic === "N/A" ? (
+                          <span className="text-slate-400 italic">DIČ nedostupné</span>
+                        ) : (
+                          mainCompany.dic
+                        )
+                      } 
+                    />
                     {mainCompany?.vatin && (
                       <DataRow
                         label="IČ DPH"
