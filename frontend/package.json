@@ -12,6 +12,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@sentry/react": "^7.99.0",
     "axios": "^1.13.2",
     "d3-force": "^3.0.0",
     "html2canvas": "^1.4.1",
