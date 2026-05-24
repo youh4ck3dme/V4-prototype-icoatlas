@@ -5,6 +5,10 @@ Supports all V4 countries with automatic identifier classification and optional 
 from fastapi import APIRouter, Query, HTTPException
 from typing import Optional, Dict, Any
 import os
+import time
+import logging
+
+logger = logging.getLogger("uvicorn.error")
 
 from ...utils.identifier_classifier import classify_identifier
 
@@ -91,47 +95,69 @@ async def search_v4(
             from ...services.ruz_service import RuzService
             import httpx
             tried_providers.append("SK:RUZ")
-            async with httpx.AsyncClient() as client:
-                service = RuzService(client)
-                result = await service.fetch_company(classification.digits)
-                company = {
-                    "atlas_id": classification.digits,  # Temporary - will be real UUID with Identity Graph
-                    "country": "SK",
-                    "legal_name": result.name,
-                    "status": result.status,
-                    "street": result.address,
-                    "city": "",
-                    "postal_code": "",
-                    "source_api": "RUZ",
-                    "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
-                }
-                _enrich_company_from_ruz(company, result)
+            t0 = time.time()
+            try:
+                async with httpx.AsyncClient() as client:
+                    service = RuzService(client)
+                    result = await service.fetch_company(classification.digits)
+                    latency = int((time.time() - t0) * 1000)
+                    company = {
+                        "atlas_id": classification.digits,  # Temporary - will be real UUID with Identity Graph
+                        "country": "SK",
+                        "legal_name": result.name,
+                        "status": result.status,
+                        "street": result.address,
+                        "city": "",
+                        "postal_code": "",
+                        "source_api": "RUZ",
+                        "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                    }
+                    _enrich_company_from_ruz(company, result)
+                    company["raw_data"]["provider_latency_ms"] = latency
+                    company["raw_data"]["provider_ok"] = True
+                    logger.info(f"SK:RUZ fetch succeeded in {latency}ms")
+            except Exception as e:
+                latency = int((time.time() - t0) * 1000)
+                logger.error(f"SK:RUZ fetch failed in {latency}ms: {e}")
+                raise
         
         elif detected_country == "CZ":
             from ...services.ares_service import ARESService as AresService
             import httpx
             tried_providers.append("CZ:ARES")
-            async with httpx.AsyncClient() as client:
-                service = AresService(client)
-                result = await service.fetch_company(classification.digits)
-                company = {
-                    "atlas_id": classification.digits,
-                    "country": "CZ",
-                    "legal_name": result.name,
-                    "status": result.status,
-                    "street": result.address,
-                    "city": "",
-                    "postal_code": "",
-                    "source_api": "ARES",
-                    "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
-                }
+            t0 = time.time()
+            try:
+                async with httpx.AsyncClient() as client:
+                    service = AresService(client)
+                    result = await service.fetch_company(classification.digits)
+                    latency = int((time.time() - t0) * 1000)
+                    company = {
+                        "atlas_id": classification.digits,
+                        "country": "CZ",
+                        "legal_name": result.name,
+                        "status": result.status,
+                        "street": result.address,
+                        "city": "",
+                        "postal_code": "",
+                        "source_api": "ARES",
+                        "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                    }
+                    company["raw_data"]["provider_latency_ms"] = latency
+                    company["raw_data"]["provider_ok"] = True
+                    logger.info(f"CZ:ARES fetch succeeded in {latency}ms")
+            except Exception as e:
+                latency = int((time.time() - t0) * 1000)
+                logger.error(f"CZ:ARES fetch failed in {latency}ms: {e}")
+                raise
         
         elif detected_country == "PL":
+            t0 = time.time()
             try:
                 from ...services.krs_playwright_service import KRSPlaywrightService
                 tried_providers.append("PL:biznes.gov.pl")
                 service = KRSPlaywrightService()
                 result = await service.fetch_company(classification.digits)
+                latency = int((time.time() - t0) * 1000)
                 company = {
                     "atlas_id": classification.digits,
                     "country": "PL",
@@ -143,8 +169,12 @@ async def search_v4(
                     "source_api": "biznes.gov.pl",
                     "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
                 }
+                company["raw_data"]["provider_latency_ms"] = latency
+                company["raw_data"]["provider_ok"] = True
+                logger.info(f"PL:biznes.gov.pl fetch succeeded in {latency}ms")
             except Exception as e:
-                print(f"⚠️ PL scraper failed: {e}. Using fallback/mock data.")
+                latency = int((time.time() - t0) * 1000)
+                logger.warning(f"PL:biznes.gov.pl fetch failed in {latency}ms: {e}. Using fallback/mock data.")
                 company = {
                     "atlas_id": classification.digits,
                     "country": "PL",
@@ -156,11 +186,15 @@ async def search_v4(
                     "source_api": "PL Fallback",
                     "raw_data": {
                         "note": "Generated fallback data due to scraper failure",
-                        "nip": classification.digits if detected_type == "NIP" else "5260250995"
+                        "nip": classification.digits if detected_type == "NIP" else "5260250995",
+                        "provider_latency_ms": latency,
+                        "provider_ok": False,
+                        "provider_error": str(e)
                     },
                 }
         
         elif detected_country == "HU":
+            t0 = time.time()
             try:
                 from ...services.nav_playwright_service import NAVPlaywrightService
                 tried_providers.append("HU:companyregister.hu")
@@ -177,6 +211,7 @@ async def search_v4(
                         or classification.normalized
                     )
                 result = await service.fetch_company(lookup_value)
+                latency = int((time.time() - t0) * 1000)
                 company = {
                     "atlas_id": classification.digits,
                     "country": "HU",
@@ -188,8 +223,12 @@ async def search_v4(
                     "source_api": "companyregister.hu",
                     "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
                 }
+                company["raw_data"]["provider_latency_ms"] = latency
+                company["raw_data"]["provider_ok"] = True
+                logger.info(f"HU:companyregister.hu fetch succeeded in {latency}ms")
             except Exception as e:
-                print(f"⚠️ HU scraper failed: {e}. Using fallback/mock data.")
+                latency = int((time.time() - t0) * 1000)
+                logger.warning(f"HU:companyregister.hu fetch failed in {latency}ms: {e}. Using fallback/mock data.")
                 company = {
                     "atlas_id": classification.digits,
                     "country": "HU",
@@ -205,7 +244,10 @@ async def search_v4(
                             classification.formatted.get("adoszam")
                             if hasattr(classification, "formatted") and isinstance(classification.formatted, dict) and classification.formatted.get("adoszam")
                             else "14906428-2-06"
-                        )
+                        ),
+                        "provider_latency_ms": latency,
+                        "provider_ok": False,
+                        "provider_error": str(e)
                     },
                 }
         
@@ -215,10 +257,12 @@ async def search_v4(
                 from ...services.ruz_service import RuzService
                 import httpx
                 tried_providers.append("SK:RUZ")
+                t0 = time.time()
                 try:
                     async with httpx.AsyncClient() as client:
                         service = RuzService(client)
                         result = await service.fetch_company(classification.digits)
+                        latency = int((time.time() - t0) * 1000)
                         company = {
                             "atlas_id": classification.digits,
                             "country": "SK",
@@ -231,24 +275,39 @@ async def search_v4(
                             "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
                         }
                         _enrich_company_from_ruz(company, result)
-                except:
+                        company["raw_data"]["provider_latency_ms"] = latency
+                        company["raw_data"]["provider_ok"] = True
+                        logger.info(f"SK:RUZ collision fetch succeeded in {latency}ms")
+                except Exception as e_sk:
                     # Fallback to CZ
+                    latency_sk = int((time.time() - t0) * 1000)
+                    logger.warning(f"SK:RUZ collision fetch failed in {latency_sk}ms: {e_sk}. Falling back to CZ:ARES.")
                     from ...services.ares_service import ARESService as AresService
                     tried_providers.append("CZ:ARES")
-                    async with httpx.AsyncClient() as client:
-                        service = AresService(client)
-                        result = await service.fetch_company(classification.digits)
-                        company = {
-                            "atlas_id": classification.digits,
-                            "country": "CZ",
-                            "legal_name": result.name,
-                            "status": result.status,
-                            "street": result.address,
-                            "city": "",
-                            "postal_code": "",
-                            "source_api": "ARES",
-                            "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
-                        }
+                    t0_cz = time.time()
+                    try:
+                        async with httpx.AsyncClient() as client:
+                            service = AresService(client)
+                            result = await service.fetch_company(classification.digits)
+                            latency_cz = int((time.time() - t0_cz) * 1000)
+                            company = {
+                                "atlas_id": classification.digits,
+                                "country": "CZ",
+                                "legal_name": result.name,
+                                "status": result.status,
+                                "street": result.address,
+                                "city": "",
+                                "postal_code": "",
+                                "source_api": "ARES",
+                                "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                            }
+                            company["raw_data"]["provider_latency_ms"] = latency_cz
+                            company["raw_data"]["provider_ok"] = True
+                            logger.info(f"CZ:ARES fallback fetch succeeded in {latency_cz}ms")
+                    except Exception as e_cz:
+                        latency_cz = int((time.time() - t0_cz) * 1000)
+                        logger.error(f"CZ:ARES fallback fetch failed in {latency_cz}ms: {e_cz}")
+                        raise
             else:
                 raise HTTPException(status_code=400, detail=f"Cannot classify identifier: {raw_id}")
     
