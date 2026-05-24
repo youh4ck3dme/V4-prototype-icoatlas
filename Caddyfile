@@ -1,0 +1,24 @@
+{$PUBLIC_APP_DOMAIN} {
+  encode gzip zstd
+
+  header {
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    X-Frame-Options "DENY"
+    Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  }
+
+  reverse_proxy frontend:80
+}
+
+{$PUBLIC_API_DOMAIN} {
+  encode gzip zstd
+
+  header {
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    X-Frame-Options "DENY"
+  }
+
+  reverse_proxy backend:8000
+}
