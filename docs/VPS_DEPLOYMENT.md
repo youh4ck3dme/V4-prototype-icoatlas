@@ -90,25 +90,57 @@ git clone https://github.com/youh4ck3dme/V4-prototype-icoatlas.git /opt/icoatlas
 
 ## 4. Run Build & Startup
 
-Deploy using docker-compose:
+Deploy backend and frontend services using docker-compose (Caddy reverse proxy is managed at host-level to prevent port conflicts):
 
 ```bash
 cd /opt/icoatlas
 docker compose build --no-cache
-docker compose up -d
+docker compose up -d backend frontend
 docker compose ps
 ```
 
-Verify internal health checks:
+Verify internal health checks on custom ports:
 
 ```bash
-curl -fsS http://127.0.0.1:8000/health
-curl -fsS http://127.0.0.1:3000/health
+curl -fsS http://127.0.0.1:8005/health
+curl -fsS http://127.0.0.1:3005/health
 ```
 
 ---
 
-## 5. Deployment Scripts
+## 5. Host Caddy Routing Integration
+
+Since the VPS runs a global system-wide Caddy proxy on ports `80`/`443`, the domain routing is integrated directly into the host's `/etc/caddy/Caddyfile`.
+
+### Safe Update Protocol:
+1. Create a backup of the host Caddyfile:
+   ```bash
+   sudo cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile.bak.$(date +%Y%m%d-%H%M%S)
+   ```
+2. Open `/etc/caddy/Caddyfile` and append the following blocks at the end of the file:
+   ```caddyfile
+   icoatlas.sk {
+       encode zstd gzip
+       reverse_proxy 127.0.0.1:3005
+   }
+
+   api.icoatlas.sk {
+       encode zstd gzip
+       reverse_proxy 127.0.0.1:8005
+   }
+   ```
+3. Validate Caddy configuration:
+   ```bash
+   sudo caddy validate --config /etc/caddy/Caddyfile
+   ```
+4. Reload Caddy service:
+   ```bash
+   sudo systemctl reload caddy
+   ```
+
+---
+
+## 6. Deployment Scripts
 
 Automated deploy and backup scripts are available in the `./scripts` folder.
 
@@ -129,7 +161,7 @@ Add the following entry to run the backup every night at 2:00 AM:
 
 ---
 
-## 6. Rollback Protocol
+## 7. Rollback Protocol
 
 If the deployment has issues, perform a quick rollback:
 
@@ -138,5 +170,5 @@ cd /opt/icoatlas
 git log --oneline -5
 git checkout <previous-good-commit-hash>
 docker compose build
-docker compose up -d
+docker compose up -d backend frontend
 ```
