@@ -41,7 +41,7 @@ const CookiePolicy = () => {
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">
-                2. Typy cookies používaných na ILUMINATE SYSTEM
+                2. Typy cookies používaných na iCOAtlas
               </h2>
 
               <h3 className="text-xl font-semibold text-slate-800 mb-3">
@@ -106,7 +106,7 @@ const CookiePolicy = () => {
                 2.3. Marketingové cookies (Vyžadujú súhlas)
               </h3>
               <p className="text-slate-700 leading-relaxed mb-4">
-                V súčasnosti ILUMINATE SYSTEM nepoužíva marketingové cookies. V
+                V súčasnosti iCOAtlas nepoužíva marketingové cookies. V
                 budúcnosti môžeme používať:
               </p>
               <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4">
@@ -151,7 +151,7 @@ const CookiePolicy = () => {
                 4. Cookies tretích strán
               </h2>
               <p className="text-slate-700 leading-relaxed mb-4">
-                ILUMINATE SYSTEM používa služby tretích strán, ktoré môžu
+                iCOAtlas používa služby tretích strán, ktoré môžu
                 ukladať vlastné cookies:
               </p>
               <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4">

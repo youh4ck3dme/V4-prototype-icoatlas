@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
   return (
     <>
       <SEOHead
-        title="Ochrana súkromia | ILUMINATI SYSTEM"
+        title="Ochrana súkromia | iCOAtlas"
         description="Zásady ochrany súkromia a spracovania osobných údajov v súlade s GDPR."
       />
       <div className="min-h-screen bg-slate-50">
@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
                   1. Úvod
                 </h2>
                 <p className="text-slate-700 leading-relaxed">
-                  Tento dokument popisuje, ako ILUMINATE SYSTEM spracúva osobné
+                  Tento dokument popisuje, ako iCOAtlas spracúva osobné
                   údaje v súlade s Nariadením GDPR (General Data Protection
                   Regulation) a zákonmi o ochrane osobných údajov platnými v
                   krajinách V4.
@@ -73,7 +73,7 @@ const PrivacyPolicy = () => {
                   2.2. Subjekty v dátach (Osoby v grafoch)
                 </h3>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  ILUMINATE SYSTEM zobrazuje osobné údaje osôb (mená, adresy,
+                  iCOAtlas zobrazuje osobné údaje osôb (mená, adresy,
                   funkcie v spoločnostiach), ktoré sú
                   <strong> verejne dostupné</strong> v obchodných registroch
                   krajín V4. Tieto osoby sa <strong>neregistrujú</strong> na
@@ -108,7 +108,7 @@ const PrivacyPolicy = () => {
                   </ul>
                 </div>
                 <p className="text-slate-700 leading-relaxed">
-                  ILUMINATE SYSTEM spracúva tieto údaje, pretože sú{" "}
+                  iCOAtlas spracúva tieto údaje, pretože sú{" "}
                   <strong>verejne dostupné</strong> a ich zobrazenie slúži{" "}
                   <strong>legitímnemu záujmu</strong> na prevencii podvodov a
                   zvýšení transparentnosti. Tieto údaje nie sú získavané tajne,
@@ -185,7 +185,7 @@ const PrivacyPolicy = () => {
                     </ol>
                     <p className="text-amber-800 text-xs mt-2 italic">
                       Poznámka: Vzhľadom na to, že údaje sú verejne dostupné v
-                      obchodných registroch, výmaz z ILUMINATI SYSTEM nezabráni
+                      obchodných registroch, výmaz z iCOAtlas nezabráni
                       ich zobrazeniu v pôvodných registroch. Pre úplné
                       odstránenie kontaktujte príslušný obchodný register.
                     </p>
@@ -207,7 +207,7 @@ const PrivacyPolicy = () => {
                     <strong>Osoby v dátach:</strong> Údaje sa uchovávajú počas
                     trvania zverejnenia v zdrojovom registri. Ak sa údaj
                     odstráni z oficiálneho registra, odstránime ho aj z
-                    ILUMINATE SYSTEM do 30 dní.
+                    iCOAtlas do 30 dní.
                   </li>
                   <li>
                     <strong>Cache dát:</strong> Dáta z externých API sa cachujú
@@ -221,7 +221,7 @@ const PrivacyPolicy = () => {
                   6. Zdieľanie údajov s tretími stranami
                 </h2>
                 <p className="text-slate-700 leading-relaxed mb-4">
-                  ILUMINATE SYSTEM nezdieľa osobné údaje s tretími stranami,
+                  iCOAtlas nezdieľa osobné údaje s tretími stranami,
                   okrem:
                 </p>
                 <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4">
@@ -250,7 +250,7 @@ const PrivacyPolicy = () => {
                   7. Bezpečnosť
                 </h2>
                 <p className="text-slate-700 leading-relaxed">
-                  ILUMINATE SYSTEM používa moderné bezpečnostné opatrenia:
+                  iCOAtlas používa moderné bezpečnostné opatrenia:
                   šifrovanie dát v prenose (HTTPS), šifrovanie v pokoji,
                   pravidelné bezpečnostné audity, prístup len pre autorizovaný
                   personál.

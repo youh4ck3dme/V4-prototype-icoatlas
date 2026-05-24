@@ -77,9 +77,9 @@ const Disclaimer = ({
           {showFullText ? (
             <div className="text-amber-800 text-sm leading-relaxed space-y-2">
               <p>
-                Dáta zobrazené na portáli ILUMINATI SYSTEM sú agregované z verejných zdrojov 
+                Dáta zobrazené na portáli iCOAtlas sú agregované z verejných zdrojov 
                 (Obchodné registre, Finančné správy V4) automatizovaným spôsobom. 
-                ILUMINATI SYSTEM nevytvára tieto dáta a nenesie zodpovednosť za ich aktuálnosť, 
+                iCOAtlas nevytvára tieto dáta a nenesie zodpovednosť za ich aktuálnosť, 
                 správnosť či úplnosť.
               </p>
               <p>

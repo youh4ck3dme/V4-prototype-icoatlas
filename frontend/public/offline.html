@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - ILUMINATI SYSTEM</title>
+    <title>Offline - iCOAtlas</title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,8 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0B4EA2 0%, #1a1a2e 100%);
-            color: white;
+            background: #f8fafc;
+            color: #1e293b;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -25,13 +25,18 @@
         .container {
             text-align: center;
             max-width: 600px;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px 0 rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
         
         .logo {
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            background: linear-gradient(135deg, #0B4EA2 0%, #EE1C25 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -40,20 +45,20 @@
         .icon {
             font-size: 5rem;
             margin-bottom: 2rem;
-            opacity: 0.8;
+            opacity: 0.9;
         }
         
         h1 {
             font-size: 2rem;
             margin-bottom: 1rem;
-            color: #FFD700;
+            color: #0B4EA2;
         }
         
         p {
             font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 2rem;
-            opacity: 0.9;
+            color: #475569;
         }
         
         .actions {
@@ -78,36 +83,39 @@
         button:hover {
             background: #c4161e;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(238, 28, 37, 0.4);
+            box-shadow: 0 4px 12px rgba(238, 28, 37, 0.2);
         }
         
         button.secondary {
             background: transparent;
-            border: 2px solid #FFD700;
-            color: #FFD700;
+            border: 2px solid #0B4EA2;
+            color: #0B4EA2;
         }
         
         button.secondary:hover {
-            background: #FFD700;
-            color: #0B4EA2;
+            background: #0B4EA2;
+            color: white;
         }
         
         .status {
             margin-top: 2rem;
             padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(11, 78, 162, 0.05);
+            border: 1px solid rgba(11, 78, 162, 0.1);
             border-radius: 8px;
             font-size: 0.9rem;
+            color: #475569;
         }
         
         .status.online {
-            background: rgba(0, 255, 0, 0.2);
+            background: rgba(0, 255, 0, 0.05);
+            border-color: rgba(0, 255, 0, 0.2);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">ILUMINATI SYSTEM</div>
+        <div class="logo">iCOAtlas</div>
         <div class="icon">📡</div>
         <h1>Ste offline</h1>
         <p>
@@ -128,7 +136,7 @@
         function updateStatus() {
             const statusEl = document.getElementById('status');
             if (navigator.onLine) {
-                statusEl.innerHTML = '<div style="color: #4ade80;">✅ Pripojenie obnovené! Obnovte stránku.</div>';
+                statusEl.innerHTML = '<div style="color: #16a34a; font-weight: 600;">✅ Pripojenie obnovené! Obnovte stránku.</div>';
                 statusEl.classList.add('online');
                 setTimeout(() => {
                     window.location.href = '/';

@@ -34,7 +34,7 @@ import {
   Share,
   Crown,
 } from "lucide-react";
-import IluminatiLogo from "../components/IluminatiLogo";
+import IcoAtlasLogo from "../components/IcoAtlasLogo";
 import ForceGraph from "../components/ForceGraph";
 import IntelligenceBrief from "../components/IntelligenceBrief";
 import Disclaimer from "../components/Disclaimer";
@@ -56,14 +56,16 @@ import SEOHead from "../components/SEOHead";
 import { API_URL, ENDPOINTS } from "../config/api";
 
 /**
- * ILUMINATI SYSTEM v5.0 - SLOVAK ENTERPRISE EDITION
+ * iCOAtlas v5.0 - SLOVAK ENTERPRISE EDITION
  * Theme: Corporate / Government / Official
  * Colors: White, Slovak Blue (#0B4EA2), Slovak Red (#EE1C25)
  */
 
 export default function HomePageNew() {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  // Locked to light theme as requested
+  const theme = "light";
+  const toggleTheme = () => {};
   const { isAuthenticated, user, token } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -333,13 +335,13 @@ export default function HomePageNew() {
   }, [data, isAuthenticated, mainCompany, query, token]);
 
   return (
-    <div className="min-h-screen bg-[#020617] font-sans text-slate-100 overflow-x-hidden relative">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 overflow-x-hidden relative">
       <div className="aether-bg"></div>
       <SEOHead
         title={
           showResults && data
-            ? `Analýza: ${query} | ILUMINATI SYSTEM`
-            : "ILUMINATI SYSTEM - Transparentnosť pre slovenské podnikanie"
+            ? `Analýza: ${query} | iCOAtlas`
+            : "iCOAtlas - Transparentnosť pre slovenské podnikanie"
         }
         description={
           showResults && data
@@ -359,7 +361,7 @@ export default function HomePageNew() {
       `}</style>
 
       {/* --- NAVBAR --- */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div
             className="flex items-center gap-3 group cursor-pointer"
@@ -369,11 +371,11 @@ export default function HomePageNew() {
               window.scrollTo(0, 0);
             }}
           >
-            <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-2 rounded-lg shadow-lg group-hover:shadow-blue-500/20 transition-all">
-              <IluminatiLogo size={28} />
+            <div className="bg-[#0B4EA2] p-2 rounded-lg shadow-sm transition-all">
+              <IcoAtlasLogo size={28} className="text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white font-heading">
-              ILUMINATI <span className="text-blue-400 font-light">SYSTEM</span>
+            <span className="text-xl font-bold tracking-tight text-slate-800 font-heading">
+              iCO<span className="text-[#0B4EA2] font-semibold">Atlas</span>
             </span>
           </div>
 
@@ -392,17 +394,6 @@ export default function HomePageNew() {
               label="Legislatíva & Compliance"
               onClick={() => navigate("/vop")}
             />
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-              title={
-                theme === "dark"
-                  ? "Prepnúť na svetlý režim"
-                  : "Prepnúť na tmavý režim"
-              }
-            >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
             {isAuthenticated ? (
               <button
                 className="px-6 py-2.5 slovak-blue-bg text-white hover:bg-blue-800 transition-colors font-medium text-sm rounded-md shadow-sm flex items-center gap-2"
@@ -473,31 +464,31 @@ export default function HomePageNew() {
             {/* Hero Section */}
             <div className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6">
               <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-6 animate-pulse-slow">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider mb-6">
                   <Sparkles size={12} />
                   <span>Next-Gen Corporate Intelligence</span>
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-[1.1] font-heading tracking-tight">
-                  Nexus{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-200">
-                    Visual Intelligence
+                <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-8 leading-[1.1] font-heading tracking-tight">
+                  iCO{" "}
+                  <span className="text-[#0B4EA2]">
+                    Atlas
                   </span>
                 </h1>
 
-                <p className="text-lg md:text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-lg md:text-xl text-slate-600 mb-12 max-w-2xl mx-auto leading-relaxed">
                   Analyze cross-border relationships, detect high-risk patterns,
                   and reveal hidden ownership structures in the V4 region.
                 </p>
 
-                <div className="glass-card p-2 md:p-3 max-w-3xl mx-auto shadow-2xl shadow-blue-500/10">
+                <div className="bg-white p-2 md:p-3 max-w-3xl mx-auto rounded-2xl border border-slate-200 shadow-xl">
                   <form
                     onSubmit={handleSearch}
                     className="flex flex-col md:flex-row gap-2"
                   >
                     <div className="md:w-32">
                         <select
-                          className="w-full h-full bg-white/5 border border-white/10 rounded-xl py-4 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer font-bold text-center"
+                          className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 appearance-none cursor-pointer font-bold text-center"
                           value={filters.country}
                           onChange={(e) => setFilters({...filters, country: e.target.value})}
                         >
@@ -509,12 +500,12 @@ export default function HomePageNew() {
                       </div>
                     <div className="flex-grow relative group">
                       <Search
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-400 transition-colors"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-700 transition-colors"
                         size={20}
                       />
                       <input
                         type="text"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium text-lg"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 focus:border-[#0B4EA2] transition-all font-medium text-lg"
                         placeholder="Insert IČO, ID or Company Name..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
@@ -528,21 +519,21 @@ export default function HomePageNew() {
                         </div>
                       )}
                       {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-50 w-full mt-2 bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl max-h-80 overflow-y-auto text-left">
+                        <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto text-left">
                           {suggestions.map((sug, idx) => (
                             <div 
                               key={idx} 
-                              className="px-4 py-3 hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0"
+                              className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0"
                               onClick={() => {
                                 setQuery(sug.id);
                                 setShowSuggestions(false);
                               }}
                             >
                               <div className="flex justify-between items-center">
-                                <span className="font-bold text-white">{sug.name}</span>
-                                <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">{sug.id}</span>
+                                <span className="font-bold text-slate-800">{sug.name}</span>
+                                <span className="text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded">{sug.id}</span>
                               </div>
-                              <div className="text-sm text-slate-400 mt-1">{sug.address}</div>
+                              <div className="text-sm text-slate-500 mt-1">{sug.address}</div>
                             </div>
                           ))}
                         </div>
@@ -551,7 +542,7 @@ export default function HomePageNew() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
+                      className="bg-[#0B4EA2] hover:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-md active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
                     >
                       {loading ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -572,7 +563,7 @@ export default function HomePageNew() {
                 <div className="mt-8 flex flex-col items-center">
                   <button
                     onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                    className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+                    className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
                   >
                     <Filter size={16} />
                     <span>Advanced Search Filters</span>
@@ -584,14 +575,14 @@ export default function HomePageNew() {
                   </button>
 
                   {showAdvancedFilters && (
-                    <div className="mt-6 w-full max-w-3xl glass-card p-6 animate-fade-in text-left">
+                    <div className="mt-6 w-full max-w-3xl bg-white border border-slate-200 p-6 rounded-2xl shadow-lg animate-fade-in text-left">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                             Country
                           </label>
                           <select
-                            className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#0B4EA2]/30 outline-none transition-all"
                             value={filters.country}
                             onChange={(e) =>
                               setFilters({
@@ -608,12 +599,12 @@ export default function HomePageNew() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                             Min Risk
                           </label>
                           <input
                             type="number"
-                            className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500/50 outline-none"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#0B4EA2]/30 outline-none"
                             value={filters.minRiskScore}
                             onChange={(e) =>
                               setFilters({
@@ -624,12 +615,12 @@ export default function HomePageNew() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                             Max Risk
                           </label>
                           <input
                             type="number"
-                            className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500/50 outline-none"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#0B4EA2]/30 outline-none"
                             value={filters.maxRiskScore}
                             onChange={(e) =>
                               setFilters({
@@ -661,7 +652,7 @@ export default function HomePageNew() {
                 />
                 <FeatureCard
                   icon={<FileCheck className="text-emerald-400" />}
-                  title="Aether Analysis"
+                  title="iCOAtlas Analýza"
                   desc="Pixel-perfect relationship visualization with intelligent story generation."
                 />
               </div>
@@ -673,15 +664,15 @@ export default function HomePageNew() {
             id="results-section"
             className="w-full max-w-7xl mx-auto px-6 pb-20 animate-fade-in"
           >
-            <div className="flex items-center gap-2 text-sm text-slate-400 mb-8 pt-6">
+            <div className="flex items-center gap-2 text-sm text-slate-500 mb-8 pt-6">
               <span
-                className="cursor-pointer hover:text-blue-400 transition-colors"
+                className="cursor-pointer hover:text-[#0B4EA2] transition-colors"
                 onClick={() => setShowResults(false)}
               >
                 Home
               </span>
               <ChevronRight size={14} />
-              <span className="text-white font-medium">
+              <span className="text-slate-800 font-medium">
                 Entity Intelligence
               </span>
             </div>
@@ -691,14 +682,14 @@ export default function HomePageNew() {
               <div className="lg:col-span-4 flex flex-col gap-6">
                 {/* Entity Stats Card */}
                 <div
-                  className="glass-card p-8 border-t-4"
+                  className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm border-t-4"
                   style={{
                     borderTopColor:
                       riskStatus.color === "red"
                         ? "#ef4444"
                         : riskStatus.color === "orange"
                         ? "#f59e0b"
-                        : "#3b82f6",
+                        : "#0B4EA2",
                   }}
                 >
                   <div className="flex justify-between items-start mb-6">
@@ -706,19 +697,19 @@ export default function HomePageNew() {
                       <span
                         className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-2 ${
                           riskStatus.color === "red"
-                            ? "bg-red-500/20 text-red-400"
+                            ? "bg-red-50 border border-red-200 text-red-700"
                             : riskStatus.color === "orange"
-                            ? "bg-orange-500/20 text-orange-400"
-                            : "bg-blue-500/20 text-blue-400"
+                            ? "bg-amber-50 border border-amber-200 text-amber-700"
+                            : "bg-blue-50 border border-blue-200 text-[#0B4EA2]"
                         }`}
                       >
                         {riskStatus.text} Risk
                       </span>
-                      <h2 className="text-2xl font-bold text-white tracking-tight">
+                      <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
                         {mainCompany?.label || "Unknown Entity"}
                       </h2>
                       {mainCompany?.ico && (
-                        <p className="text-sm text-slate-400 mt-1">
+                        <p className="text-sm text-slate-500 mt-1">
                           ICO: {mainCompany.ico}
                         </p>
                       )}
@@ -726,17 +717,17 @@ export default function HomePageNew() {
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-bold text-lg ${
                         riskStatus.color === "red"
-                          ? "border-red-500/40 text-red-500 bg-red-500/10"
+                          ? "border-red-500/40 text-red-700 bg-red-50"
                           : riskStatus.color === "orange"
-                          ? "border-orange-500/40 text-orange-500 bg-orange-500/10"
-                          : "border-blue-500/40 text-blue-500 bg-blue-500/10"
+                          ? "border-orange-500/40 text-amber-700 bg-amber-50"
+                          : "border-blue-500/40 text-[#0B4EA2] bg-blue-50"
                       }`}
                     >
                       {riskScore}
                     </div>
                   </div>
 
-                  <div className="space-y-4 py-6 border-y border-white/5 text-sm">
+                  <div className="space-y-4 py-6 border-y border-slate-100 text-sm">
                     <DataRow
                       label="Country"
                       value={mainCompany?.country || "N/A"}
@@ -759,7 +750,7 @@ export default function HomePageNew() {
                         label="IČ DPH"
                         value={
                           mainCompany.vat_status === "restricted" ? (
-                            <span className="text-amber-400 font-semibold flex items-center gap-1">
+                            <span className="text-amber-700 font-semibold flex items-center gap-1">
                               {mainCompany.vatin} (Obmedzená reg. §7/7a)
                             </span>
                           ) : (
@@ -800,15 +791,15 @@ export default function HomePageNew() {
                   </div>
 
                   {mainCompany?.risk_factors?.length > 0 && (
-                    <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                      <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <div className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200">
+                      <h4 className="text-xs font-bold text-red-700 uppercase tracking-widest mb-3 flex items-center gap-2">
                         <ShieldAlert size={14} /> Critical Risk Factors
                       </h4>
                       <ul className="space-y-2">
                         {mainCompany.risk_factors.map((factor, idx) => (
                           <li
                             key={idx}
-                            className="text-xs text-slate-300 flex items-start gap-2"
+                            className="text-xs text-slate-700 flex items-start gap-2"
                           >
                             <span className="w-1 h-1 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
                             {factor}
@@ -820,18 +811,18 @@ export default function HomePageNew() {
 
                   {/* Debts Section */}
                   {mainCompany?.raw_data?.debts && mainCompany.raw_data.debts.length > 0 && (
-                    <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                      <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <div className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200">
+                      <h4 className="text-xs font-bold text-red-700 uppercase tracking-widest mb-3 flex items-center gap-2">
                         <AlertTriangle size={14} /> Záväzky voči štátu
                       </h4>
                       <div className="space-y-3">
                         {mainCompany.raw_data.debts.map((debt, idx) => (
-                          <div key={idx} className="flex justify-between items-center text-sm border-b border-red-500/10 pb-2 last:border-0 last:pb-0">
+                          <div key={idx} className="flex justify-between items-center text-sm border-b border-red-100 pb-2 last:border-0 last:pb-0">
                             <div className="flex flex-col">
-                              <span className="text-slate-200 font-medium">{debt.institution}</span>
-                              <span className="text-slate-400 text-xs">Evidované k: {debt.published_on}</span>
+                              <span className="text-slate-800 font-medium">{debt.institution}</span>
+                              <span className="text-slate-500 text-xs">Evidované k: {debt.published_on}</span>
                             </div>
-                            <span className="text-red-400 font-bold text-lg">{Number(debt.amount).toFixed(2)} €</span>
+                            <span className="text-red-700 font-bold text-lg">{Number(debt.amount).toFixed(2)} €</span>
                           </div>
                         ))}
                       </div>
@@ -840,43 +831,43 @@ export default function HomePageNew() {
 
                   {/* Štatutárny orgán (Executives) */}
                   {mainCompany?.executives && mainCompany.executives.length > 0 && (
-                    <div className="mt-6 p-5 rounded-xl bg-blue-500/5 border border-blue-500/10 shadow-lg">
-                      <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <div className="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200 shadow-sm">
+                      <h4 className="text-xs font-bold text-[#0B4EA2] uppercase tracking-wider mb-4 flex items-center gap-2">
                         <Users size={16} /> Štatutárny orgán
                       </h4>
                       <div className="space-y-4">
                         {mainCompany.executives.map((exec, idx) => (
-                          <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                          <div key={idx} className="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
                             <div className="flex justify-between items-start">
-                              <span className="font-semibold text-white text-sm">{exec.name}</span>
+                              <span className="font-semibold text-slate-800 text-sm">{exec.name}</span>
                               {exec.role && (
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#0B4EA2] border border-blue-100">
                                   {exec.role}
                                 </span>
                               )}
                             </div>
                             {exec.potential_nominee && (
-                              <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/25 text-amber-400 border border-amber-500/30">
+                              <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                                 ⚠️ Možný biely kôň (zahraničná adresa)
                               </div>
                             )}
                             {exec.address && (
                               <div className="mt-1.5">
-                                <p className="text-xs text-slate-400 leading-relaxed">
+                                <p className="text-xs text-slate-500 leading-relaxed">
                                   {exec.address}
                                 </p>
                                 <a
                                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(exec.address)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[10px] text-blue-400 hover:text-blue-300 hover:underline mt-0.5 inline-block"
+                                  className="text-[10px] text-[#0B4EA2] hover:underline mt-0.5 inline-block"
                                 >
                                   Zobraziť na Google Maps
                                 </a>
                               </div>
                             )}
                             {exec.since && (
-                              <p className="text-[10px] text-slate-500 mt-1 font-mono">
+                              <p className="text-[10px] text-slate-400 mt-1 font-mono">
                                 Vznik funkcie: {exec.since}
                               </p>
                             )}
@@ -888,23 +879,23 @@ export default function HomePageNew() {
 
                   {/* Spoločníci / Vlastníci (Owners) */}
                   {mainCompany?.owners && mainCompany.owners.length > 0 && (
-                    <div className="mt-6 p-5 rounded-xl bg-indigo-500/5 border border-indigo-500/10 shadow-lg">
-                      <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <div className="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200 shadow-sm">
+                      <h4 className="text-xs font-bold text-indigo-800 uppercase tracking-wider mb-4 flex items-center gap-2">
                         <Building2 size={16} /> Spoločníci a vlastné imanie
                       </h4>
                       <div className="space-y-4">
                         {mainCompany.owners.map((owner, idx) => (
-                          <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                          <div key={idx} className="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
                             <div className="flex flex-col gap-1">
-                              <span className="font-semibold text-white text-sm">{owner.name}</span>
+                              <span className="font-semibold text-slate-800 text-sm">{owner.name}</span>
                               {owner.share && (
-                                <span className="text-xs font-semibold text-emerald-400">
+                                <span className="text-xs font-semibold text-emerald-700">
                                   {owner.share}
                                 </span>
                               )}
                             </div>
                             {owner.address && (
-                              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                              <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
                                 {owner.address}
                               </p>
                             )}
@@ -916,26 +907,26 @@ export default function HomePageNew() {
 
                   {/* Koneční užívatelia výhod (RPVS / UBOs) */}
                   {mainCompany?.ubos && mainCompany.ubos.length > 0 && (
-                    <div className="mt-6 p-5 rounded-xl bg-yellow-500/5 border border-yellow-500/10 shadow-lg animate-fade-in">
-                      <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <Crown size={16} className="text-yellow-400" /> Koneční užívatelia výhod (RPVS)
+                    <div className="mt-6 p-5 rounded-xl bg-amber-50/50 border border-amber-200 shadow-sm animate-fade-in">
+                      <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Crown size={16} className="text-amber-600" /> Koneční užívatelia výhod (RPVS)
                       </h4>
                       <div className="space-y-4">
                         {mainCompany.ubos.map((ubo, idx) => (
-                          <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                          <div key={idx} className="border-b border-amber-100 pb-3 last:border-0 last:pb-0">
                             <div className="flex justify-between items-start">
-                              <span className="font-semibold text-white text-sm">{ubo.formatted_name}</span>
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                              <span className="font-semibold text-slate-800 text-sm">{ubo.formatted_name}</span>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-850 border border-amber-200">
                                 UBO
                               </span>
                             </div>
                             {ubo.share && (
-                              <p className="text-xs font-semibold text-emerald-400 mt-1">
+                              <p className="text-xs font-semibold text-emerald-700 mt-1">
                                 {ubo.share}
                               </p>
                             )}
                             {ubo.address && (
-                              <p className="text-xs text-slate-400 mt-1">
+                              <p className="text-xs text-slate-500 mt-1">
                                 {ubo.address}
                               </p>
                             )}
@@ -947,15 +938,15 @@ export default function HomePageNew() {
 
                   {/* Predmety podnikania (Activities) */}
                   {mainCompany?.activities && mainCompany.activities.length > 0 && (
-                    <div className="mt-6 p-5 rounded-xl bg-slate-800/20 border border-white/5 shadow-lg">
-                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <div className="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200 shadow-sm">
+                      <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-4 flex items-center gap-2">
                         <Activity size={16} /> Predmety podnikania
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {mainCompany.activities.map((act, idx) => (
                           <span 
                             key={idx} 
-                            className="bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg text-xs text-slate-300 transition-all cursor-default leading-normal"
+                            className="bg-white hover:bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs text-slate-750 transition-all cursor-default leading-normal"
                           >
                             {act}
                           </span>
@@ -965,15 +956,15 @@ export default function HomePageNew() {
                   )}
                   {/* Financials Section (Phase 17) */}
                   {mainCompany?.raw_data?.financials && (
-                    <div className="mt-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-                      <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <div className="mt-6 p-4 rounded-xl bg-emerald-50/70 border border-emerald-200">
+                      <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-3 flex items-center gap-2">
                         <Activity size={14} /> Financial Data (
                         {mainCompany.raw_data.financials.year || "Latest"})
                       </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-slate-500">Revenue</span>
-                          <span className="text-slate-200 font-medium">
+                          <span className="text-slate-800 font-medium">
                             {mainCompany.raw_data.financials.revenue || "N/A"}
                           </span>
                         </div>
@@ -984,8 +975,8 @@ export default function HomePageNew() {
                               (
                                 mainCompany.raw_data.financials.profit || ""
                               ).startsWith("-")
-                                ? "text-red-400"
-                                : "text-emerald-400"
+                                ? "text-red-700"
+                                : "text-emerald-750 font-bold"
                             }`}
                           >
                             {mainCompany.raw_data.financials.profit || "N/A"}
@@ -1058,20 +1049,20 @@ export default function HomePageNew() {
                       disabled={favoriteLoading}
                       className={`mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${
                         isFavorite
-                          ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/30"
-                          : "bg-white/5 text-white border border-white/10 hover:bg-white/10"
+                          ? "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100"
+                          : "bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200"
                       }`}
                     >
                       {favoriteLoading ? (
                         <Loader2 size={18} className="animate-spin" />
                       ) : isFavorite ? (
                         <>
-                          <Star size={18} className="fill-yellow-500" /> Saved
-                          to Nexus
+                          <Star size={18} className="fill-yellow-500 text-yellow-500" /> Saved
+                          to iCOAtlas
                         </>
                       ) : (
                         <>
-                          <Star size={18} /> Add to Nexus
+                          <Star size={18} /> Add to iCOAtlas
                         </>
                       )}
                     </button>
@@ -1080,11 +1071,11 @@ export default function HomePageNew() {
 
                 {/* Summary Card */}
                 {mainCompany?.details && (
-                  <div className="glass-card p-6 bg-blue-500/5 border-blue-500/10">
-                    <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">
-                      Aether Summary
+                  <div className="bg-blue-50 border border-blue-100 p-6 rounded-2xl shadow-sm">
+                    <h4 className="text-xs font-bold text-blue-800 uppercase tracking-widest mb-3">
+                      iCOAtlas Súhrn
                     </h4>
-                    <p className="text-sm text-slate-300 leading-relaxed">
+                    <p className="text-sm text-slate-700 leading-relaxed">
                       {mainCompany.details}
                     </p>
                   </div>
@@ -1093,16 +1084,16 @@ export default function HomePageNew() {
 
               {/* Graph Panel */}
               <div className="lg:col-span-8 flex flex-col gap-6">
-                <div className="glass-card flex-grow overflow-hidden relative flex flex-col">
-                  <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-white uppercase tracking-wider text-xs">
-                      <Share size={16} className="text-blue-400" />{" "}
+                <div className="bg-white border border-slate-200 rounded-2xl flex-grow overflow-hidden relative flex flex-col">
+                  <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-bold text-slate-800 uppercase tracking-wider text-xs">
+                      <Share size={16} className="text-[#0B4EA2]" />{" "}
                       Relationship Visualization
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => exportToCSV(data)}
-                        className="text-[10px] uppercase font-bold bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all"
+                        className="text-[10px] uppercase font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all"
                       >
                         CSV
                       </button>
@@ -1110,13 +1101,13 @@ export default function HomePageNew() {
                         onClick={() => {
                           /* PNG logic handled in watermarking block below */
                         }}
-                        className="text-[10px] uppercase font-bold bg-blue-600 border border-blue-500 px-3 py-1.5 rounded-lg text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+                        className="text-[10px] uppercase font-bold bg-[#0B4EA2] border border-[#0B4EA2] px-3 py-1.5 rounded-lg text-white hover:bg-blue-800 transition-all shadow-sm"
                       >
                         Export PNG
                       </button>
                     </div>
                   </div>
-                  <div className="flex-grow bg-black/20 p-4 relative flex flex-col md:flex-row gap-4">
+                  <div className="flex-grow bg-slate-50/50 p-4 relative flex flex-col md:flex-row gap-4">
                     <div className="flex-grow relative">
                       <ForceGraph data={data} />
                     </div>
@@ -1137,57 +1128,57 @@ export default function HomePageNew() {
       </main>
 
       {/* --- FOOTER --- */}
-      <footer className="bg-slate-900 text-slate-400 py-12 text-sm border-t border-slate-800 mt-auto">
+      <footer className="bg-slate-100 text-slate-600 py-12 text-sm border-t border-slate-200 mt-auto">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-2 text-white font-bold mb-4 font-heading">
-              <IluminatiLogo size={24} /> ILUMINATI
+            <div className="flex items-center gap-2 text-slate-800 font-bold mb-4 font-heading">
+              <IcoAtlasLogo size={24} /> iCOAtlas
             </div>
             <p className="mb-4">
               Profesionálny nástroj pre overovanie obchodných partnerov.
             </p>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-4">Produkt</h4>
+            <h4 className="text-slate-800 font-bold mb-4">Produkt</h4>
             <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer">Funkcie</li>
-              <li className="hover:text-white cursor-pointer">
+              <li className="hover:text-slate-950 cursor-pointer">Funkcie</li>
+              <li className="hover:text-slate-950 cursor-pointer">
                 API Integrácia
               </li>
-              <li className="hover:text-white cursor-pointer">Cenník</li>
+              <li className="hover:text-slate-950 cursor-pointer">Cenník</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-4">Spoločnosť</h4>
+            <h4 className="text-slate-800 font-bold mb-4">Spoločnosť</h4>
             <ul className="space-y-2">
-              <li className="hover:text-white cursor-pointer">O nás</li>
-              <li className="hover:text-white cursor-pointer">Kariéra</li>
-              <li className="hover:text-white cursor-pointer">Kontakt</li>
+              <li className="hover:text-slate-950 cursor-pointer">O nás</li>
+              <li className="hover:text-slate-950 cursor-pointer">Kariéra</li>
+              <li className="hover:text-slate-950 cursor-pointer">Kontakt</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-4">Legislatíva</h4>
+            <h4 className="text-slate-800 font-bold mb-4">Legislatíva</h4>
             <ul className="space-y-2">
               <li
-                className="hover:text-white cursor-pointer"
+                className="hover:text-slate-950 cursor-pointer"
                 onClick={() => navigate("/vop")}
               >
                 VOP
               </li>
               <li
-                className="hover:text-white cursor-pointer"
+                className="hover:text-slate-950 cursor-pointer"
                 onClick={() => navigate("/privacy")}
               >
                 Ochrana údajov
               </li>
               <li
-                className="hover:text-white cursor-pointer"
+                className="hover:text-slate-950 cursor-pointer"
                 onClick={() => navigate("/disclaimer")}
               >
                 Disclaimer
               </li>
               <li
-                className="hover:text-white cursor-pointer"
+                className="hover:text-slate-950 cursor-pointer"
                 onClick={() => navigate("/cookies")}
               >
                 Cookies
@@ -1197,12 +1188,12 @@ export default function HomePageNew() {
         </div>
 
         {/* Disclaimer s zdrojmi dát */}
-        <div className="border-t border-slate-700 mt-8 pt-6">
-          <div className="bg-slate-800/50 rounded-lg p-4 border-l-4 border-amber-500">
+        <div className="border-t border-slate-200 mt-8 pt-6">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 border-l-4 border-amber-500">
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <svg
-                  className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+                  className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -1215,10 +1206,10 @@ export default function HomePageNew() {
                   />
                 </svg>
                 <div className="flex-1">
-                  <p className="text-amber-400 font-semibold text-sm mb-2">
+                  <p className="text-amber-700 font-semibold text-sm mb-2">
                     Dôležité upozornenie
                   </p>
-                  <p className="text-slate-300 text-xs leading-relaxed">
+                  <p className="text-slate-700 text-xs leading-relaxed">
                     Dáta majú len informatívny charakter. Poskytovateľ
                     negarantuje správnosť dát. Pre oficiálne informácie použite
                     pôvodné zdroje.
@@ -1226,10 +1217,10 @@ export default function HomePageNew() {
                 </div>
               </div>
               <div className="pl-8">
-                <p className="text-amber-400 font-semibold text-xs mb-2">
+                <p className="text-amber-700 font-semibold text-xs mb-2">
                   Zdroj dát:
                 </p>
-                <ul className="space-y-1 text-xs text-slate-400">
+                <ul className="space-y-1 text-xs text-slate-500">
                   <li>
                     <a
                       href="https://www.orsr.sk"
@@ -1327,10 +1318,10 @@ function FeatureCard({ icon, title, desc }) {
   );
 }
 
-function DataRow({ label, value, valueClass = "text-white font-medium text-right" }) {
+function DataRow({ label, value, valueClass = "text-slate-800 font-medium text-right" }) {
   return (
-    <div className="flex justify-between items-start py-2 border-b border-white/5 last:border-0 gap-4">
-      <span className="text-slate-400 text-xs uppercase tracking-wider whitespace-nowrap pt-0.5">{label}</span>
+    <div className="flex justify-between items-start py-2 border-b border-slate-100 last:border-0 gap-4">
+      <span className="text-slate-500 text-xs uppercase tracking-wider whitespace-nowrap pt-0.5">{label}</span>
       <span className={valueClass}>{value}</span>
     </div>
   );

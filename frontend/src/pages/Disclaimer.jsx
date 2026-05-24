@@ -22,8 +22,8 @@ const DisclaimerPage = () => {
           <div className="prose prose-slate max-w-none">
             <div className="bg-amber-50 border-l-4 border-amber-400 p-6 mb-8">
               <p className="text-amber-900 font-semibold text-lg leading-relaxed">
-                Dáta zobrazené na portáli ILUMINATE SYSTEM sú agregované z verejných zdrojov 
-                (Obchodné registre, Finančné správy V4) automatizovaným spôsobom. ILUMINATE SYSTEM nevytvára tieto 
+                Dáta zobrazené na portáli iCOAtlas sú agregované z verejných zdrojov 
+                (Obchodné registre, Finančné správy V4) automatizovaným spôsobom. iCOAtlas nevytvára tieto 
                 dáta a nenesie zodpovednosť za ich aktuálnosť, správnosť či úplnosť. Informácie slúžia 
                 výhradne na podporu rozhodovania (business intelligence) a nenahrádzajú oficiálne právne 
                 úkony alebo úradné výpisy. Rizikové skóre je výsledkom štatistického modelu, nie obvinením 
@@ -35,7 +35,7 @@ const DisclaimerPage = () => {
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">1. Povaha dát</h2>
               <p className="text-slate-700 leading-relaxed">
                 Všetky dáta zobrazené na Platforme sú získavané z oficiálnych, verejne dostupných 
-                zdrojov. ILUMINATE SYSTEM funguje ako agregátor a vizualizátor týchto dát, nie ako ich tvorca. 
+                zdrojov. iCOAtlas funguje ako agregátor a vizualizátor týchto dát, nie ako ich tvorca. 
                 Dáta môžu obsahovať chyby, ktoré vznikli už v zdrojových systémoch (štátne registry).
               </p>
             </section>
@@ -43,7 +43,7 @@ const DisclaimerPage = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">2. Aktuálnosť dát</h2>
               <p className="text-slate-700 leading-relaxed">
-                ILUMINATE SYSTEM sa snaží udržiavať dáta aktuálne, ale vzhľadom na povahu agregácie z viacerých 
+                iCOAtlas sa snaží udržiavať dáta aktuálne, ale vzhľadom na povahu agregácie z viacerých 
                 zdrojov a cache mechanizmy môže dôjsť k oneskoreniu v aktualizácii. Dáta sa aktualizujú 
                 pravidelne, ale nie v reálnom čase. Pre oficiálne a právne záväzné informácie vždy 
                 použite pôvodné zdroje (oficiálne registry).
@@ -53,7 +53,7 @@ const DisclaimerPage = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">3. Rizikové skóre a analýzy</h2>
               <p className="text-slate-700 leading-relaxed mb-4">
-                Rizikové skóre a všetky analýzy poskytované ILUMINATE SYSTEM sú výsledkom štatistických modelov 
+                Rizikové skóre a všetky analýzy poskytované iCOAtlas sú výsledkom štatistických modelov 
                 a algoritmov. Tieto skóre:
               </p>
               <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4">
@@ -68,7 +68,7 @@ const DisclaimerPage = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">4. Obchodné rozhodnutia</h2>
               <p className="text-slate-700 leading-relaxed">
-                ILUMINATE SYSTEM nenesie zodpovednosť za akékoľvek obchodné rozhodnutia, ktoré užívateľ urobí 
+                iCOAtlas nenesie zodpovednosť za akékoľvek obchodné rozhodnutia, ktoré užívateľ urobí 
                 na základe dát zobrazených na Platforme. Užívateľ používa Platformu na vlastné riziko 
                 a je zodpovedný za vlastné rozhodnutia.
               </p>
@@ -92,7 +92,7 @@ const DisclaimerPage = () => {
                 <li>Overiť informácie v oficiálnych registroch</li>
                 <li>Konzultovať právneho alebo finančného poradcu</li>
                 <li>Použiť viacero zdrojov informácií</li>
-                <li>Nepokladať ILUMINATE SYSTEM za jediný zdroj pravdy</li>
+                <li>Nepokladať iCOAtlas za jediný zdroj pravdy</li>
               </ul>
             </section>
 

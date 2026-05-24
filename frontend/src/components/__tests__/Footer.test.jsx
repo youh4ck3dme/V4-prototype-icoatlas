@@ -52,7 +52,7 @@ describe('Footer', () => {
     
     const currentYear = new Date().getFullYear();
     expect(screen.getByText(new RegExp(currentYear.toString()))).toBeInTheDocument();
-    expect(screen.getByText(/Iluminati Corp s\.r\.o\./i)).toBeInTheDocument();
+    expect(screen.getAllByText(/iCOAtlas s\.r\.o\./i).length).toBeGreaterThan(0);
   });
 
   it('has correct link attributes', () => {

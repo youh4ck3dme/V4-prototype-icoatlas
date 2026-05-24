@@ -25,9 +25,9 @@ async def lifespan(app: FastAPI):
     # Shutdown logic if needed
 
 app = FastAPI(
-    title="ILUMINATI SYSTEM v5 API",
+    title="iCOAtlas v5 API",
     version="5.0.0",
-    description="Enterprise Business Intelligence Platform for V4 Region",
+    description="iCOAtlas - Enterprise Business Intelligence Platform for V4 Region",
     lifespan=lifespan
 )
 

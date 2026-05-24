@@ -1,6 +1,6 @@
 import React from 'react';
 import V4Search from '../components/V4Search';
-import IluminatiLogo from '../components/IluminatiLogo';
+import IcoAtlasLogo from '../components/IcoAtlasLogo';
 import { useAuth } from '../contexts/AuthContext';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Search, LogOut, User } from 'lucide-react';
@@ -16,7 +16,7 @@ const V4SearchPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-8">
-              <IluminatiLogo />
+              <IcoAtlasLogo />
               <div className="hidden md:flex items-center gap-4">
                 <NavLink 
                   to="/dashboard" 

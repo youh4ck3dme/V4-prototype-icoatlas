@@ -75,7 +75,7 @@ const Logo = ({ size = 'default', showText = true, className = '' }) => {
       {showText && (
         <div className="text-center">
           <h1 className={`${config.text} font-bold bg-gradient-to-r from-[#D4AF37] via-[#FFD700] to-[#D4AF37] bg-clip-text text-transparent animate-gradient`}>
-            ILUMINATE SYSTEM
+            iCOAtlas
           </h1>
           {size === 'large' || size === 'xl' ? (
             <p className="text-sm text-[#D4AF37]/70 mt-1 font-light">Cross-Border Intelligence Platform</p>

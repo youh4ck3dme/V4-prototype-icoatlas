@@ -45,11 +45,11 @@ const RateLimitIndicator = () => {
   const isError = percentage >= 100;
 
   return (
-    <div className="bg-white/10 backdrop-blur-lg rounded-lg p-4 border border-white/20">
+    <div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-white">Daily Searches</span>
+        <span className="text-sm font-medium text-slate-850">Daily Searches</span>
         <span className={`text-sm font-semibold ${
-          isError ? 'text-red-400' : isWarning ? 'text-yellow-400' : 'text-green-400'
+          isError ? 'text-red-650' : isWarning ? 'text-amber-650' : 'text-green-650'
         }`}>
           {limits.searches_per_day === -1 
             ? 'Unlimited' 
@@ -58,16 +58,16 @@ const RateLimitIndicator = () => {
       </div>
       {limits.searches_per_day !== -1 && (
         <>
-          <div className="w-full bg-white/10 rounded-full h-2 mb-2">
+          <div className="w-full bg-slate-100 rounded-full h-2 mb-2">
             <div
               className={`h-2 rounded-full transition-all ${
-                isError ? 'bg-red-500' : isWarning ? 'bg-yellow-500' : 'bg-green-500'
+                isError ? 'bg-red-600' : isWarning ? 'bg-amber-500' : 'bg-green-600'
               }`}
               style={{ width: `${Math.min(percentage, 100)}%` }}
             ></div>
           </div>
           {isWarning && (
-            <p className="text-xs text-yellow-300">
+            <p className="text-xs text-amber-700 font-medium">
               {isError 
                 ? 'Daily limit reached. Upgrade to continue searching.' 
                 : 'Approaching daily limit. Consider upgrading.'}

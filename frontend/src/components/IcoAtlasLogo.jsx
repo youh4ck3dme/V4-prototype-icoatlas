@@ -1,11 +1,11 @@
 import React from 'react';
 
 /**
- * ILUMINATI SYSTEM Logo Component
+ * iCOAtlas Logo Component
  * Theme: Corporate / Government / Official
  * Colors: Slovak Blue (#0B4EA2), Slovak Red (#EE1C25)
  */
-const IluminatiLogo = ({ size = 40, className = '' }) => (
+const IcoAtlasLogo = ({ size = 40, className = '' }) => (
   <svg 
     width={size} 
     height={size} 
@@ -19,7 +19,7 @@ const IluminatiLogo = ({ size = 40, className = '' }) => (
     <circle cx="50" cy="10" r="3" fill="#EE1C25" />
     <circle cx="90" cy="85" r="3" fill="#EE1C25" />
     <circle cx="10" cy="85" r="3" fill="#EE1C25" />
-    {/* Inner Eye */}
+    {/* Inner Eye / Core Globe */}
     <path d="M50 35 L50 65" stroke="#0B4EA2" strokeWidth="1.5" strokeOpacity="0.3" />
     <path d="M35 50 L65 50" stroke="#0B4EA2" strokeWidth="1.5" strokeOpacity="0.3" />
     <circle cx="50" cy="50" r="12" stroke="#0B4EA2" strokeWidth="2" fill="none" />
@@ -27,5 +27,5 @@ const IluminatiLogo = ({ size = 40, className = '' }) => (
   </svg>
 );
 
-export default IluminatiLogo;
-
+export default IcoAtlasLogo;
+export { IcoAtlasLogo as IcoAtlasLogo }; // Backward compatibility during migration

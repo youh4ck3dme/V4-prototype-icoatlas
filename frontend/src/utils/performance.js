@@ -1,5 +1,5 @@
 /**
- * Performance utilities pre ILUMINATI SYSTEM
+ * Performance utilities pre iCOAtlas
  */
 
 /**

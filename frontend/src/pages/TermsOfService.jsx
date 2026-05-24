@@ -8,8 +8,8 @@ const TermsOfService = () => {
   return (
     <>
       <SEOHead 
-        title="Všeobecné obchodné podmienky | ILUMINATI SYSTEM"
-        description="Všeobecné obchodné podmienky a podmienky používania služby ILUMINATI SYSTEM."
+        title="Všeobecné obchodné podmienky | iCOAtlas"
+        description="Všeobecné obchodné podmienky a podmienky používania služby iCOAtlas."
       />
       <div className="min-h-screen bg-slate-50">
       <div className="max-w-4xl mx-auto px-8 py-12">
@@ -40,16 +40,16 @@ const TermsOfService = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">1. Definícia služby</h2>
               <p className="text-slate-700 leading-relaxed">
-                ILUMINATE SYSTEM (ďalej len "IS" alebo "Platforma") je informačný nástroj 
+                iCOAtlas (ďalej len "IS" alebo "Platforma") je informačný nástroj 
                 typu Business Intelligence, ktorý agreguje a vizualizuje verejne dostupné dáta 
                 z obchodných registrov krajín V4 (Česká republika, Slovensko, Poľsko, Maďarsko). 
-                ILUMINATE SYSTEM poskytuje užívateľom nástroje na analýzu vlastníckych štruktúr, identifikáciu 
+                iCOAtlas poskytuje užívateľom nástroje na analýzu vlastníckych štruktúr, identifikáciu 
                 rizík a prevenciu podvodov typu "karusel".
               </p>
               <p className="text-slate-700 leading-relaxed mt-4">
-                <strong>Dôležité:</strong> ILUMINATE SYSTEM negarantuje správnosť dát v reálnom čase. Dáta sú 
+                <strong>Dôležité:</strong> iCOAtlas negarantuje správnosť dát v reálnom čase. Dáta sú 
                 získavané z oficiálnych štátnych registrov, ale chyby môžu vzniknúť už v zdrojových 
-                systémoch. ILUMINATE SYSTEM nenesie zodpovednosť za nepresnosti v pôvodných dátach.
+                systémoch. iCOAtlas nenesie zodpovednosť za nepresnosti v pôvodných dátach.
               </p>
             </section>
 
@@ -63,11 +63,11 @@ const TermsOfService = () => {
                 </p>
               </div>
               <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4">
-                <li>ILUMINATE SYSTEM poskytuje služby "tak, ako sú" (as-is) bez záruky akéhokoľvek druhu.</li>
+                <li>iCOAtlas poskytuje služby "tak, ako sú" (as-is) bez záruky akéhokoľvek druhu.</li>
                 <li>Užívateľ používa Platformu na vlastné riziko.</li>
-                <li>ILUMINATE SYSTEM nezodpovedá za obchodné rozhodnutia založené na zobrazených dátach.</li>
+                <li>iCOAtlas nezodpovedá za obchodné rozhodnutia založené na zobrazených dátach.</li>
                 <li>Rizikové skóre a analýzy sú výsledkom štatistických modelov, nie právnych posudkov.</li>
-                <li>ILUMINATE SYSTEM nezodpovedá za výpadky externých registrov alebo oneskorenia v aktualizácii dát.</li>
+                <li>iCOAtlas nezodpovedá za výpadky externých registrov alebo oneskorenia v aktualizácii dát.</li>
               </ul>
             </section>
 
@@ -109,14 +109,14 @@ const TermsOfService = () => {
               <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4 mb-6">
                 <li>Zakázané je používanie web scrapingu, crawlerov alebo podobných nástrojov.</li>
                 <li>API prístup je dostupný len pre Enterprise klientov s platnou licenciou.</li>
-                <li>ILUMINATI SYSTEM si vyhradzuje právo monitorovať používanie Platformy a detegovať zneužitie.</li>
+                <li>iCOAtlas si vyhradzuje právo monitorovať používanie Platformy a detegovať zneužitie.</li>
                 <li>Pri porušení sa účet okamžite zablokuje a dáta môžu byť použité ako dôkaz.</li>
               </ul>
 
               <h3 className="text-xl font-semibold text-slate-800 mb-3">4.2. Fair Use Policy pre Scraping Externých Zdrojov</h3>
               <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
                 <p className="text-blue-800 font-semibold mb-2">
-                  ILUMINATI SYSTEM dodržiava "Fair Use Policy" pri získavaní dát z externých zdrojov:
+                  iCOAtlas dodržiava "Fair Use Policy" pri získavaní dát z externých zdrojov:
                 </p>
                 <ul className="list-disc list-inside text-blue-700 space-y-1 ml-4">
                   <li>Nepreťažujeme štátne servery - používame rozumné rate limiting</li>
@@ -129,7 +129,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold text-slate-800 mb-3">4.3. Zdrojovanie Dát</h3>
               <p className="text-slate-700 leading-relaxed mb-4">
-                ILUMINATI SYSTEM vždy uvádza zdroj dát pri zobrazení informácií. Hlavné zdroje:
+                iCOAtlas vždy uvádza zdroj dát pri zobrazení informácií. Hlavné zdroje:
               </p>
               <ul className="list-disc list-inside text-slate-700 space-y-2 ml-4">
                 <li><strong>Slovensko:</strong> Obchodný register SR (ORSR), Živnostenský register (ZRSR), Register účtovných závierok (RUZ), Finančná správa SR</li>
@@ -139,7 +139,7 @@ const TermsOfService = () => {
               </ul>
               <p className="text-slate-700 leading-relaxed mt-4">
                 Všetky dáta sú získavané z verejne dostupných, oficiálnych zdrojov. 
-                ILUMINATI SYSTEM funguje ako agregátor a vizualizátor týchto dát.
+                iCOAtlas funguje ako agregátor a vizualizátor týchto dát.
               </p>
             </section>
 

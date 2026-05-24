@@ -1,9 +1,9 @@
-// Offline Service Worker pre ILUMINATI SYSTEM
+// Offline Service Worker pre iCOAtlas
 // Rozširuje základný Service Worker o offline funkcionalitu
 
-const CACHE_NAME = 'iluminati-offline-v1';
+const CACHE_NAME = 'icoatlas-offline-v1';
 const OFFLINE_PAGE = '/offline.html';
-const API_CACHE_NAME = 'iluminati-api-cache-v1';
+const API_CACHE_NAME = 'icoatlas-api-cache-v1';
 
 // Assets ktoré sa majú cacheovať offline
 const STATIC_ASSETS = [
@@ -184,7 +184,7 @@ async function syncSearches() {
 // Push notifications (pre budúce rozšírenia)
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'ILUMINATI SYSTEM';
+  const title = data.title || 'iCOAtlas';
   const options = {
     body: data.body || 'New update available',
     icon: '/favicon.svg',

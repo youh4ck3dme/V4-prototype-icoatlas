@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
-import IluminatiLogo from '../components/IluminatiLogo';
+import IcoAtlasLogo from '../components/IcoAtlasLogo';
 import { Copy, Trash2, Plus, Key, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 
 const ApiKeys = () => {
@@ -123,7 +123,7 @@ const ApiKeys = () => {
       <ProtectedRoute>
         <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4">
           <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20 text-center">
-            <IluminatiLogo className="mx-auto mb-6" />
+            <IcoAtlasLogo className="mx-auto mb-6" />
             <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-white mb-2">Enterprise Tier Required</h1>
             <p className="text-blue-200 mb-6">API Keys are only available for Enterprise tier users.</p>
@@ -145,7 +145,7 @@ const ApiKeys = () => {
         <nav className="bg-white/10 backdrop-blur-lg border-b border-white/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              <IluminatiLogo />
+              <IcoAtlasLogo />
               <a href="/dashboard" className="text-white hover:text-blue-200">Back to Dashboard</a>
             </div>
           </div>

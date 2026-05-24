@@ -4,7 +4,7 @@ import { useEffect } from 'react';
  * SEO Head komponenta pre dynamické meta tagy
  */
 export const SEOHead = ({ 
-  title = 'ILUMINATI SYSTEM - Transparentnosť pre slovenské podnikanie',
+  title = 'iCOAtlas - Transparentnosť pre slovenské podnikanie',
   description = 'Komplexná hĺbková analýza obchodných partnerov, vlastníckych štruktúr a finančného zdravia firiem v regióne strednej Európy (SK, CZ, PL, HU).',
   keywords = 'IČO, obchodný register, risk analýza, vlastnícke štruktúry, cross-border, V4, Slovensko, Česká republika, Poľsko, Maďarsko',
   ogImage = '/favicon.svg',
@@ -37,7 +37,7 @@ export const SEOHead = ({
     updateMetaTag('og:image', ogImage, true);
     updateMetaTag('og:type', 'website', true);
     updateMetaTag('og:url', canonical || window.location.href, true);
-    updateMetaTag('og:site_name', 'ILUMINATI SYSTEM', true);
+    updateMetaTag('og:site_name', 'iCOAtlas', true);
     
     // Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
@@ -61,7 +61,7 @@ export const SEOHead = ({
     updateMetaTag('robots', 'index, follow');
     
     // Author
-    updateMetaTag('author', 'ILUMINATI SYSTEM');
+    updateMetaTag('author', 'iCOAtlas');
     
     // Viewport (ak nie je už nastavený)
     let viewport = document.querySelector('meta[name="viewport"]');

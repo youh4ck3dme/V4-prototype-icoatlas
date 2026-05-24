@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import IluminatiLogo from "../components/IluminatiLogo";
+import IcoAtlasLogo from "../components/IcoAtlasLogo";
 import { exportBatchToExcel } from "../utils/export";
 import { Download } from "lucide-react";
 import { ENDPOINTS } from "../config/api";
@@ -120,7 +120,7 @@ const Dashboard = () => {
       <nav className="bg-white/10 backdrop-blur-lg border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <IluminatiLogo />
+            <IcoAtlasLogo />
             <div className="flex items-center space-x-4">
               <span className="text-white">{user?.email}</span>
               <button

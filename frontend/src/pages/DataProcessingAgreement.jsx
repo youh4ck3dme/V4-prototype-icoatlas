@@ -21,7 +21,7 @@ const DataProcessingAgreement = () => {
 
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-8">
             <p className="text-blue-800 font-semibold">
-              Tento dokument je určený pre B2B klientov (Enterprise), ktorí nahrajú do ILUMINATE SYSTEM vlastné 
+              Tento dokument je určený pre B2B klientov (Enterprise), ktorí nahrajú do iCOAtlas vlastné 
               zoznamy partnerov na preverenie. DPA upravuje vzťah medzi Vami (Kontrolor) a nami 
               (Spracovateľ) v súlade s GDPR čl. 28.
             </p>
@@ -39,7 +39,7 @@ const DataProcessingAgreement = () => {
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">1. Predmet zmluvy</h2>
               <p className="text-slate-700 leading-relaxed">
                 Táto zmluva upravuje podmienky spracovania osobných údajov, ktoré Kontrolor poskytne 
-                Spracovateľovi v rámci používania služby ILUMINATE SYSTEM Enterprise API. 
+                Spracovateľovi v rámci používania služby iCOAtlas Enterprise API. 
                 Spracovateľ sa zaväzuje spracovávať údaje výlučne v súlade s touto zmluvou a GDPR.
               </p>
             </section>

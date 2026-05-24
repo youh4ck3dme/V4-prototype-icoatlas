@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
-import IluminatiLogo from '../components/IluminatiLogo';
+import IcoAtlasLogo from '../components/IcoAtlasLogo';
 import {
   LineChart,
   Line,
@@ -158,7 +158,7 @@ const Analytics = () => {
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <IluminatiLogo className="w-10 h-10" />
+                <IcoAtlasLogo className="w-10 h-10" />
                 <div>
                   <h1 className="text-2xl font-bold text-slate-800">
                     Analytics Dashboard

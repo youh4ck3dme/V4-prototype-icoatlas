@@ -1,14 +1,14 @@
 import React from 'react';
-import IluminatiLogo from '../components/IluminatiLogo';
+import IcoAtlasLogo from '../components/IcoAtlasLogo';
 
 const License = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <IluminatiLogo className="mx-auto mb-6" />
+          <IcoAtlasLogo className="mx-auto mb-6" />
           <h1 className="text-4xl font-bold text-white mb-4">Licencia</h1>
-          <p className="text-blue-200 text-lg">Open-source licencia pre ILUMINATI SYSTEM</p>
+          <p className="text-blue-200 text-lg">Open-source licencia pre iCOAtlas</p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
@@ -47,7 +47,7 @@ const License = () => {
             <div className="mt-8 p-6 bg-yellow-900/20 rounded-lg border border-yellow-500/30">
               <h3 className="text-lg font-semibold text-yellow-200 mb-3">Dôležité upozornenie</h3>
               <p className="text-yellow-100 text-sm">
-                Táto licencia sa vzťahuje len na open-source komponenty systému ILUMINATI. Niektoré funkcionality môžu využívať externé API služby, ktoré majú vlastné licenčné podmienky. Používateľ je zodpovedný za dodržiavanie všetkých príslušných právnych predpisov pri používaní tohto softvéru.
+                Táto licencia sa vzťahuje len na open-source komponenty systému iCOAtlas. Niektoré funkcionality môžu využívať externé API služby, ktoré majú vlastné licenčné podmienky. Používateľ je zodpovedný za dodržiavanie všetkých príslušných právnych predpisov pri používaní tohto softvéru.
               </p>
             </div>
           </div>
@@ -55,7 +55,7 @@ const License = () => {
 
         <div className="text-center mt-8">
           <a
-            href="https://github.com/crossbordernexus/iluminati-system"
+            href="https://github.com/crossbordernexus/icoatlas-system"
             className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
             target="_blank"
             rel="noopener noreferrer"

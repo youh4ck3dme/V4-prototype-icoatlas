@@ -239,26 +239,26 @@ const V4Search = () => {
 
           {/* Sidebar / Sidebar Info */}
           <div className="lg:col-span-4 space-y-6">
-             <div className="bg-slate-900 text-white rounded-2xl shadow-xl p-6 overflow-hidden relative">
-               <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl -ml-16 -mt-16"></div>
+             <div className="bg-white border border-slate-200 text-slate-800 rounded-2xl shadow-sm p-6 overflow-hidden relative">
+               <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -ml-16 -mt-16"></div>
                
-               <h3 className="text-xl font-bold mb-4 flex items-center gap-2 relative z-10">
-                 <Info className="w-6 h-6 text-emerald-400" />
+               <h3 className="text-xl font-bold mb-4 flex items-center gap-2 relative z-10 text-slate-900">
+                 <Info className="w-6 h-6 text-emerald-600" />
                  Graph Intelligence
                </h3>
                
                <div className="space-y-4 relative z-10">
-                 <div className="flex items-center justify-between text-sm border-b border-slate-700 pb-2">
-                   <span className="text-slate-400">Celkom uzlov</span>
-                   <span className="font-mono text-emerald-400">{result.graph?.summary?.node_count || 0}</span>
+                 <div className="flex items-center justify-between text-sm border-b border-slate-100 pb-2">
+                   <span className="text-slate-500">Celkom uzlov</span>
+                   <span className="font-mono text-emerald-700 font-bold">{result.graph?.summary?.node_count || 0}</span>
                  </div>
-                 <div className="flex items-center justify-between text-sm border-b border-slate-700 pb-2">
-                   <span className="text-slate-400">Detegované vzťahy</span>
-                   <span className="font-mono text-emerald-400">{result.graph?.summary?.edge_count || 0}</span>
+                 <div className="flex items-center justify-between text-sm border-b border-slate-100 pb-2">
+                   <span className="text-slate-500">Detegované vzťahy</span>
+                   <span className="font-mono text-emerald-700 font-bold">{result.graph?.summary?.edge_count || 0}</span>
                  </div>
                  
-                 <div className="mt-6 p-4 bg-slate-800 rounded-xl border border-slate-700">
-                   <p className="text-xs text-slate-300 leading-relaxed">
+                 <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                   <p className="text-xs text-slate-600 leading-relaxed">
                      Systém automaticky prepája firmy cez spoločných majiteľov a adresy vo všetkých V4 krajinách. 
                      Hrany typu <strong>SAME_PERSON_AS</strong> sú generované na základe algoritmu zhody osôb.
                    </p>

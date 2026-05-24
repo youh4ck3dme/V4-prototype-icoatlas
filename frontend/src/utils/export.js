@@ -40,7 +40,7 @@ export const exportToCSV = (data) => {
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
-  link.setAttribute('download', `iluminati-export-${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `icoatlas-export-${new Date().toISOString().split('T')[0]}.csv`);
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
@@ -65,7 +65,7 @@ export const exportToPDF = async (elementId = 'results-section') => {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>ILUMINATI SYSTEM - Export</title>
+          <title>iCOAtlas - Export</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 20px; }
             h1 { color: #0B4EA2; }
@@ -82,7 +82,7 @@ export const exportToPDF = async (elementId = 'results-section') => {
           </style>
         </head>
         <body>
-          <h1>ILUMINATI SYSTEM - Export</h1>
+          <h1>iCOAtlas - Export</h1>
           <p>Dátum: ${new Date().toLocaleString('sk-SK')}</p>
           ${element.innerHTML}
         </body>
@@ -115,7 +115,7 @@ export const exportToJSON = (data) => {
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
-  link.setAttribute('download', `iluminati-export-${new Date().toISOString().split('T')[0]}.json`);
+  link.setAttribute('download', `icoatlas-export-${new Date().toISOString().split('T')[0]}.json`);
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
@@ -155,7 +155,7 @@ export const exportToExcel = async (data, token = null) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `iluminati-export-${new Date().toISOString().split('T')[0]}.xlsx`);
+    link.setAttribute('download', `icoatlas-export-${new Date().toISOString().split('T')[0]}.xlsx`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -200,7 +200,7 @@ export const exportBatchToExcel = async (companies, token = null) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `iluminati-batch-export-${new Date().toISOString().split('T')[0]}.xlsx`);
+    link.setAttribute('download', `icoatlas-batch-export-${new Date().toISOString().split('T')[0]}.xlsx`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

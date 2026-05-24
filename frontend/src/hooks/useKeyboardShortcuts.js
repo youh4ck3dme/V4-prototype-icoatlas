@@ -53,7 +53,7 @@ export const useKeyboardShortcuts = (shortcuts) => {
 };
 
 /**
- * Predefinované skratky pre ILUMINATI SYSTEM
+ * Predefinované skratky pre iCOAtlas
  */
 export const SHORTCUTS = {
   SEARCH: 'Ctrl+K', // alebo Cmd+K na Mac

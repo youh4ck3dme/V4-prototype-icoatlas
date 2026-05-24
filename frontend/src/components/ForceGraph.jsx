@@ -103,22 +103,22 @@ const ForceGraph = ({ data }) => {
 
   // Farba hrany podľa typu
   const getLinkColor = (link) => {
-    if (!link) return "#D4AF37";
+    if (!link) return "#b45309";
     const linkType = link.type || "RELATED";
     switch (linkType) {
       case "OWNED_BY":
-        return "#D4AF37";
+        return "#d97706";
       case "UBO_OF":
       case "SKUTOČNÝ_MAJITEĽ":
-        return "#fbbf24";
+        return "#b45309";
       case "MANAGED_BY":
-        return "#60a5fa";
+        return "#2563eb";
       case "LOCATED_AT":
-        return "#34d399";
+        return "#10b981";
       case "HAS_DEBT":
-        return "#ef4444";
+        return "#dc2626";
       default:
-        return "#94a3b8";
+        return "#64748b";
     }
   };
 
@@ -150,7 +150,7 @@ const ForceGraph = ({ data }) => {
       if (canvas) {
         const url = canvas.toDataURL("image/png");
         const link = document.createElement("a");
-        link.download = "iluminati-graph.png";
+        link.download = "icoatlas-graph.png";
         link.href = url;
         link.click();
       } else {
@@ -192,33 +192,33 @@ const ForceGraph = ({ data }) => {
 
   return (
     <>
-      <div className="relative glass-card border-white/10 overflow-hidden force-graph-container h-full">
+      <div className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden force-graph-container h-full">
         {/* Toolbar */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             onClick={handleZoomIn}
-            className="p-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-blue-400 hover:bg-white/10 transition-all"
+            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
             title="Priblížiť"
           >
             <ZoomIn size={18} />
           </button>
           <button
             onClick={handleZoomOut}
-            className="p-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-blue-400 hover:bg-white/10 transition-all"
+            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
             title="Oddialiť"
           >
             <ZoomOut size={18} />
           </button>
           <button
             onClick={handleReset}
-            className="p-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-lg text-blue-400 hover:bg-white/10 transition-all"
+            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
             title="Resetovať"
           >
             <RotateCcw size={18} />
           </button>
           <button
             onClick={handleExportPNG}
-            className="p-2 bg-blue-600 border border-blue-500 rounded-lg text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+            className="p-2 bg-[#0B4EA2] border border-[#0B4EA2] rounded-lg text-white hover:bg-blue-800 transition-all shadow-sm"
             title="Exportovať do PNG"
           >
             <Download size={18} />
@@ -295,7 +295,7 @@ const ForceGraph = ({ data }) => {
             ctx.font = `${fontSize}px Sans-Serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = "#ffffff";
+            ctx.fillStyle = "#1e293b"; // Dark slate text for white background
             ctx.fillText(label, node.x, node.y + size + fontSize);
 
             // 3. Draw Country Flag (Indicator)
@@ -368,7 +368,7 @@ const ForceGraph = ({ data }) => {
             ctx.translate(textPos.x, textPos.y);
             // ctx.rotate(Math.atan2(relLink.y, relLink.x));
 
-            ctx.fillStyle = "rgba(10, 10, 10, 0.8)";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
             ctx.fillRect(
               -bckgDimensions[0] / 2,
               -bckgDimensions[1] / 2,
@@ -377,7 +377,7 @@ const ForceGraph = ({ data }) => {
 
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = "#D4AF37";
+            ctx.fillStyle = "#475569"; // Dark slate label
             ctx.fillText(label, 0, 0);
             ctx.restore();
           }}
@@ -392,17 +392,17 @@ const ForceGraph = ({ data }) => {
       {/* Modal s detailom uzla */}
       {isModalOpen && selectedNode && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in"
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="glass-card p-8 max-w-lg w-full mx-4 shadow-2xl relative border-blue-500/20"
+            className="bg-white p-8 max-w-lg w-full mx-4 shadow-2xl rounded-2xl relative border border-slate-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
             >
               <X size={20} />
             </button>
@@ -418,7 +418,7 @@ const ForceGraph = ({ data }) => {
               >
                 {React.createElement(getNodeIcon(selectedNode), {
                   size: 32,
-                  className: "text-white",
+                  className: "text-slate-800",
                   style: {
                     filter: `drop-shadow(0 0 8px ${getNodeColor(
                       selectedNode
@@ -427,15 +427,15 @@ const ForceGraph = ({ data }) => {
                 })}
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight">
                   {selectedNode.label}
                 </h3>
                 <div className="flex gap-2 items-center">
-                  <span className="px-2 py-1 rounded bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-bold uppercase">
+                  <span className="px-2 py-1 rounded bg-[#0B4EA2]/10 border border-[#0B4EA2]/25 text-[#0B4EA2] text-xs font-bold uppercase">
                     {selectedNode.type}
                   </span>
                   {selectedNode.country && (
-                    <span className="px-2 py-1 rounded bg-blue-900/30 border border-blue-500/30 text-blue-300 text-xs font-bold">
+                    <span className="px-2 py-1 rounded bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold">
                       {selectedNode.country}
                     </span>
                   )}
@@ -447,38 +447,38 @@ const ForceGraph = ({ data }) => {
             <div className="space-y-3">
               {selectedNode.details && (
                 <div>
-                  <p className="text-sm text-gray-400 mb-1">Detaily:</p>
-                  <p className="text-gray-300">{selectedNode.details}</p>
+                  <p className="text-sm text-slate-500 mb-1">Detaily:</p>
+                  <p className="text-slate-800">{selectedNode.details}</p>
                 </div>
               )}
 
               {selectedNode.ico && (
                 <div>
-                  <p className="text-sm text-gray-400 mb-1">IČO:</p>
-                  <p className="text-gray-300 font-mono">{selectedNode.ico}</p>
+                  <p className="text-sm text-slate-500 mb-1">IČO:</p>
+                  <p className="text-slate-800 font-mono">{selectedNode.ico}</p>
                 </div>
               )}
 
               {selectedNode.risk_score !== undefined &&
                 selectedNode.risk_score > 0 && (
                   <div>
-                    <p className="text-sm text-gray-400 mb-1">
+                    <p className="text-sm text-slate-500 mb-1">
                       Rizikové skóre:
                     </p>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-700 rounded-full h-2">
+                      <div className="flex-1 bg-slate-100 rounded-full h-2">
                         <div
-                          className="h-2 rounded-full transition-all"
+                           className="h-2 rounded-full transition-all"
                           style={{
                             width: `${(selectedNode.risk_score / 10) * 100}%`,
                             backgroundColor:
                               selectedNode.risk_score > 5
-                                ? "#ef4444"
-                                : "#fbbf24",
+                                ? "#dc2626"
+                                : "#d97706",
                           }}
                         />
                       </div>
-                      <span className="text-sm font-bold text-red-300">
+                      <span className="text-sm font-bold text-red-600">
                         {selectedNode.risk_score}/10
                       </span>
                     </div>
@@ -486,9 +486,9 @@ const ForceGraph = ({ data }) => {
                 )}
 
               {selectedNode.virtual_seat && (
-                <div className="flex items-center gap-2 p-2 bg-amber-900/30 border border-amber-500/30 rounded-lg">
-                  <AlertTriangle size={16} className="text-amber-400" />
-                  <span className="text-sm text-amber-300">
+                <div className="flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                  <AlertTriangle size={16} className="text-amber-600" />
+                  <span className="text-sm text-amber-800 font-medium">
                     Virtuálne sídlo
                   </span>
                 </div>
@@ -496,9 +496,9 @@ const ForceGraph = ({ data }) => {
             </div>
 
             {/* Footer */}
-            <div className="mt-8 pt-5 border-t border-white/5">
-              <p className="text-[10px] text-slate-500 text-center uppercase font-bold tracking-widest">
-                Nexus Intelligence Modal • ESC to Close
+            <div className="mt-8 pt-5 border-t border-slate-100">
+              <p className="text-[10px] text-slate-400 text-center uppercase font-bold tracking-widest">
+                iCOAtlas Intelligence Modal • ESC to Close
               </p>
             </div>
           </div>

@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico'],
       manifest: {
-        name: 'ILUMINATI SYSTEM',
-        short_name: 'ILUMINATI',
+        name: 'iCOAtlas',
+        short_name: 'iCOAtlas',
         description: 'Transparentnosť pre slovenské podnikanie - Cross-border business intelligence',
         theme_color: '#0B4EA2',
         background_color: '#ffffff',
