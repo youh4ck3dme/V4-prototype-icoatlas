@@ -545,7 +545,7 @@ export default function HomePageNew() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="bg-[#0B4EA2] hover:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-md active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
+                      className="neon-search-btn text-white px-8 py-4 rounded-xl font-bold text-lg active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
                     >
                       {loading ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
