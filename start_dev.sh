@@ -88,16 +88,6 @@ else
     echo -e "${YELLOW}⚠️  Redis not installed (using in-memory cache)${NC}"
 fi
 
-# Initialize database if needed
-if [ ! -f "backend/sql_app.db" ]; then
-    echo -e "${YELLOW}⚠️  Database not found. Initializing...${NC}"
-    cd backend
-    source venv/bin/activate
-    python3 -c "from services.database import init_database; init_database(); print('✅ Database initialized')"
-    deactivate
-    cd ..
-fi
-
 echo -e "${GREEN}✅ Pre-flight checks complete${NC}"
 echo ""
 
@@ -107,7 +97,7 @@ echo ""
 echo -e "${BLUE}Cleaning up old processes...${NC}"
 
 # Kill old backend processes
-pkill -f "uvicorn main:app" 2>/dev/null || true
+pkill -f "uvicorn app.main:app" 2>/dev/null || true
 
 # Kill old frontend processes  
 pkill -f "vite" 2>/dev/null || true
@@ -129,7 +119,7 @@ mkdir -p logs
 echo -e "${BLUE}[1/2] Starting Backend API...${NC}"
 cd backend
 source venv/bin/activate
-nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload > ../logs/backend.log 2>&1 &
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > ../logs/backend.log 2>&1 &
 BACKEND_PID=$!
 deactivate
 cd ..
@@ -137,7 +127,7 @@ cd ..
 # Wait for backend to start
 echo -n "Waiting for backend"
 for i in {1..30}; do
-    if curl -s http://localhost:8000/api/health > /dev/null 2>&1; then
+    if curl -s http://localhost:8000/health > /dev/null 2>&1; then
         echo ""
         echo -e "${GREEN}✅ Backend API started (PID: $BACKEND_PID)${NC}"
         break
@@ -163,7 +153,7 @@ cd ..
 # Wait for frontend to start
 echo -n "Waiting for frontend"
 for i in {1..30}; do
-    if curl -s http://localhost:5173 > /dev/null 2>&1; then
+    if curl -s http://localhost:8009 > /dev/null 2>&1; then
         echo ""
         echo -e "${GREEN}✅ Frontend started (PID: $FRONTEND_PID)${NC}"
         break
@@ -190,7 +180,7 @@ echo ""
 echo -e "${BLUE}Services:${NC}"
 echo "  • Backend API:  http://localhost:8000"
 echo "  • API Docs:     http://localhost:8000/api/docs"
-echo "  • Frontend:     http://localhost:5173"
+echo "  • Frontend:     http://localhost:8009"
 echo ""
 echo -e "${BLUE}Process IDs:${NC}"
 echo "  • Backend:  $BACKEND_PID"
@@ -202,9 +192,9 @@ echo "  • Frontend: tail -f logs/frontend.log"
 echo ""
 echo -e "${BLUE}To stop services:${NC}"
 echo "  kill $BACKEND_PID $FRONTEND_PID"
-echo "  or run: pkill -f 'uvicorn main:app' && pkill -f 'vite'"
+echo "  or run: pkill -f 'uvicorn app.main:app' && pkill -f 'vite'"
 echo ""
-echo -e "${YELLOW}Press Ctrl+C to view logs, or open http://localhost:5173 in your browser${NC}"
+echo -e "${YELLOW}Press Ctrl+C to view logs, or open http://localhost:8009 in your browser${NC}"
 echo ""
 
 # Save PIDs to file for easy cleanup

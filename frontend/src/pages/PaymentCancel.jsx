@@ -3,25 +3,25 @@ import IcoAtlasLogo from '../components/IcoAtlasLogo';
 
 const PaymentCancel = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20 text-center">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white border border-slate-200 shadow-md rounded-xl p-8 text-center animate-fade-in">
         <IcoAtlasLogo className="mx-auto mb-6" />
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">Payment Cancelled</h1>
-          <p className="text-blue-200">Your payment was cancelled. No charges were made.</p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Platba zrušená</h1>
+          <p className="text-slate-600">Vaša platba bola zrušená. Z účtu vám neboli stiahnuté žiadne prostriedky.</p>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <Link
             to="/dashboard"
-            className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+            className="block w-full bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-colors shadow-sm"
           >
-            Back to Dashboard
+            Späť na Dashboard
           </Link>
           <Link
-            to="/payment/checkout"
-            className="block w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-4 rounded-lg transition-colors border border-white/20"
+            to="/profile"
+            className="block w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-4 rounded-lg transition-colors border border-slate-200"
           >
-            Try Again
+            Skúsiť znova
           </Link>
         </div>
       </div>

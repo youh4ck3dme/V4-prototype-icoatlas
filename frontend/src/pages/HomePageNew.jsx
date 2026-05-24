@@ -373,7 +373,7 @@ export default function HomePageNew() {
             }}
           >
             <div className="bg-[#0B4EA2] p-2 rounded-lg shadow-sm transition-all">
-              <IcoAtlasLogo size={28} className="text-white" />
+              <IcoAtlasLogo size={28} strokeColor="#ffffff" />
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-800 font-heading">
               iCO<span className="text-[#0B4EA2] font-semibold">Atlas</span>

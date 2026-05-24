@@ -3,50 +3,50 @@ import IcoAtlasLogo from '../components/IcoAtlasLogo';
 
 const License = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-12 px-4">
+    <div className="min-h-screen bg-slate-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <IcoAtlasLogo className="mx-auto mb-6" />
-          <h1 className="text-4xl font-bold text-white mb-4">Licencia</h1>
-          <p className="text-blue-200 text-lg">Open-source licencia pre iCOAtlas</p>
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">Licencia</h1>
+          <p className="text-slate-600 text-lg">Open-source licencia pre iCOAtlas</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
-          <div className="prose prose-invert max-w-none">
-            <h2 className="text-2xl font-bold text-white mb-6">MIT License</h2>
+        <div className="bg-white border border-slate-200 shadow-md rounded-xl p-8">
+          <div className="prose prose-slate max-w-none">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">MIT License</h2>
 
-            <p className="text-blue-100 mb-6">
+            <p className="text-slate-800 mb-6">
               Copyright (c) 2024 Cross-Border Nexus
             </p>
 
-            <p className="text-blue-100 mb-6">
+            <p className="text-slate-700 mb-6 leading-relaxed">
               S oprávnením sa udeľuje bezplatne akejkoľvek osobe, ktorá získa kópiu tohto softvéru a súvisiacich dokumentačných súborov (ďalej len "softvér"), aby s ním nakladala bez obmedzení vrátane, nie však výlučne, práv na používanie, kopírovanie, úpravu, zlúčenie, publikovanie, distribúciu, sublicencovanie a/alebo predaj kópií softvéru, a aby umožnila osobám, ktorým sa softvér poskytuje, aby tak konali za týchto podmienok:
             </p>
 
-            <p className="text-blue-100 mb-6">
+            <p className="text-slate-700 mb-6 leading-relaxed">
               Vyššie uvedené autorské práva a toto oprávnenie sa poskytujú za predpokladu, že vyššie uvedené upozornenie na autorské práva a toto oprávnenie sa zobrazia vo všetkých kópiách alebo podstatných častiach softvéru.
             </p>
 
-            <p className="text-blue-100 mb-8">
+            <p className="text-slate-700 mb-8 leading-relaxed font-semibold">
               SOFTVÉR SA POSKYTUJE "TAK, AKO JE", BEZ AKEJKOĽVEK ZÁRUKY, VÝSLOVNÝCH ALEBO IMPLICITNÝCH, VRÁTANE, ALE NIE VÝLUČNE, ZÁRUK TÝKAJÚCICH SA OBCHODOVATEĽNOSTI, VHODNOSTI NA URČITÝ ÚČEL A NEPORUŠENIA PRÁV. V ŽIADNOM PRÍPADE NEBUDÚ AUTORI ALEBO DRŽITELIA AUTORSKÝCH PRÁV ZODPOVEDNÍ ZA AKÉKOĽVEK NÁROKY, ŠKODY ALEBO INÉ ZODPOVEDNOSTI, ČI UŽ V SÚVISLOSTI SO ZMLUVOU, DELIKTOM ALEBO INÝM SPÔSOBOM, VYPLÝVAJÚCE Z ALEBO V SÚVISLOSTI S SOFTVÉROM ALEBO POUŽÍVANÍM ALEBO INÝMI KONANÍMI V SOFTVÉRI.
             </p>
 
-            <div className="bg-blue-900/30 rounded-lg p-6 border border-blue-500/30">
-              <h3 className="text-xl font-semibold text-blue-200 mb-4">Preklad do angličtiny (originál):</h3>
-              <p className="text-blue-100 text-sm italic">
+            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+              <h3 className="text-xl font-semibold text-[#0B4EA2] mb-4">Preklad do angličtiny (originál):</h3>
+              <p className="text-slate-700 text-sm italic">
                 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
               </p>
-              <p className="text-blue-100 text-sm italic mt-3">
+              <p className="text-slate-700 text-sm italic mt-3">
                 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
               </p>
-              <p className="text-blue-100 text-sm italic mt-3">
+              <p className="text-slate-700 text-sm italic mt-3">
                 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               </p>
             </div>
 
-            <div className="mt-8 p-6 bg-yellow-900/20 rounded-lg border border-yellow-500/30">
-              <h3 className="text-lg font-semibold text-yellow-200 mb-3">Dôležité upozornenie</h3>
-              <p className="text-yellow-100 text-sm">
+            <div className="mt-8 p-6 bg-yellow-50 rounded-lg border border-yellow-200">
+              <h3 className="text-lg font-semibold text-yellow-800 mb-3">Dôležité upozornenie</h3>
+              <p className="text-yellow-950 text-sm">
                 Táto licencia sa vzťahuje len na open-source komponenty systému iCOAtlas. Niektoré funkcionality môžu využívať externé API služby, ktoré majú vlastné licenčné podmienky. Používateľ je zodpovedný za dodržiavanie všetkých príslušných právnych predpisov pri používaní tohto softvéru.
               </p>
             </div>
@@ -56,7 +56,7 @@ const License = () => {
         <div className="text-center mt-8">
           <a
             href="https://github.com/crossbordernexus/icoatlas-system"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors shadow-sm"
             target="_blank"
             rel="noopener noreferrer"
           >

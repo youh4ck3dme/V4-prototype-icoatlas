@@ -76,7 +76,7 @@ const V4Search = () => {
     <div className="max-w-7xl mx-auto p-4 space-y-6">
       {/* Search Header */}
       <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full -mr-32 -mt-32 opacity-50 blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 opacity-50 blur-3xl"></div>
         
         <h1 className="text-3xl font-bold text-slate-900 mb-2 relative z-10">V4 Identifier Intelligence</h1>
         <p className="text-slate-500 mb-8 relative z-10">Automaticky rozpoznáva SK, CZ, PL a HU identifikátory s grafom vzťahov.</p>
@@ -89,13 +89,13 @@ const V4Search = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Zadajte IČO, NIP, KRS, DIČ..."
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 text-lg transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-[#0B4EA2] text-lg transition-all"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-emerald-200"
+            className="px-8 py-4 bg-[#0B4EA2] hover:bg-blue-800 disabled:bg-slate-300 text-white font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-100"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Analyzovať'}
           </button>
@@ -117,13 +117,13 @@ const V4Search = () => {
               <div className="flex border-b">
                 <button
                   onClick={() => setActiveTab('info')}
-                  className={`flex-1 py-4 font-bold text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === 'info' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/30' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}
+                  className={`flex-1 py-4 font-bold text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === 'info' ? 'border-[#0B4EA2] text-[#0B4EA2] bg-blue-50/30' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}
                 >
                   Detail firmy
                 </button>
                 <button
                   onClick={() => setActiveTab('graph')}
-                  className={`flex-1 py-4 font-bold text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === 'graph' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/30' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}
+                  className={`flex-1 py-4 font-bold text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === 'graph' ? 'border-[#0B4EA2] text-[#0B4EA2] bg-blue-50/30' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}
                 >
                   Graf vzťahov
                 </button>
@@ -140,7 +140,7 @@ const V4Search = () => {
                           <span>{result.company.street}, {result.company.city}</span>
                         </div>
                       </div>
-                      <div className="bg-emerald-100 text-emerald-700 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
+                      <div className="bg-blue-50 text-[#0B4EA2] px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
                         {result.company.status}
                       </div>
                     </div>
@@ -170,12 +170,12 @@ const V4Search = () => {
                         {/* Executives */}
                         <div className="space-y-4">
                           <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <User className="w-5 h-5 text-emerald-500" />
+                            <User className="w-5 h-5 text-[#0B4EA2]" />
                             Štatutárny orgán
                           </h3>
                           <div className="space-y-3">
                             {result.company.executives.map((p, i) => (
-                              <div key={i} className="p-3 border border-slate-100 rounded-lg hover:border-emerald-200 transition-all bg-white shadow-sm">
+                              <div key={i} className="p-3 border border-slate-100 rounded-lg hover:border-blue-200 transition-all bg-white shadow-sm">
                                 <div className="font-bold text-slate-800">{p.name}</div>
                                 <div className="text-sm text-slate-500 italic">{p.role}</div>
                               </div>
@@ -186,14 +186,14 @@ const V4Search = () => {
                         {/* Owners */}
                         <div className="space-y-4">
                           <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <Share2 className="w-5 h-5 text-emerald-500" />
+                            <Share2 className="w-5 h-5 text-[#0B4EA2]" />
                             Vlastníci / Spoločníci
                           </h3>
                           <div className="space-y-3">
                             {result.company.owners.map((p, i) => (
-                              <div key={i} className="p-3 border border-slate-100 rounded-lg hover:border-emerald-200 transition-all bg-white shadow-sm">
+                              <div key={i} className="p-3 border border-slate-100 rounded-lg hover:border-blue-200 transition-all bg-white shadow-sm">
                                 <div className="font-bold text-slate-800">{p.name}</div>
-                                {p.share && <div className="text-sm text-emerald-600 font-medium">Podiel: {p.share}</div>}
+                                {p.share && <div className="text-sm text-[#EE1C25] font-medium">Podiel: {p.share}</div>}
                               </div>
                             ))}
                           </div>
@@ -240,21 +240,21 @@ const V4Search = () => {
           {/* Sidebar / Sidebar Info */}
           <div className="lg:col-span-4 space-y-6">
              <div className="bg-white border border-slate-200 text-slate-800 rounded-2xl shadow-sm p-6 overflow-hidden relative">
-               <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -ml-16 -mt-16"></div>
+               <div className="absolute top-0 left-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -ml-16 -mt-16"></div>
                
                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 relative z-10 text-slate-900">
-                 <Info className="w-6 h-6 text-emerald-600" />
+                 <Info className="w-6 h-6 text-[#0B4EA2]" />
                  Graph Intelligence
                </h3>
                
                <div className="space-y-4 relative z-10">
                  <div className="flex items-center justify-between text-sm border-b border-slate-100 pb-2">
                    <span className="text-slate-500">Celkom uzlov</span>
-                   <span className="font-mono text-emerald-700 font-bold">{result.graph?.summary?.node_count || 0}</span>
+                   <span className="font-mono text-[#0B4EA2] font-bold">{result.graph?.summary?.node_count || 0}</span>
                  </div>
                  <div className="flex items-center justify-between text-sm border-b border-slate-100 pb-2">
                    <span className="text-slate-500">Detegované vzťahy</span>
-                   <span className="font-mono text-emerald-700 font-bold">{result.graph?.summary?.edge_count || 0}</span>
+                   <span className="font-mono text-[#0B4EA2] font-bold">{result.graph?.summary?.edge_count || 0}</span>
                  </div>
                  
                  <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
@@ -280,7 +280,7 @@ const V4Search = () => {
                      <div className="text-xs text-slate-500">Otvoriť v novom okne</div>
                    </div>
                  </div>
-                 <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 transition-all" />
+                 <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-[#0B4EA2] transition-all" />
                </a>
              )}
           </div>

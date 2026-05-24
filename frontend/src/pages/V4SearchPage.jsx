@@ -20,14 +20,14 @@ const V4SearchPage = () => {
               <div className="hidden md:flex items-center gap-4">
                 <NavLink 
                   to="/dashboard" 
-                  className={({isActive}) => `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${isActive ? 'bg-emerald-50 text-emerald-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                  className={({isActive}) => `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${isActive ? 'bg-blue-50 text-[#0B4EA2]' : 'text-slate-500 hover:bg-slate-50'}`}
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   Dashboard
                 </NavLink>
                 <NavLink 
                   to="/v4" 
-                  className={({isActive}) => `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${isActive ? 'bg-emerald-50 text-emerald-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                  className={({isActive}) => `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${isActive ? 'bg-blue-50 text-[#0B4EA2]' : 'text-slate-500 hover:bg-slate-50'}`}
                 >
                   <Search className="w-4 h-4" />
                   V4 Intelligence
@@ -42,7 +42,7 @@ const V4SearchPage = () => {
               </div>
               <button 
                 onClick={() => navigate('/profile')}
-                className="p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-emerald-100 hover:text-emerald-600 transition-all"
+                className="p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-blue-50 hover:text-[#0B4EA2] transition-all"
               >
                 <User className="w-5 h-5" />
               </button>

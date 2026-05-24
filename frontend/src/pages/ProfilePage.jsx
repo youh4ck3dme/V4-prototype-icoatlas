@@ -90,263 +90,267 @@ const ProfilePage = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen pt-24 p-6 container mx-auto">
-      <h1 className="text-3xl font-bold text-white mb-2">Môj Profil</h1>
-      <p className="text-slate-400 mb-8">Správa účtu a predplatného</p>
+    <div className="min-h-screen bg-slate-50 pt-24 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">Môj Profil</h1>
+        <p className="text-slate-500 mb-8">Správa účtu a predplatného</p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* User Info Card */}
-        <div className="glass-card p-6 h-fit">
-          <div className="flex items-center gap-4 mb-6">
-            <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold 
-                            ${
-                              user.tier === "enterprise"
-                                ? "bg-gradient-to-r from-purple-500 to-pink-500"
-                                : "bg-slate-700"
-                            }`}
-            >
-              {user.full_name ? user.full_name[0] : user.email[0]}
-            </div>
-            <div>
-              <h3 className="font-bold text-lg text-white">
-                {user.full_name || "Používateľ"}
-              </h3>
-              <p className="text-sm text-slate-400">{user.email}</p>
-            </div>
-          </div>
-
-          <div className="border-t border-slate-700/50 pt-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-slate-400">Aktuálny plán:</span>
-              <span
-                className={`px-2 py-1 rounded text-xs font-bold uppercase
-                                ${
-                                  user.tier === "enterprise"
-                                    ? "bg-purple-500/20 text-purple-300"
-                                    : user.tier === "pro"
-                                    ? "bg-sky-500/20 text-sky-300"
-                                    : "bg-slate-700 text-slate-300"
-                                }`}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* User Info Card */}
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 h-fit">
+            <div className="flex items-center gap-4 mb-6">
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold text-white
+                              ${
+                                user.tier === "enterprise"
+                                  ? "bg-gradient-to-r from-purple-600 to-pink-600"
+                                  : "bg-slate-600"
+                              }`}
               >
-                {user.tier}
-              </span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400">Členom od:</span>
-              <span className="text-white">
-                {new Date(user.created_at).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Subscription Management */}
-        <div className="glass-card p-6 lg:col-span-2">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <FaCreditCard className="text-sky-400" /> Predplatné
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* PRO Plan */}
-            <div
-              className={`border rounded-lg p-4 transition-all ${
-                user.tier === "pro"
-                  ? "border-sky-500 bg-sky-900/10"
-                  : "border-slate-700 hover:border-slate-600"
-              }`}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-bold text-white">PRO</h3>
-                {user.tier === "pro" && <FaCheck className="text-sky-400" />}
+                {user.full_name ? user.full_name[0] : user.email[0]}
               </div>
-              <p className="text-2xl font-bold text-white mb-4">
-                19.99€{" "}
-                <span className="text-sm font-normal text-slate-400">/mes</span>
-              </p>
-              <ul className="text-sm text-slate-300 space-y-2 mb-6">
-                <li>✓ Vyššie limity vyhľadávania</li>
-                <li>✓ Detailné exporty</li>
-                <li>✓ Prioritná podpora</li>
-              </ul>
-              {user.tier !== "pro" && user.tier !== "enterprise" && (
-                <button
-                  onClick={() => handlePaymentLink("pro")}
-                  className="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white rounded font-medium transition-colors"
-                >
-                  Upgrade na PRO
-                </button>
-              )}
-            </div>
-
-            {/* ENTERPRISE Plan */}
-            <div
-              className={`border rounded-lg p-4 transition-all ${
-                user.tier === "enterprise"
-                  ? "border-purple-500 bg-purple-900/10"
-                  : "border-slate-700 hover:border-slate-600"
-              }`}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  ENTERPRISE <FaCrown className="text-yellow-400 text-sm" />
+              <div>
+                <h3 className="font-bold text-lg text-slate-900">
+                  {user.full_name || "Používateľ"}
                 </h3>
-                {user.tier === "enterprise" && (
-                  <FaCheck className="text-purple-400" />
-                )}
+                <p className="text-sm text-slate-500">{user.email}</p>
               </div>
-              <p className="text-2xl font-bold text-white mb-4">
-                99.99€{" "}
-                <span className="text-sm font-normal text-slate-400">/mes</span>
-              </p>
-              <ul className="text-sm text-slate-300 space-y-2 mb-6">
-                <li>✓ Neobmedzené vyhľadávanie</li>
-                <li>✓ API Prístup</li>
-                <li>✓ Nexus Intelligence</li>
-              </ul>
-              {user.tier !== "enterprise" && (
-                <button
-                  onClick={() => handlePaymentLink("enterprise")}
-                  className="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded font-medium transition-colors"
+            </div>
+
+            <div className="border-t border-slate-100 pt-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-slate-500">Aktuálny plán:</span>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-bold uppercase
+                                  ${
+                                    user.tier === "enterprise"
+                                      ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                      : user.tier === "pro"
+                                      ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                      : "bg-slate-100 text-slate-700 border border-slate-200"
+                                  }`}
                 >
-                  Upgrade na ENTERPRISE
-                </button>
-              )}
+                  {user.tier}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-500">Členom od:</span>
+                <span className="text-slate-800 font-medium">
+                  {new Date(user.created_at).toLocaleDateString()}
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Payment Instructions */}
-          <div className="mt-4 p-4 bg-sky-900/20 border border-sky-700/50 rounded-lg">
-            <p className="text-sm text-slate-300">
-              <strong className="text-sky-400">ℹ️ Po úhrade:</strong>{" "}
-              Kontaktujte nás na{" "}
-              <a
-                href="mailto:support@icoatlas.sk"
-                className="text-sky-400 hover:underline"
-              >
-                support@icoatlas.sk
-              </a>{" "}
-              s potvrdením platby pre aktiváciu vášho predplatného.
-            </p>
-          </div>
-        </div>
-
-        {/* API Keys Section - Only for Enterprise */}
-        {user.tier === "enterprise" && (
-          <div className="glass-card p-6 lg:col-span-3">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <FaKey className="text-yellow-400" /> API Kľúče
+          {/* Subscription Management */}
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 lg:col-span-2">
+            <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <FaCreditCard className="text-[#0B4EA2]" /> Predplatné
             </h2>
 
-            {/* Key Creation */}
-            <form onSubmit={createApiKey} className="flex gap-4 mb-6">
-              <input
-                type="text"
-                placeholder="Názov kľúča (napr. Produkcia)"
-                className="flex-1 bg-slate-900/50 border border-slate-700 rounded p-2 text-white outline-none focus:border-sky-500"
-                value={newKeyName}
-                onChange={(e) => setNewKeyName(e.target.value)}
-                required
-              />
-              <button
-                type="submit"
-                className="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded text-white font-medium"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* PRO Plan */}
+              <div
+                className={`border rounded-lg p-4 transition-all ${
+                  user.tier === "pro"
+                    ? "border-[#0B4EA2] bg-blue-50/50"
+                    : "border-slate-200 hover:border-slate-350"
+                }`}
               >
-                Vygenerovať
-              </button>
-            </form>
-
-            {/* New Key Display Modal/Alert */}
-            {createdKey && (
-              <div className="mb-6 p-4 bg-yellow-900/20 border border-yellow-700/50 rounded-lg">
-                <h4 className="text-yellow-400 font-bold mb-2">
-                  Nový API kľúč vygenerovaný
-                </h4>
-                <p className="text-sm text-slate-300 mb-2">
-                  Toto je jediný raz, čo vidíte tento kľúč. Bezpečne si ho
-                  uložte.
-                </p>
-                <div className="flex items-center gap-2 bg-black/30 p-2 rounded">
-                  <code className="text-white flex-1 font-mono">
-                    {createdKey.key}
-                  </code>
-                  <button
-                    className="text-slate-400 hover:text-white"
-                    onClick={() =>
-                      navigator.clipboard.writeText(createdKey.key)
-                    }
-                    title="Kopírovať"
-                  >
-                    <FaCopy />
-                  </button>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-slate-900">PRO</h3>
+                  {user.tier === "pro" && <FaCheck className="text-[#0B4EA2]" />}
                 </div>
+                <p className="text-2xl font-bold text-slate-900 mb-4">
+                  19.99€{" "}
+                  <span className="text-sm font-normal text-slate-500">/mes</span>
+                </p>
+                <ul className="text-sm text-slate-650 space-y-2 mb-6">
+                  <li>✓ Vyššie limity vyhľadávania</li>
+                  <li>✓ Detailné exporty</li>
+                  <li>✓ Prioritná podpora</li>
+                </ul>
+                {user.tier !== "pro" && user.tier !== "enterprise" && (
+                  <button
+                    onClick={() => handleUpgrade("pro")}
+                    className="w-full py-2 bg-[#0B4EA2] hover:bg-blue-800 text-white rounded font-medium transition-colors"
+                  >
+                    Upgrade na PRO
+                  </button>
+                )}
               </div>
-            )}
 
-            {/* Keys List */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-slate-400 text-sm border-b border-slate-700">
-                    <th className="p-3">Názov</th>
-                    <th className="p-3">Prefix</th>
-                    <th className="p-3">Vytvorený</th>
-                    <th className="p-3">Stav</th>
-                    <th className="p-3 text-right">Akcie</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {apiKeys.map((key) => (
-                    <tr
-                      key={key.id}
-                      className="border-b border-slate-700/30 text-slate-300 hover:bg-white/5"
-                    >
-                      <td className="p-3">{key.name}</td>
-                      <td className="p-3 font-mono text-xs bg-black/20 rounded w-fit px-2 py-1">
-                        {key.prefix}••••
-                      </td>
-                      <td className="p-3 text-sm">
-                        {new Date(key.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="p-3">
-                        <span
-                          className={`px-2 py-0.5 rounded text-xs ${
-                            key.is_active
-                              ? "bg-emerald-500/20 text-emerald-300"
-                              : "bg-red-500/20 text-red-300"
-                          }`}
-                        >
-                          {key.is_active ? "Aktívny" : "Zrušený"}
-                        </span>
-                      </td>
-                      <td className="p-3 text-right">
-                        {key.is_active && (
-                          <button
-                            onClick={() => revokeApiKey(key.id)}
-                            className="text-red-400 hover:text-red-300 p-2"
-                            title="Zrušiť kľúč"
-                          >
-                            <FaTrash />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  {apiKeys.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan="5"
-                        className="p-6 text-center text-slate-500 italic"
-                      >
-                        Žiadne aktívne API kľúče
-                      </td>
-                    </tr>
+              {/* ENTERPRISE Plan */}
+              <div
+                className={`border rounded-lg p-4 transition-all ${
+                  user.tier === "enterprise"
+                    ? "border-purple-500 bg-purple-50/30"
+                    : "border-slate-200 hover:border-slate-350"
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    ENTERPRISE <FaCrown className="text-yellow-500 text-sm" />
+                  </h3>
+                  {user.tier === "enterprise" && (
+                    <FaCheck className="text-purple-650" />
                   )}
-                </tbody>
-              </table>
+                </div>
+                <p className="text-2xl font-bold text-slate-900 mb-4">
+                  99.99€{" "}
+                  <span className="text-sm font-normal text-slate-500">/mes</span>
+                </p>
+                <ul className="text-sm text-slate-650 space-y-2 mb-6">
+                  <li>✓ Neobmedzené vyhľadávanie</li>
+                  <li>✓ API Prístup</li>
+                  <li>✓ Nexus Intelligence</li>
+                </ul>
+                {user.tier !== "enterprise" && (
+                  <button
+                    onClick={() => handleUpgrade("enterprise")}
+                    className="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded font-medium transition-colors"
+                  >
+                    Upgrade na ENTERPRISE
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Payment Instructions */}
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-slate-700">
+                <strong className="text-[#0B4EA2]">ℹ️ Po úhrade:</strong>{" "}
+                Kontaktujte nás na{" "}
+                <a
+                  href="mailto:support@icoatlas.sk"
+                  className="text-[#0B4EA2] hover:underline font-semibold"
+                >
+                  support@icoatlas.sk
+                </a>{" "}
+                s potvrdením platby pre aktiváciu vášho predplatného.
+              </p>
             </div>
           </div>
-        )}
+
+          {/* API Keys Section - Only for Enterprise */}
+          {user.tier === "enterprise" && (
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 lg:col-span-3">
+              <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <FaKey className="text-yellow-600" /> API Kľúče
+              </h2>
+
+              {/* Key Creation */}
+              <form onSubmit={createApiKey} className="flex gap-4 mb-6">
+                <input
+                  type="text"
+                  placeholder="Názov kľúča (napr. Produkcia)"
+                  className="flex-1 bg-slate-50 border border-slate-350 rounded p-2 text-slate-900 outline-none focus:ring-2 focus:ring-[#0B4EA2] focus:border-transparent"
+                  value={newKeyName}
+                  onChange={(e) => setNewKeyName(e.target.value)}
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-[#0B4EA2] hover:bg-blue-800 px-4 py-2 rounded text-white font-medium transition-colors"
+                >
+                  Vygenerovať
+                </button>
+              </form>
+
+              {/* New Key Display Modal/Alert */}
+              {createdKey && (
+                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-250 rounded-lg">
+                  <h4 className="text-yellow-800 font-bold mb-2">
+                    Nový API kľúč vygenerovaný
+                  </h4>
+                  <p className="text-sm text-slate-650 mb-2">
+                    Toto je jediný raz, čo vidíte tento kľúč. Bezpečne si ho
+                    uložte.
+                  </p>
+                  <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 p-2 rounded">
+                    <code className="text-slate-800 flex-1 font-mono break-all">
+                      {createdKey.key}
+                    </code>
+                    <button
+                      className="text-slate-500 hover:text-slate-800 p-1"
+                      onClick={() =>
+                        navigator.clipboard.writeText(createdKey.key)
+                      }
+                      title="Kopírovať"
+                    >
+                      <FaCopy />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Keys List */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="text-slate-500 text-sm border-b border-slate-200">
+                      <th className="p-3">Názov</th>
+                      <th className="p-3">Prefix</th>
+                      <th className="p-3">Vytvorený</th>
+                      <th className="p-3">Stav</th>
+                      <th className="p-3 text-right">Akcie</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {apiKeys.map((key) => (
+                      <tr
+                        key={key.id}
+                        className="border-b border-slate-100 text-slate-700 hover:bg-slate-50"
+                      >
+                        <td className="p-3 font-medium">{key.name}</td>
+                        <td className="p-3">
+                          <span className="font-mono text-xs bg-slate-100 rounded px-2 py-1 border border-slate-200 text-slate-800">
+                            {key.prefix}••••
+                          </span>
+                        </td>
+                        <td className="p-3 text-sm">
+                          {new Date(key.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="p-3">
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                              key.is_active
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : "bg-red-50 text-red-700 border border-red-200"
+                            }`}
+                          >
+                            {key.is_active ? "Aktívny" : "Zrušený"}
+                          </span>
+                        </td>
+                        <td className="p-3 text-right">
+                          {key.is_active && (
+                            <button
+                              onClick={() => revokeApiKey(key.id)}
+                              className="text-[#EE1C25] hover:text-red-700 p-2 transition-colors"
+                              title="Zrušiť kľúč"
+                            >
+                              <FaTrash />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {apiKeys.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="5"
+                          className="p-6 text-center text-slate-400 italic"
+                        >
+                          Žiadne aktívne API kľúče
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

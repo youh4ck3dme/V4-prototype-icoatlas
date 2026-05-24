@@ -159,17 +159,17 @@ const Webhooks = () => {
   if (user?.tier !== 'enterprise') {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20 text-center">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white border border-slate-200 shadow-md rounded-xl p-8 text-center animate-fade-in">
             <IcoAtlasLogo className="mx-auto mb-6" />
-            <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-white mb-2">Enterprise Tier Required</h1>
-            <p className="text-blue-200 mb-6">Webhooks are only available for Enterprise tier users.</p>
+            <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Vyžaduje sa Enterprise úroveň</h1>
+            <p className="text-slate-650 mb-6">Webhooks sú dostupné len pre predplatiteľov balíka Enterprise.</p>
             <a
-              href="/payment/checkout?tier=enterprise"
-              className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              href="/dashboard"
+              className="inline-block bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-sm"
             >
-              Upgrade to Enterprise
+              Späť na Dashboard
             </a>
           </div>
         </div>
@@ -179,12 +179,19 @@ const Webhooks = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
-        <nav className="bg-white/10 backdrop-blur-lg border-b border-white/20">
+      <div className="min-h-screen bg-slate-50 pt-20">
+        <nav className="bg-white border-b border-slate-200 shadow-sm fixed top-0 left-0 right-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              <IcoAtlasLogo />
-              <a href="/dashboard" className="text-white hover:text-blue-200">Back to Dashboard</a>
+              <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+                <IcoAtlasLogo size={32} />
+                <span className="text-xl font-bold tracking-tight text-slate-800">
+                  iCO<span className="text-[#0B4EA2] font-semibold">Atlas</span>
+                </span>
+              </div>
+              <a href="/dashboard" className="text-[#0B4EA2] hover:text-blue-800 font-semibold text-sm">
+                Späť na Dashboard
+              </a>
             </div>
           </div>
         </nav>
@@ -192,50 +199,50 @@ const Webhooks = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Webhooks</h1>
-              <p className="text-blue-200">Manage real-time event notifications</p>
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">Webhooks</h1>
+              <p className="text-slate-500">Spravujte notifikácie o udalostiach v reálnom čase</p>
             </div>
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
+              className="bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
             >
               <Plus size={20} />
-              Create Webhook
+              Vytvoriť Webhook
             </button>
           </div>
 
           {/* New Webhook Display */}
           {newWebhook && (
-            <div className="bg-green-500/20 border border-green-500 rounded-lg p-6 mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="text-green-400" size={24} />
-                  <h3 className="text-xl font-bold text-white">Webhook Created!</h3>
+                  <CheckCircle className="text-green-600" size={24} />
+                  <h3 className="text-xl font-bold text-green-800">Webhook bol úspešne vytvorený!</h3>
                 </div>
                 <button
                   onClick={() => setNewWebhook(null)}
-                  className="text-white hover:text-green-200"
+                  className="text-slate-400 hover:text-slate-600 font-bold text-lg"
                 >
                   ×
                 </button>
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-white mb-1">Secret Key</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tajný kľúč (Secret Key)</label>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-black/30 rounded-lg p-3 text-green-300 font-mono text-sm break-all">
+                    <code className="flex-1 bg-slate-100 border border-slate-200 rounded-lg p-3 text-slate-800 font-mono text-sm break-all">
                       {newWebhook.secret}
                     </code>
                     <button
                       onClick={() => copyToClipboard(newWebhook.secret, 'new')}
-                      className="text-green-300 hover:text-green-200"
+                      className="text-[#0B4EA2] hover:text-blue-800 p-1"
                     >
                       {copiedSecretId === 'new' ? <CheckCircle size={20} /> : <Copy size={20} />}
                     </button>
                   </div>
                 </div>
-                <p className="text-yellow-300 text-sm font-semibold">
-                  ⚠️ Save this secret now! It will not be shown again. Use it to verify webhook signatures.
+                <p className="text-yellow-800 text-sm font-semibold">
+                  ⚠️ Pozor! Dobre si uložte tento tajný kľúč. Zobrazí sa iba raz a slúži na verifikáciu podpisu webhookov.
                 </p>
               </div>
             </div>
@@ -243,63 +250,63 @@ const Webhooks = () => {
 
           {/* Create Form */}
           {showCreateForm && (
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 mb-6 border border-white/20">
-              <h2 className="text-xl font-bold text-white mb-4">Create New Webhook</h2>
+            <div className="bg-white border border-slate-200 shadow-md rounded-xl p-6 mb-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Vytvoriť nový Webhook</h2>
               <form onSubmit={handleCreateWebhook} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Webhook URL</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Webhook URL</label>
                   <input
                     type="url"
                     value={formData.url}
                     onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                     required
-                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://your-app.com/webhooks/icoatlas"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-355 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="https://vasa-aplikacia.sk/webhooks/icoatlas"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Events</label>
-                  <div className="space-y-2 bg-white/5 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Udalosti (Events)</label>
+                  <div className="space-y-2 bg-slate-50 border border-slate-200 rounded-lg p-4">
                     {AVAILABLE_EVENTS.map((event) => (
-                      <label key={event} className="flex items-center text-white cursor-pointer hover:bg-white/5 p-2 rounded">
+                      <label key={event} className="flex items-center text-slate-700 cursor-pointer hover:bg-slate-100/50 p-2 rounded transition-colors">
                         <input
                           type="checkbox"
                           checked={formData.events.includes(event)}
                           onChange={() => toggleEvent(event)}
-                          className="mr-3"
+                          className="mr-3 rounded border-slate-300 text-[#0B4EA2] focus:ring-blue-500"
                         />
-                        <code className="text-sm">{event}</code>
+                        <code className="text-sm text-slate-800 font-mono font-semibold">{event}</code>
                       </label>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Secret (optional)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Tajný kľúč - Secret (voliteľné)</label>
                   <input
                     type="text"
                     value={formData.secret}
                     onChange={(e) => setFormData({ ...formData, secret: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Leave empty to auto-generate"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-355 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Ponechajte prázdne pre automatické vygenerovanie"
                   />
-                  <p className="text-xs text-blue-200 mt-1">Used for HMAC signature verification</p>
+                  <p className="text-xs text-slate-550 mt-1">Slúži na overenie pravosti HMAC podpisu.</p>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 pt-2">
                   <button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition-colors"
+                    className="bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded-lg transition-colors shadow-sm"
                   >
-                    Create Webhook
+                    Vytvoriť Webhook
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreateForm(false)}
-                    className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-2 rounded-lg transition-colors"
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-2 rounded-lg transition-colors border border-slate-200"
                   >
-                    Cancel
+                    Zrušiť
                   </button>
                 </div>
               </form>
@@ -308,17 +315,17 @@ const Webhooks = () => {
 
           {/* Webhooks List */}
           {loading ? (
-            <div className="text-center text-white py-12">Loading...</div>
+            <div className="text-center text-slate-500 py-12">Načítavam...</div>
           ) : webhooks.length === 0 ? (
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-12 border border-white/20 text-center">
-              <Webhook className="w-16 h-16 text-blue-300 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">No Webhooks</h3>
-              <p className="text-blue-200 mb-6">Create your first webhook to receive real-time event notifications</p>
+            <div className="bg-white border border-slate-200 shadow-md rounded-xl p-12 text-center">
+              <Webhook className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Žiadne Webhooky</h3>
+              <p className="text-slate-500 mb-6">Vytvorte si svoj prvý webhook pre odosielanie notifikácií v reálnom čase.</p>
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                className="bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-sm"
               >
-                Create Webhook
+                Vytvoriť Webhook
               </button>
             </div>
           ) : (
@@ -328,40 +335,40 @@ const Webhooks = () => {
                 {webhooks.map((webhook) => (
                   <div
                     key={webhook.id}
-                    className={`bg-white/10 backdrop-blur-lg rounded-lg p-6 border ${
-                      webhook.is_active ? 'border-white/20' : 'border-red-500/50'
+                    className={`bg-white border rounded-xl p-6 shadow-sm ${
+                      webhook.is_active ? 'border-slate-200' : 'border-red-200 bg-red-50/10'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Webhook className="text-blue-300" size={20} />
-                          <code className="text-white font-mono text-sm break-all">{webhook.url}</code>
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <Webhook className="text-[#0B4EA2]" size={20} />
+                          <code className="text-slate-800 font-mono text-sm break-all bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">{webhook.url}</code>
                           {webhook.is_active ? (
-                            <span className="px-2 py-1 bg-green-500/20 text-green-300 text-xs rounded">Active</span>
+                            <span className="px-2 py-1 bg-green-50 text-green-700 border border-green-200 text-xs rounded font-semibold">Aktívny</span>
                           ) : (
-                            <span className="px-2 py-1 bg-red-500/20 text-red-300 text-xs rounded">Inactive</span>
+                            <span className="px-2 py-1 bg-red-50 text-red-700 border border-red-200 text-xs rounded font-semibold">Neaktívny</span>
                           )}
                         </div>
                         <div className="flex flex-wrap gap-2 mb-3">
                           {webhook.events.map((event) => (
-                            <span key={event} className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
+                            <span key={event} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-xs rounded font-medium">
                               {event}
                             </span>
                           ))}
                         </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm text-blue-200">
+                        <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
                           <div>
-                            <span className="font-semibold">Created:</span> {formatDate(webhook.created_at)}
+                            <span className="font-semibold text-slate-800">Vytvorený:</span> {formatDate(webhook.created_at)}
                           </div>
                           <div>
-                            <span className="font-semibold">Last Delivered:</span> {formatDate(webhook.last_delivered_at)}
+                            <span className="font-semibold text-slate-800">Doručené:</span> {formatDate(webhook.last_delivered_at)}
                           </div>
                           <div>
-                            <span className="font-semibold">Success:</span> {webhook.success_count}
+                            <span className="font-semibold text-slate-800">Úspešné:</span> {webhook.success_count}
                           </div>
                           <div>
-                            <span className="font-semibold">Failures:</span> {webhook.failure_count}
+                            <span className="font-semibold text-slate-800">Neúspešné:</span> {webhook.failure_count}
                           </div>
                         </div>
                       </div>
@@ -371,15 +378,15 @@ const Webhooks = () => {
                             setSelectedWebhook(webhook.id);
                             loadWebhookLogs(webhook.id);
                           }}
-                          className="text-blue-400 hover:text-blue-300 p-2"
-                          title="View logs"
+                          className="text-[#0B4EA2] hover:text-blue-800 p-2 hover:bg-slate-100 rounded transition-colors"
+                          title="Zobraziť logy"
                         >
                           <Eye size={20} />
                         </button>
                         <button
                           onClick={() => handleDeleteWebhook(webhook.id)}
-                          className="text-red-400 hover:text-red-300 p-2"
-                          title="Delete webhook"
+                          className="text-[#EE1C25] hover:text-red-700 p-2 hover:bg-red-50 rounded transition-colors"
+                          title="Vymazať webhook"
                         >
                           <Trash2 size={20} />
                         </button>
@@ -391,46 +398,46 @@ const Webhooks = () => {
 
               {/* Logs Panel */}
               {selectedWebhook && (
-                <div className="lg:col-span-1 bg-white/10 backdrop-blur-lg rounded-lg p-6 border border-white/20">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold text-white">Delivery Logs</h3>
+                <div className="lg:col-span-1 bg-white border border-slate-200 shadow-sm rounded-xl p-6">
+                  <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                    <h3 className="text-lg font-bold text-slate-900">Doručovacie logy</h3>
                     <button
                       onClick={() => setSelectedWebhook(null)}
-                      className="text-white hover:text-blue-200"
+                      className="text-slate-400 hover:text-slate-600 font-bold text-lg"
                     >
                       ×
                     </button>
                   </div>
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                  <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
                     {logs.length === 0 ? (
-                      <p className="text-blue-200 text-sm">No deliveries yet</p>
+                      <p className="text-slate-500 italic text-sm">Žiadne pokusy o doručenie</p>
                     ) : (
                       logs.map((log) => (
                         <div
                           key={log.id}
-                          className={`p-3 rounded text-sm ${
-                            log.success ? 'bg-green-500/10 border border-green-500/30' : 'bg-red-500/10 border border-red-500/30'
+                          className={`p-3 rounded-lg border text-sm ${
+                            log.success ? 'bg-green-50/50 border-green-200' : 'bg-red-50/50 border-red-200'
                           }`}
                         >
                           <div className="flex items-center gap-2 mb-1">
                             {log.success ? (
-                              <CheckCircle className="text-green-400" size={16} />
+                              <CheckCircle className="text-green-600" size={16} />
                             ) : (
-                              <AlertCircle className="text-red-400" size={16} />
+                              <AlertCircle className="text-red-650" size={16} />
                             )}
-                            <code className="text-white text-xs">{log.event_type}</code>
+                            <code className="text-slate-800 text-xs font-mono font-semibold">{log.event_type}</code>
                           </div>
-                          <div className="text-blue-200 text-xs">
-                            <Clock size={12} className="inline mr-1" />
+                          <div className="text-slate-500 text-xs flex items-center gap-1">
+                            <Clock size={12} />
                             {formatDate(log.delivery_time)}
                           </div>
                           {log.response_status && (
-                            <div className="text-xs text-blue-300 mt-1">
-                              Status: {log.response_status}
+                            <div className="text-xs text-slate-700 mt-1 font-medium">
+                              Odozva: status {log.response_status}
                             </div>
                           )}
                           {log.error_message && (
-                            <div className="text-xs text-red-300 mt-1">
+                            <div className="text-xs text-red-700 mt-1">
                               {log.error_message}
                             </div>
                           )}
