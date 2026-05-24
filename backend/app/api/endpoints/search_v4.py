@@ -58,12 +58,44 @@ def _enrich_company_from_ruz(company_dict, result):
     company_dict["legal_form"] = legal_form
 
 
+def classify_registry_error(exc: Exception) -> Dict[str, Any]:
+    err_code = "parse_failed"
+    message = str(exc)
+    
+    if isinstance(exc, HTTPException):
+        message = exc.detail
+        if exc.status_code == 404:
+            err_code = "not_found"
+        elif exc.status_code == 504:
+            err_code = "timeout"
+        elif exc.status_code in (403, 429):
+            err_code = "provider_blocked"
+        elif "timeout" in str(exc.detail).lower():
+            err_code = "timeout"
+        elif "not found" in str(exc.detail).lower() or "nebolo nájdené" in str(exc.detail).lower() or "nie znaleziono" in str(exc.detail).lower():
+            err_code = "not_found"
+        elif "blocked" in str(exc.detail).lower() or "forbidden" in str(exc.detail).lower() or "rate limit" in str(exc.detail).lower():
+            err_code = "provider_blocked"
+    else:
+        exc_name = type(exc).__name__.lower()
+        if "timeout" in exc_name or "timeout" in str(exc).lower():
+            err_code = "timeout"
+        elif "blocked" in str(exc).lower() or "forbidden" in str(exc).lower() or "rate limit" in str(exc).lower():
+            err_code = "provider_blocked"
+            
+    return {
+        "error_code": err_code,
+        "message": message
+    }
+
+
 @router.get("/search/{raw_id}", summary="Unified V4 company search with graph")
 async def search_v4(
     raw_id: str,
     country: Optional[str] = Query(None, description="Country hint: SK, CZ, PL, HU"),
     graph: int = Query(0, description="Include relationship graph (1=yes, 0=no)"),
     limit: int = Query(50, description="Max related companies in graph"),
+    fallback: int = Query(1, description="Allow fallback to mock data (1=yes, 0=no)"),
 ) -> Dict[str, Any]:
     """
     Unified V4 company search.
@@ -76,6 +108,7 @@ async def search_v4(
     - country: Force country (SK, CZ, PL, HU) - overrides auto-detection
     - graph: Set to 1 to include relationship graph
     - limit: Max related companies to return in graph
+    - fallback: Allow fallback to mock/mocked data on PL/HU scraper failures
     """
     
     # Classify the identifier
@@ -97,6 +130,7 @@ async def search_v4(
         if cached_data:
             company = cached_data
             cache_hit = True
+            company["provider_status"] = "cached"
             logger.info(f"Cache hit for {cache_key}")
     except Exception as e:
         logger.warning(f"Failed to fetch from cache: {e}")
@@ -126,7 +160,8 @@ async def search_v4(
                         "city": "",
                         "postal_code": "",
                         "source_api": "RUZ",
-                        "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                        "provider_status": "live",
+                        "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
                     }
                     _enrich_company_from_ruz(company, result)
                     company["raw_data"]["provider_latency_ms"] = latency
@@ -156,7 +191,8 @@ async def search_v4(
                         "city": "",
                         "postal_code": "",
                         "source_api": "ARES",
-                        "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                        "provider_status": "live",
+                        "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
                     }
                     company["raw_data"]["provider_latency_ms"] = latency
                     company["raw_data"]["provider_ok"] = True
@@ -183,13 +219,31 @@ async def search_v4(
                     "city": "",
                     "postal_code": "",
                     "source_api": "biznes.gov.pl",
-                    "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                    "provider_status": "live",
+                    "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
                 }
                 company["raw_data"]["provider_latency_ms"] = latency
                 company["raw_data"]["provider_ok"] = True
                 logger.info(f"PL:biznes.gov.pl fetch succeeded in {latency}ms")
             except Exception as e:
                 latency = int((time.time() - t0) * 1000)
+                classified = classify_registry_error(e)
+                if fallback == 0:
+                    status_code = e.status_code if isinstance(e, HTTPException) else 502
+                    if "timeout" in classified["error_code"]:
+                        status_code = 504
+                    elif "not_found" in classified["error_code"]:
+                        status_code = 404
+                    elif "provider_blocked" in classified["error_code"]:
+                        status_code = 403
+                    raise HTTPException(
+                        status_code=status_code,
+                        detail={
+                            "error_code": classified["error_code"],
+                            "message": classified["message"],
+                            "tried_providers": tried_providers
+                        }
+                    )
                 logger.warning(f"PL:biznes.gov.pl fetch failed in {latency}ms: {e}. Using fallback/mock data.")
                 company = {
                     "atlas_id": classification.digits,
@@ -200,6 +254,8 @@ async def search_v4(
                     "city": "Warszawa",
                     "postal_code": "00-001",
                     "source_api": "PL Fallback",
+                    "provider_status": "fallback",
+                    "provider_error": classified,
                     "raw_data": {
                         "note": "Generated fallback data due to scraper failure",
                         "nip": classification.digits if detected_type == "NIP" else "5260250995",
@@ -237,13 +293,31 @@ async def search_v4(
                     "city": "",
                     "postal_code": "",
                     "source_api": "companyregister.hu",
-                    "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                    "provider_status": "live",
+                    "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
                 }
                 company["raw_data"]["provider_latency_ms"] = latency
                 company["raw_data"]["provider_ok"] = True
                 logger.info(f"HU:companyregister.hu fetch succeeded in {latency}ms")
             except Exception as e:
                 latency = int((time.time() - t0) * 1000)
+                classified = classify_registry_error(e)
+                if fallback == 0:
+                    status_code = e.status_code if isinstance(e, HTTPException) else 502
+                    if "timeout" in classified["error_code"]:
+                        status_code = 504
+                    elif "not_found" in classified["error_code"]:
+                        status_code = 404
+                    elif "provider_blocked" in classified["error_code"]:
+                        status_code = 403
+                    raise HTTPException(
+                        status_code=status_code,
+                        detail={
+                            "error_code": classified["error_code"],
+                            "message": classified["message"],
+                            "tried_providers": tried_providers
+                        }
+                    )
                 logger.warning(f"HU:companyregister.hu fetch failed in {latency}ms: {e}. Using fallback/mock data.")
                 company = {
                     "atlas_id": classification.digits,
@@ -254,6 +328,8 @@ async def search_v4(
                     "city": "Budapest",
                     "postal_code": "1007",
                     "source_api": "HU Fallback",
+                    "provider_status": "fallback",
+                    "provider_error": classified,
                     "raw_data": {
                         "note": "Generated fallback data due to scraper failure",
                         "adoszam": (
@@ -288,7 +364,8 @@ async def search_v4(
                             "city": "",
                             "postal_code": "",
                             "source_api": "RUZ",
-                            "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                            "provider_status": "live",
+                            "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
                         }
                         _enrich_company_from_ruz(company, result)
                         company["raw_data"]["provider_latency_ms"] = latency
@@ -315,7 +392,8 @@ async def search_v4(
                                 "city": "",
                                 "postal_code": "",
                                 "source_api": "ARES",
-                                "raw_data": result.raw_data if hasattr(result, 'raw_data') else {},
+                                "provider_status": "live",
+                                "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
                             }
                             company["raw_data"]["provider_latency_ms"] = latency_cz
                             company["raw_data"]["provider_ok"] = True
@@ -327,23 +405,49 @@ async def search_v4(
             else:
                 raise HTTPException(status_code=400, detail=f"Cannot classify identifier: {raw_id}")
         
-        # Save successful response to cache
-        if company and not cache_hit and company.get("raw_data", {}).get("provider_ok"):
+        # Save response to cache
+        if company and not cache_hit:
             try:
-                await cache_service.set(cache_key, company, expire_seconds=86400)
-                logger.info(f"Successfully cached data for {cache_key}")
+                if company.get("provider_status") == "fallback":
+                    await cache_service.set(cache_key, company, expire_seconds=300)
+                    logger.info(f"Successfully cached fallback data for {cache_key} (5 mins)")
+                elif company.get("provider_status") == "live":
+                    await cache_service.set(cache_key, company, expire_seconds=86400)
+                    logger.info(f"Successfully cached live data for {cache_key} (24 hours)")
             except Exception as e:
                 logger.warning(f"Failed to save to cache: {e}")
     
     except HTTPException:
         raise
     except Exception as e:
-        error = str(e)
+        classified = classify_registry_error(e)
+        status_code = 502
+        if isinstance(e, HTTPException):
+            status_code = e.status_code
+        elif "timeout" in classified["error_code"]:
+            status_code = 504
+        elif "not_found" in classified["error_code"]:
+            status_code = 404
+        elif "provider_blocked" in classified["error_code"]:
+            status_code = 403
+            
+        raise HTTPException(
+            status_code=status_code,
+            detail={
+                "error_code": classified["error_code"],
+                "message": classified["message"],
+                "tried_providers": tried_providers
+            }
+        )
     
     if not company:
         raise HTTPException(
             status_code=404, 
-            detail=f"Company not found. Tried: {tried_providers}. Error: {error}"
+            detail={
+                "error_code": "not_found",
+                "message": "Company not found",
+                "tried_providers": tried_providers
+            }
         )
         
     # --- Debt & Risk Intelligence (Autoform & Datahub) ---
@@ -544,5 +648,64 @@ async def search_v4(
                 response["graph"] = {"error": str(e), "note": "Graph DB connection failed"}
         else:
             response["graph"] = {"note": "Graph features disabled (DATABASE_URL not set)"}
+            
+    response["provider_status"] = company.get("provider_status", "live")
+    if company.get("provider_error"):
+        response["provider_error"] = company.get("provider_error")
     
     return response
+
+
+@router.get("/health/registries", summary="Smoke test V4 registries availability")
+async def health_registries():
+    import httpx
+    import asyncio
+    
+    async def check_sk():
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get("https://www.registeruz.sk/cruz-public/domain/suggestion/search?query=88888888", timeout=5.0)
+                return "ok" if r.status_code == 200 else "degraded"
+        except Exception as e:
+            return f"error: {str(e)}"
+
+    async def check_cz():
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get("https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/27082440", timeout=5.0)
+                return "ok" if r.status_code == 200 else "degraded"
+        except Exception as e:
+            return f"error: {str(e)}"
+
+    async def check_pl():
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get("https://www.biznes.gov.pl/pl/wyszukiwarka-firm", timeout=5.0)
+                return "ok" if r.status_code == 200 else "degraded"
+        except Exception as e:
+            return f"error: {str(e)}"
+
+    async def check_hu():
+        try:
+            async with httpx.AsyncClient() as client:
+                r = await client.get("https://companyregister.hu/", timeout=5.0)
+                return "ok" if r.status_code == 200 else "degraded"
+        except Exception as e:
+            return f"error: {str(e)}"
+
+    results = await asyncio.gather(
+        check_sk(), check_cz(), check_pl(), check_hu()
+    )
+    
+    status = "ok" if all(r == "ok" for r in results) else "degraded"
+    
+    return {
+        "status": status,
+        "registries": {
+            "SK": results[0],
+            "CZ": results[1],
+            "PL": results[2],
+            "HU": results[3]
+        }
+    }
+
