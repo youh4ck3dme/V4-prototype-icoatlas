@@ -37,8 +37,8 @@ const V4SearchPage = () => {
             
             <div className="flex items-center gap-4">
               <div className="hidden sm:flex flex-col text-right mr-2">
-                <span className="text-sm font-bold text-slate-900">{user?.full_name || 'User'}</span>
-                <span className="text-xs text-slate-500 uppercase tracking-widest">{user?.tier || 'Free'} Plan</span>
+                <span className="text-sm font-bold text-slate-900">{user?.full_name || 'Používateľ'}</span>
+                <span className="text-xs text-slate-500 uppercase tracking-widest">Program {user?.tier === 'pro' ? 'Pro' : user?.tier === 'enterprise' ? 'Enterprise' : 'Bezplatný'}</span>
               </div>
               <button 
                 onClick={() => navigate('/profile')}
@@ -64,7 +64,7 @@ const V4SearchPage = () => {
       <footer className="py-8 bg-white border-t border-slate-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="text-slate-400 text-sm italic">
-            &copy; 2025 ICOAtlas Identifier Intelligence V4. Powered by Identity Graph Engine.
+            &copy; 2026 ICOAtlas Identifier Intelligence V4. Poháňané technológiou Identity Graph Engine.
           </p>
         </div>
       </footer>

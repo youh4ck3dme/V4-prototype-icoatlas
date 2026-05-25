@@ -173,8 +173,8 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">8. Kontakt</h2>
               <p className="text-slate-700 leading-relaxed">
                 Pre otázky týkajúce sa týchto VOP kontaktujte nás na: 
-                <a href="mailto:legal@crossbordernexus.com" className="text-blue-600 hover:underline ml-1">
-                  legal@crossbordernexus.com
+                <a href="mailto:support@icoatlas.sk" className="text-blue-600 hover:underline ml-1">
+                  support@icoatlas.sk
                 </a>
               </p>
             </section>

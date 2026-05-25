@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import IcoAtlasLogo from '../components/IcoAtlasLogo';
@@ -6,6 +7,7 @@ import { Copy, Trash2, Plus, Key, Eye, EyeOff, CheckCircle, AlertCircle } from '
 
 const ApiKeys = () => {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [apiKeys, setApiKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -87,7 +89,7 @@ const ApiKeys = () => {
   };
 
   const handleRevokeKey = async (keyId) => {
-    if (!confirm('Are you sure you want to revoke this API key?')) {
+    if (!confirm('Naozaj chcete zrušiť tento API kľúč?')) {
       return;
     }
 
@@ -114,7 +116,7 @@ const ApiKeys = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Never';
+    if (!dateString) return 'Nikdy';
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -360,8 +362,8 @@ const ApiKeys = () => {
                       </div>
                       <div className="mt-3 flex gap-2">
                         {key.permissions.map((perm) => (
-                          <span key={perm} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-xs rounded font-medium capitalize">
-                            {perm}
+                          <span key={perm} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-xs rounded font-medium">
+                            {perm === 'read' ? 'Čítanie' : perm === 'write' ? 'Zápis' : perm}
                           </span>
                         ))}
                       </div>

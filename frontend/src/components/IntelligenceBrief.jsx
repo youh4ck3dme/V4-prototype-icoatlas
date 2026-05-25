@@ -14,12 +14,12 @@ const IntelligenceBrief = ({ story, metadata }) => {
       <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-2 font-bold text-slate-800 uppercase tracking-wider text-[11px]">
           <Sparkles className="w-4 h-4 text-[#0B4EA2]" />
-          <span>Intelligence Brief</span>
+          <span>Analytický prehľad</span>
         </div>
         {metadata?.is_cross_border && (
           <span className="flex items-center gap-1 text-[9px] bg-blue-50 text-[#0B4EA2] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border border-blue-200">
             <Globe className="w-3 h-3" />
-            Cross-Border
+            Cezhraničný
           </span>
         )}
       </div>
@@ -33,7 +33,7 @@ const IntelligenceBrief = ({ story, metadata }) => {
           <div className="grid grid-cols-2 gap-4 pt-5 border-t border-slate-100">
             <div className="flex flex-col gap-1">
               <span className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">
-                Network Nodes
+                Sieťové uzly
               </span>
               <span className="text-sm font-bold text-slate-800">
                 {metadata.node_count}
@@ -41,7 +41,7 @@ const IntelligenceBrief = ({ story, metadata }) => {
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">
-                Relationships
+                Vzťahy
               </span>
               <span className="text-sm font-bold text-slate-800">
                 {metadata.edge_count}
@@ -49,7 +49,7 @@ const IntelligenceBrief = ({ story, metadata }) => {
             </div>
             <div className="flex flex-col col-span-2 gap-2 mt-2">
               <span className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">
-                Involved Jurisdictions
+                Zúčastnené krajiny
               </span>
               <div className="flex flex-wrap gap-2 mt-1">
                 {metadata.involved_countries?.map((c) => (

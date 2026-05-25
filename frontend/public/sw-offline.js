@@ -10,7 +10,7 @@ const STATIC_ASSETS = [
   '/',
   '/offline.html',
   '/manifest.json',
-  '/favicon.svg'
+  '/favicon.png'
 ];
 
 // API endpoints ktoré sa majú cacheovať
@@ -187,8 +187,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'iCOAtlas';
   const options = {
     body: data.body || 'New update available',
-    icon: '/favicon.svg',
-    badge: '/favicon.svg'
+    icon: '/favicon.png',
+    badge: '/favicon.png'
   };
   
   event.waitUntil(

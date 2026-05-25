@@ -55,7 +55,7 @@ const License = () => {
 
         <div className="text-center mt-8">
           <a
-            href="https://github.com/crossbordernexus/icoatlas-system"
+            href="https://github.com/youh4ck3dme/V4-prototype-icoatlas"
             className="inline-flex items-center px-6 py-3 bg-[#0B4EA2] hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors shadow-sm"
             target="_blank"
             rel="noopener noreferrer"

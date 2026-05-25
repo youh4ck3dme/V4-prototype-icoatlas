@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import IcoAtlasLogo from '../components/IcoAtlasLogo';
@@ -14,6 +15,7 @@ const AVAILABLE_EVENTS = [
 
 const Webhooks = () => {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [webhooks, setWebhooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -73,7 +75,7 @@ const Webhooks = () => {
     e.preventDefault();
     
     if (formData.events.length === 0) {
-      alert('Please select at least one event type');
+      alert('Prosím, vyberte aspoň jeden typ udalosti');
       return;
     }
 
@@ -113,7 +115,7 @@ const Webhooks = () => {
   };
 
   const handleDeleteWebhook = async (webhookId) => {
-    if (!confirm('Are you sure you want to delete this webhook?')) {
+    if (!confirm('Naozaj chcete vymazať tento webhook?')) {
       return;
     }
 
@@ -152,7 +154,7 @@ const Webhooks = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Never';
+    if (!dateString) return 'Nikdy';
     return new Date(dateString).toLocaleString();
   };
 

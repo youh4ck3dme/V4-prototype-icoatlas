@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'favicon.ico'],
+      includeAssets: ['favicon.png'],
       manifest: {
         name: 'iCOAtlas',
         short_name: 'iCOAtlas',
@@ -19,14 +19,9 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: '/favicon.svg',
+            src: '/favicon.png',
             sizes: 'any',
-            type: 'image/svg+xml'
-          },
-          {
-            src: '/favicon.ico',
-            sizes: '48x48',
-            type: 'image/x-icon'
+            type: 'image/png'
           }
         ],
         start_url: '/',

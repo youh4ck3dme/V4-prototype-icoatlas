@@ -59,9 +59,9 @@ const Analytics = () => {
 
       if (!response.ok) {
         if (response.status === 403) {
-          setError('Analytics dashboard is only available for Enterprise tier');
+          setError('Analytický panel je dostupný iba pre úroveň Enterprise');
         } else {
-          setError('Failed to load analytics data');
+          setError('Nepodarilo sa načítať analytické údaje');
         }
         return;
       }
@@ -70,7 +70,7 @@ const Analytics = () => {
       setDashboardData(data.data);
     } catch (error) {
       console.error('Error loading analytics:', error);
-      setError('Error loading analytics data');
+      setError('Chyba pri načítaní analytických údajov');
     } finally {
       setLoading(false);
     }
@@ -84,16 +84,16 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-8 text-center">
               <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                Enterprise Feature
+                Funkcia Enterprise
               </h2>
               <p className="text-slate-600 mb-6">
-                Analytics dashboard is only available for Enterprise tier users.
+                Analytický panel je dostupný iba pre používateľov s úrovňou Enterprise.
               </p>
               <button
                 onClick={() => (window.location.href = '/dashboard')}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                Go to Dashboard
+                Prejsť na Dashboard
               </button>
             </div>
           </div>
@@ -107,7 +107,7 @@ const Analytics = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-slate-600">Loading analytics...</p>
+          <p className="text-slate-600">Načítavam analytiku...</p>
         </div>
       </div>
     );
@@ -119,13 +119,13 @@ const Analytics = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
             <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Error</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Chyba</h2>
             <p className="text-slate-600 mb-6">{error}</p>
             <button
               onClick={loadAnalytics}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Retry
+              Skúsiť znova
             </button>
           </div>
         </div>
@@ -144,10 +144,16 @@ const Analytics = () => {
   const searchTrendsData = search_trends?.data || [];
   const riskDistData = risk_distribution?.distribution || [];
   const tierDistData = user_activity?.tier_distribution
-    ? Object.entries(user_activity.tier_distribution).map(([tier, count]) => ({
-        name: tier.charAt(0).toUpperCase() + tier.slice(1),
-        value: count,
-      }))
+    ? Object.entries(user_activity.tier_distribution).map(([tier, count]) => {
+        let nameSlovak = tier;
+        if (tier === 'free') nameSlovak = 'Zadarmo';
+        else if (tier === 'pro') nameSlovak = 'PRO';
+        else if (tier === 'enterprise') nameSlovak = 'Enterprise';
+        return {
+          name: nameSlovak,
+          value: count,
+        };
+      })
     : [];
 
   return (
@@ -161,10 +167,10 @@ const Analytics = () => {
                 <IcoAtlasLogo className="w-10 h-10" />
                 <div>
                   <h1 className="text-2xl font-bold text-slate-800">
-                    Analytics Dashboard
+                    Analytický panel
                   </h1>
                   <p className="text-sm text-slate-600">
-                    Business Intelligence & Insights
+                    Prehľady a štatistiky podnikania
                   </p>
                 </div>
               </div>
@@ -174,15 +180,15 @@ const Analytics = () => {
                   onChange={(e) => setSelectedPeriod(Number(e.target.value))}
                   className="px-4 py-2 border border-slate-300 rounded-lg text-sm"
                 >
-                  <option value={7}>Last 7 days</option>
-                  <option value={30}>Last 30 days</option>
-                  <option value={90}>Last 90 days</option>
+                  <option value={7}>Posledných 7 dní</option>
+                  <option value={30}>Posledných 30 dní</option>
+                  <option value={90}>Posledných 90 dní</option>
                 </select>
                 <button
                   onClick={loadAnalytics}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                 >
-                  Refresh
+                  Obnoviť
                 </button>
               </div>
             </div>
@@ -195,7 +201,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">Total Searches</p>
+                  <p className="text-sm text-slate-600 mb-1">Celkom vyhľadávaní</p>
                   <p className="text-3xl font-bold text-slate-800">
                     {search_trends?.total || 0}
                   </p>
@@ -207,7 +213,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">Active Users</p>
+                  <p className="text-sm text-slate-600 mb-1">Aktívni používatelia</p>
                   <p className="text-3xl font-bold text-slate-800">
                     {user_activity?.active_users || 0}
                   </p>
@@ -219,7 +225,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">High Risk</p>
+                  <p className="text-sm text-slate-600 mb-1">Vysoké riziko</p>
                   <p className="text-3xl font-bold text-red-600">
                     {risk_distribution?.high_risk_count || 0}
                   </p>
@@ -231,7 +237,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">API Calls</p>
+                  <p className="text-sm text-slate-600 mb-1">API volania</p>
                   <p className="text-3xl font-bold text-slate-800">
                     {api_usage?.total_calls || 0}
                   </p>
@@ -247,7 +253,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
-                Search Trends
+                Trendy vyhľadávania
               </h3>
               {searchTrendsData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
@@ -262,18 +268,18 @@ const Analytics = () => {
                       dataKey="count"
                       stroke="#3b82f6"
                       strokeWidth={2}
-                      name="Searches"
+                      name="Vyhľadávania"
                     />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
                 <p className="text-slate-500 text-center py-12">
-                  No search data available
+                  Nie sú dostupné žiadne údaje o vyhľadávaní
                 </p>
               )}
               {search_trends?.peak_hour && (
                 <p className="text-sm text-slate-600 mt-4">
-                  Peak hour: {search_trends.peak_hour}:00 | Peak day:{' '}
+                  Špičková hodina: {search_trends.peak_hour}:00 | Špičkový deň:{' '}
                   {search_trends.peak_day}
                 </p>
               )}
@@ -283,7 +289,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
-                Risk Score Distribution
+                Distribúcia rizikového skóre
               </h3>
               {riskDistData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
@@ -292,17 +298,17 @@ const Analytics = () => {
                     <XAxis dataKey="score" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#ef4444" name="Companies" />
+                    <Bar dataKey="count" fill="#ef4444" name="Firmy" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
                 <p className="text-slate-500 text-center py-12">
-                  No risk data available
+                  Nie sú dostupné žiadne údaje o rizikách
                 </p>
               )}
               {risk_distribution?.average_score && (
                 <p className="text-sm text-slate-600 mt-4">
-                  Average risk score:{' '}
+                  Priemerné rizikové skóre:{' '}
                   {risk_distribution.average_score.toFixed(2)}
                 </p>
               )}
@@ -312,7 +318,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                User Tier Distribution
+                Distribúcia úrovní používateľov
               </h3>
               {tierDistData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
@@ -341,7 +347,7 @@ const Analytics = () => {
                 </ResponsiveContainer>
               ) : (
                 <p className="text-slate-500 text-center py-12">
-                  No user data available
+                  Nie sú dostupné žiadne údaje o používateľoch
                 </p>
               )}
             </div>
@@ -350,7 +356,7 @@ const Analytics = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <Activity className="w-5 h-5" />
-                API Usage
+                Používanie API
               </h3>
               {api_usage?.most_used_endpoints &&
               api_usage.most_used_endpoints.length > 0 ? (
@@ -363,17 +369,17 @@ const Analytics = () => {
                     <XAxis type="number" />
                     <YAxis dataKey="endpoint" type="category" width={150} />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#8b5cf6" name="Calls" />
+                    <Bar dataKey="count" fill="#8b5cf6" name="Volania" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
                 <p className="text-slate-500 text-center py-12">
-                  No API usage data available
+                  Nie sú dostupné žiadne údaje o používaní API
                 </p>
               )}
               {api_usage?.error_rate !== undefined && (
                 <p className="text-sm text-slate-600 mt-4">
-                  Error rate: {api_usage.error_rate}% | Calls/day:{' '}
+                  Chybovosť: {api_usage.error_rate}% | Volania/deň:{' '}
                   {api_usage.calls_per_day?.toFixed(1) || 0}
                 </p>
               )}
@@ -383,16 +389,16 @@ const Analytics = () => {
           {/* Additional Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h4 className="font-bold text-slate-800 mb-4">User Activity</h4>
+              <h4 className="font-bold text-slate-800 mb-4">Aktivita používateľov</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">New Users:</span>
+                  <span className="text-slate-600">Noví používatelia:</span>
                   <span className="font-semibold">
                     {user_activity?.new_users || 0}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Retention Rate:</span>
+                  <span className="text-slate-600">Miera udržania:</span>
                   <span className="font-semibold">
                     {user_activity?.retention_rate || 0}%
                   </span>
@@ -401,22 +407,22 @@ const Analytics = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h4 className="font-bold text-slate-800 mb-4">Risk Summary</h4>
+              <h4 className="font-bold text-slate-800 mb-4">Súhrn rizík</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">High Risk:</span>
+                  <span className="text-slate-600">Vysoké riziko:</span>
                   <span className="font-semibold text-red-600">
                     {risk_distribution?.high_risk_count || 0}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Medium Risk:</span>
+                  <span className="text-slate-600">Stredné riziko:</span>
                   <span className="font-semibold text-orange-600">
                     {risk_distribution?.medium_risk_count || 0}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Low Risk:</span>
+                  <span className="text-slate-600">Nízke riziko:</span>
                   <span className="font-semibold text-green-600">
                     {risk_distribution?.low_risk_count || 0}
                   </span>
@@ -425,21 +431,27 @@ const Analytics = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h4 className="font-bold text-slate-800 mb-4">Feature Usage</h4>
+              <h4 className="font-bold text-slate-800 mb-4">Používanie funkcií</h4>
               <div className="space-y-2 text-sm">
                 {user_activity?.feature_usage
                   ? Object.entries(user_activity.feature_usage).map(
-                      ([feature, count]) => (
-                        <div key={feature} className="flex justify-between">
-                          <span className="text-slate-600 capitalize">
-                            {feature}:
-                          </span>
-                          <span className="font-semibold">{count}</span>
-                        </div>
-                      )
+                      ([feature, count]) => {
+                        let featureSlovak = feature;
+                        if (feature === 'search') featureSlovak = 'vyhľadávanie';
+                        else if (feature === 'export') featureSlovak = 'export';
+                        else if (feature === 'api') featureSlovak = 'API volania';
+                        return (
+                          <div key={feature} className="flex justify-between">
+                            <span className="text-slate-600 capitalize">
+                              {featureSlovak}:
+                            </span>
+                            <span className="font-semibold">{count}</span>
+                          </div>
+                        );
+                      }
                     )
                   : (
-                    <p className="text-slate-500">No data available</p>
+                    <p className="text-slate-500">Nie sú dostupné žiadne údaje</p>
                   )}
               </div>
             </div>

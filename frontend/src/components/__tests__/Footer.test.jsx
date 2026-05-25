@@ -29,8 +29,8 @@ describe('Footer', () => {
     expect(screen.getByText('Všeobecné obchodné podmienky')).toBeInTheDocument();
     expect(screen.getByText('Zásady ochrany osobných údajov')).toBeInTheDocument();
     expect(screen.getByText('Vyhlásenie o odmietnutí zodpovednosti')).toBeInTheDocument();
-    expect(screen.getByText('Cookie Policy')).toBeInTheDocument();
-    expect(screen.getByText('Data Processing Agreement (B2B)')).toBeInTheDocument();
+    expect(screen.getByText('Zásady cookies')).toBeInTheDocument();
+    expect(screen.getByText('Zmluva o spracovaní osobných údajov (B2B)')).toBeInTheDocument();
   });
 
   it('displays contact information', () => {
@@ -40,7 +40,7 @@ describe('Footer', () => {
       </RouterWrapper>
     );
     
-    expect(screen.getByText(/privacy@crossbordernexus.com/)).toBeInTheDocument();
+    expect(screen.getAllByText(/support@icoatlas\.sk/i).length).toBeGreaterThan(0);
   });
 
   it('displays copyright information', () => {

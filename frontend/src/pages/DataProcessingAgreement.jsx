@@ -163,8 +163,8 @@ const DataProcessingAgreement = () => {
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">12. Kontakt</h2>
               <p className="text-slate-700 leading-relaxed">
                 Pre otázky týkajúce sa DPA kontaktujte:{" "}
-                <a href="mailto:dpa@crossbordernexus.com" className="text-blue-600 hover:underline">
-                  dpa@crossbordernexus.com
+                <a href="mailto:support@icoatlas.sk" className="text-blue-600 hover:underline">
+                  support@icoatlas.sk
                 </a>
               </p>
             </section>
@@ -176,8 +176,8 @@ const DataProcessingAgreement = () => {
               <p className="text-slate-600 text-sm">
                 Tento DPA je súčasťou Enterprise zmluvy. Pre individuálne upravenie podmienok 
                 kontaktujte náš obchodný tím na{" "}
-                <a href="mailto:sales@crossbordernexus.com" className="text-blue-600 hover:underline">
-                  sales@crossbordernexus.com
+                <a href="mailto:support@icoatlas.sk" className="text-blue-600 hover:underline">
+                  support@icoatlas.sk
                 </a>
               </p>
             </div>

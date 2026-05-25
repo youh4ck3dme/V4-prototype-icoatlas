@@ -60,9 +60,9 @@ const Register = () => {
 
     if (result.success) {
       // Presmerovať na login po úspešnej registrácii
-      navigate('/login', { state: { message: 'Registration successful! Please sign in.' } });
+      navigate('/login', { state: { message: 'Registrácia bola úspešná! Prihláste sa.' } });
     } else {
-      setError(result.error || 'Registration failed');
+      setError(result.error || 'Registrácia zlyhala');
     }
 
     setLoading(false);
@@ -115,7 +115,7 @@ const Register = () => {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email
+              E-mail
             </label>
             <input
               id="email"

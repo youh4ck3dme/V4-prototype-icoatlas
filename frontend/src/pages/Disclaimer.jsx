@@ -100,8 +100,8 @@ const DisclaimerPage = () => {
               <h2 className="text-2xl font-semibold text-slate-900 mb-4">7. Kontakt</h2>
               <p className="text-slate-700 leading-relaxed">
                 Pre otázky týkajúce sa tohto vyhlásenia kontaktujte:{" "}
-                <a href="mailto:support@crossbordernexus.com" className="text-blue-600 hover:underline">
-                  support@crossbordernexus.com
+                <a href="mailto:support@icoatlas.sk" className="text-blue-600 hover:underline">
+                  support@icoatlas.sk
                 </a>
               </p>
             </section>

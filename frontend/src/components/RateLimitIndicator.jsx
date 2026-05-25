@@ -47,12 +47,12 @@ const RateLimitIndicator = () => {
   return (
     <div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-slate-850">Daily Searches</span>
+        <span className="text-sm font-medium text-slate-850">Denné vyhľadávania</span>
         <span className={`text-sm font-semibold ${
           isError ? 'text-red-650' : isWarning ? 'text-amber-650' : 'text-green-650'
         }`}>
           {limits.searches_per_day === -1 
-            ? 'Unlimited' 
+            ? 'Neobmedzene' 
             : `${usage.searches_used} / ${limits.searches_per_day}`}
         </span>
       </div>
@@ -69,8 +69,8 @@ const RateLimitIndicator = () => {
           {isWarning && (
             <p className="text-xs text-amber-700 font-medium">
               {isError 
-                ? 'Daily limit reached. Upgrade to continue searching.' 
-                : 'Approaching daily limit. Consider upgrading.'}
+                ? 'Denný limit bol dosiahnutý. Pre pokračovanie prejdite na vyšší program.' 
+                : 'Blížite sa k dennému limitu. Zvážte prechod na vyšší program.'}
             </p>
           )}
         </>

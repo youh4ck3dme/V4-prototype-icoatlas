@@ -156,10 +156,10 @@ const PrivacyPolicy = () => {
                     meno zobrazuje v grafe a chcete byť vymazaný, kontaktujte
                     nás na{" "}
                     <a
-                      href="mailto:privacy@crossbordernexus.com"
+                      href="mailto:support@icoatlas.sk"
                       className="underline font-semibold"
                     >
-                      privacy@crossbordernexus.com
+                      support@icoatlas.sk
                     </a>
                     . Každú žiadosť posúdime individuálne.
                   </p>
@@ -169,7 +169,7 @@ const PrivacyPolicy = () => {
                     </p>
                     <ol className="list-decimal list-inside text-amber-800 text-xs space-y-1 ml-2">
                       <li>
-                        Pošlite e-mail na privacy@crossbordernexus.com s
+                        Pošlite e-mail na support@icoatlas.sk s
                         predmetom "Žiadosť o výmaz údajov"
                       </li>
                       <li>
@@ -268,10 +268,10 @@ const PrivacyPolicy = () => {
                 <div className="bg-slate-50 p-4 rounded-lg mt-4">
                   <p className="font-semibold text-slate-900">E-mail:</p>
                   <a
-                    href="mailto:privacy@crossbordernexus.com"
+                    href="mailto:support@icoatlas.sk"
                     className="text-blue-600 hover:underline"
                   >
-                    privacy@crossbordernexus.com
+                    support@icoatlas.sk
                   </a>
                   <p className="font-semibold text-slate-900 mt-4">Adresa:</p>
                   <p className="text-slate-700">
