@@ -7,7 +7,7 @@ import { Download } from "lucide-react";
 import { ENDPOINTS } from "../config/api";
 
 const Dashboard = () => {
-  const { user, logout, refreshUser } = useAuth();
+  const { user, token: authContextToken, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [searchHistory, setSearchHistory] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authContextToken || localStorage.getItem("token");
 
       // Načítať tier limits
       const limitsResponse = await fetch(
@@ -72,7 +72,7 @@ const Dashboard = () => {
 
   const handleUpgrade = async (tier) => {
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authContextToken || localStorage.getItem("token");
       const response = await fetch(
         `${ENDPOINTS.API_URL}/api/payment/checkout?tier=${tier}`,
         {
@@ -263,7 +263,7 @@ const Dashboard = () => {
                         e.stopPropagation();
                         if (!confirm("Naozaj odobrať z obľúbených?")) return;
                         try {
-                          const token = localStorage.getItem("access_token");
+                          const token = authContextToken || localStorage.getItem("token");
                           const response = await fetch(
                             `${ENDPOINTS.USER.FAVORITES}/${favorite.id}`,
                             {

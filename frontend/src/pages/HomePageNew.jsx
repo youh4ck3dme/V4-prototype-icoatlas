@@ -448,7 +448,7 @@ export default function HomePageNew() {
             <button
               className="w-full text-left px-4 py-2 rounded hover:bg-slate-50 slovak-blue-text font-medium"
               onClick={() => {
-                navigate("/vop");
+                navigate(isAuthenticated ? "/dashboard" : "/login");
                 setMenuOpen(false);
               }}
             >

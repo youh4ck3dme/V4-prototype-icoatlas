@@ -11,7 +11,7 @@ const RegisterPage = () => {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -41,8 +41,9 @@ const RegisterPage = () => {
         password: formData.password,
         full_name: formData.full_name,
       });
-      // Auto login or redirect to login (Going to Login for clarity)
-      navigate("/login");
+      // Auto-login the user immediately after successful registration
+      await login(formData.email, formData.password);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {

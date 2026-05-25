@@ -17,7 +17,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await login(email, password);
-      navigate("/profile");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {
