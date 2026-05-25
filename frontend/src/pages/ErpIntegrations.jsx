@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const ErpIntegrations = () => {
   const { user } = useAuth();
@@ -31,7 +32,7 @@ const ErpIntegrations = () => {
   const loadConnections = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/enterprise/erp/connections', {
+      const response = await fetch(`${API_URL}/api/enterprise/erp/connections`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -65,7 +66,7 @@ const ErpIntegrations = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/enterprise/erp/connect', {
+      const response = await fetch(`${API_URL}/api/enterprise/erp/connect`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +109,7 @@ const ErpIntegrations = () => {
   const handleActivate = async (connectionId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/enterprise/erp/${connectionId}/activate`, {
+      const response = await fetch(`${API_URL}/api/enterprise/erp/${connectionId}/activate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -130,7 +131,7 @@ const ErpIntegrations = () => {
   const handleDeactivate = async (connectionId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/enterprise/erp/${connectionId}/deactivate`, {
+      const response = await fetch(`${API_URL}/api/enterprise/erp/${connectionId}/deactivate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -153,7 +154,7 @@ const ErpIntegrations = () => {
     setSyncing({ ...syncing, [connectionId]: true });
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/enterprise/erp/${connectionId}/sync?sync_type=incremental`, {
+      const response = await fetch(`${API_URL}/api/enterprise/erp/${connectionId}/sync?sync_type=incremental`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -180,7 +181,7 @@ const ErpIntegrations = () => {
   const loadSyncLogs = async (connectionId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/enterprise/erp/${connectionId}/logs?limit=10`, {
+      const response = await fetch(`${API_URL}/api/enterprise/erp/${connectionId}/logs?limit=10`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import IcoAtlasLogo from '../components/IcoAtlasLogo';
 import { Copy, Trash2, Plus, Key, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const ApiKeys = () => {
   const { user, token } = useAuth();
@@ -28,7 +29,7 @@ const ApiKeys = () => {
 
   const loadApiKeys = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/enterprise/keys', {
+      const response = await fetch(`${API_URL}/api/enterprise/keys`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -62,7 +63,7 @@ const ApiKeys = () => {
         payload.ip_whitelist = formData.ip_whitelist.split(',').map(ip => ip.trim()).filter(ip => ip);
       }
 
-      const response = await fetch('http://localhost:8000/api/enterprise/keys', {
+      const response = await fetch(`${API_URL}/api/enterprise/keys`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -94,7 +95,7 @@ const ApiKeys = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/enterprise/keys/${keyId}`, {
+      const response = await fetch(`${API_URL}/api/enterprise/keys/${keyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

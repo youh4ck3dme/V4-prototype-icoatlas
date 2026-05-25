@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../config/api';
 
 const RateLimitIndicator = () => {
   const { isAuthenticated, token } = useAuth();
@@ -14,7 +15,7 @@ const RateLimitIndicator = () => {
 
   const loadLimits = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/tier/limits', {
+      const response = await fetch(`${API_URL}/api/auth/tier/limits`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

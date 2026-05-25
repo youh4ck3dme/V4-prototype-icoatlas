@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import IcoAtlasLogo from '../components/IcoAtlasLogo';
 import { Copy, Trash2, Plus, Webhook, CheckCircle, AlertCircle, Eye, EyeOff, Clock } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const AVAILABLE_EVENTS = [
     'company.created',
@@ -37,7 +38,7 @@ const Webhooks = () => {
 
   const loadWebhooks = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/enterprise/webhooks', {
+      const response = await fetch(`${API_URL}/api/enterprise/webhooks`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -56,7 +57,7 @@ const Webhooks = () => {
 
   const loadWebhookLogs = async (webhookId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/enterprise/webhooks/${webhookId}/logs?limit=20`, {
+      const response = await fetch(`${API_URL}/api/enterprise/webhooks/${webhookId}/logs?limit=20`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -89,7 +90,7 @@ const Webhooks = () => {
         payload.secret = formData.secret;
       }
 
-      const response = await fetch('http://localhost:8000/api/enterprise/webhooks', {
+      const response = await fetch(`${API_URL}/api/enterprise/webhooks`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -120,7 +121,7 @@ const Webhooks = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/enterprise/webhooks/${webhookId}`, {
+      const response = await fetch(`${API_URL}/api/enterprise/webhooks/${webhookId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

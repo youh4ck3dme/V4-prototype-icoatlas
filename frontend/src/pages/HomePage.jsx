@@ -3,6 +3,7 @@ import { Search, Loader2, Building2, User, MapPin, AlertTriangle, Sparkles, Glob
 import Disclaimer from '../components/Disclaimer';
 import Logo from '../components/Logo';
 import ForceGraph from '../components/ForceGraph';
+import { API_URL } from '../config/api';
 
 // --- JEDNODUCHÝ SVG GRAPH RENDERER (MVP) ---
 const SimpleGraph = ({ data }) => {
@@ -164,7 +165,7 @@ function HomePage() {
     setData(null);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(query)}`);
       if (!response.ok) throw new Error('Chyba pri komunikácii so serverom');
       
       const result = await response.json();

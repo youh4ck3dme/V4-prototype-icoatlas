@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../config/api';
 import ProtectedRoute from '../components/ProtectedRoute';
 import IcoAtlasLogo from '../components/IcoAtlasLogo';
 import {
@@ -49,7 +50,7 @@ const Analytics = () => {
 
       // Načítať kompletný dashboard
       const response = await fetch(
-        `http://localhost:8000/api/analytics/dashboard`,
+        `${API_URL}/api/analytics/dashboard`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

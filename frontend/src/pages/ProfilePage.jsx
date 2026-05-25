@@ -17,7 +17,7 @@ const ProfilePage = () => {
   const [loadingKeys, setLoadingKeys] = useState(false);
 
   // Initialize API URL from env
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
   useEffect(() => {
     if (user && user.tier === "enterprise") {

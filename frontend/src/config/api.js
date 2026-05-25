@@ -9,7 +9,7 @@ const isHTTPS = window.location.protocol === "https:";
 // API URL - automaticky používa HTTPS, ak je frontend na HTTPS
 const getApiUrl = () => {
   // Vite používa import.meta.env namiesto process.env
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
 
   if (apiUrl) {
     return apiUrl;
@@ -25,6 +25,10 @@ const getApiUrl = () => {
 };
 
 export const API_URL = getApiUrl();
+
+if (import.meta.env.PROD && API_URL.includes("localhost")) {
+  throw new Error("Invalid production API config: localhost API URL is not allowed");
+}
 
 export const ENDPOINTS = {
   SEARCH: {
