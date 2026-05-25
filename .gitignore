@@ -68,4 +68,19 @@ ssl/*.cert
 # Editor configs
 .kilo/
 
+# Process and temp files
+.backend.pid
+.frontend.pid
+*.pid
+homepage_screenshot.png
+scratch/
+dist/*.zip
+plugins/drive-download-*.zip
+*.log
+debug_*.png
+debug_*.html
+debug_*.txt
+*.zip
+
+
 

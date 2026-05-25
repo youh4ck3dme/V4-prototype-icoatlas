@@ -46,3 +46,58 @@ curl -k "https://api.icoatlas.sk/api/v4/search/31677517?country=SK&graph=1"
 ```
 **Expected Outcome:**
 You should see a full JSON response containing the company data. At the end of the JSON, the `graph` object must contain `nodes` and `edges` (or be an empty structure if no relationships exist), but it **MUST NOT** contain `connection to server at "127.0.0.1" failed` or `relation "graph_nodes" does not exist`.
+
+## 4. Deployment Process
+
+### Frontend deploy:
+1. **Locally:**
+   ```bash
+   cd frontend
+   npm run build
+   cd ..
+   git status
+   git add frontend/src frontend/Dockerfile.prod PRODUCTION_OPS_GUIDE.md
+   git commit -m "fix(frontend): improve mobile and iPhone responsiveness"
+   git push origin main
+   ```
+2. **On VPS:**
+   ```bash
+   ssh fantastic4-vps
+   cd /opt/icoatlas
+   git pull origin main
+   docker compose -f docker-compose.prod.yml build frontend
+   docker compose -f docker-compose.prod.yml up -d --no-deps frontend nginx
+   ```
+3. **Smoke test:**
+   ```bash
+   curl -I https://icoatlas.sk
+   curl -s -k https://api.icoatlas.sk/health
+   ```
+
+### Backend deploy:
+1. **On VPS:**
+   ```bash
+   ssh fantastic4-vps
+   cd /opt/icoatlas
+   ./backup_production_db.sh
+   git pull origin main
+   ./run_production_migrations.sh
+   docker compose -f docker-compose.prod.yml build backend
+   docker compose -f docker-compose.prod.yml up -d --no-deps backend
+   ```
+2. **Verification:**
+   ```bash
+   curl -s -k https://api.icoatlas.sk/health
+   curl -s -k "https://api.icoatlas.sk/api/v4/search/31677517?country=SK&graph=1"
+   ```
+
+### Emergency rollback:
+1. **On VPS:**
+   ```bash
+   ssh fantastic4-vps
+   cd /opt/icoatlas
+   git log --oneline -10
+   git checkout <previous-good-commit>
+   docker compose -f docker-compose.prod.yml build frontend
+   docker compose -f docker-compose.prod.yml up -d --no-deps frontend nginx
+   ```
