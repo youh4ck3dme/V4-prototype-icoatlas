@@ -26,7 +26,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20 flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-slate-50 pt-20 flex items-center justify-center p-4">
       <div className="bg-white border border-slate-200 shadow-lg rounded-2xl max-w-md w-full p-8 relative overflow-hidden">
         {/* Decorative Grid */}
         <div className="absolute top-0 right-0 p-4 opacity-5">

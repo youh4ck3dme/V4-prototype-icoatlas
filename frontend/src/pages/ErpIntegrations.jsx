@@ -198,7 +198,7 @@ const ErpIntegrations = () => {
 
   if (user?.tier !== 'enterprise') {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="min-h-[100dvh] bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white border border-slate-200 shadow-md rounded-xl p-8 max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Vyžaduje sa Enterprise úroveň</h1>
           <p className="text-slate-650 mb-6">ERP integrácie sú dostupné len pre predplatiteľov balíka Enterprise.</p>
@@ -215,14 +215,14 @@ const ErpIntegrations = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-slate-50 flex items-center justify-center">
         <div className="text-slate-600 text-xl font-medium">Načítavam...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20 p-8">
+    <div className="min-h-[100dvh] bg-slate-50 pt-20 p-8">
       <nav className="bg-white border-b border-slate-200 shadow-sm fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">

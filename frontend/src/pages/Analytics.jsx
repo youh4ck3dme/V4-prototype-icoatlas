@@ -80,7 +80,7 @@ const Analytics = () => {
   if (user?.tier !== 'enterprise') {
     return (
       <ProtectedRoute requiredTier="enterprise">
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="min-h-[100dvh] bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="container mx-auto px-4 py-8">
             <div className="bg-white rounded-lg shadow-lg p-8 text-center">
               <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
@@ -105,7 +105,7 @@ const Analytics = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
           <p className="text-slate-600">Načítavam analytiku...</p>
@@ -116,7 +116,7 @@ const Analytics = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-[100dvh] bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
             <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -159,7 +159,7 @@ const Analytics = () => {
 
   return (
     <ProtectedRoute requiredTier="enterprise">
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-[100dvh] bg-gradient-to-br from-slate-50 to-slate-100">
         {/* Header */}
         <div className="bg-white shadow-sm border-b border-slate-200">
           <div className="container mx-auto px-4 py-4">

@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
         title="Ochrana súkromia | iCOAtlas"
         description="Zásady ochrany súkromia a spracovania osobných údajov v súlade s GDPR."
       />
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-[100dvh] bg-slate-50">
         <div className="max-w-4xl mx-auto px-8 py-12">
           <Link
             to="/"

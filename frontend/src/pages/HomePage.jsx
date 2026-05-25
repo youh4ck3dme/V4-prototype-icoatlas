@@ -182,7 +182,7 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] via-[#1a1a2e] to-[#16213e] relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-[#0A0A0A] via-[#1a1a2e] to-[#16213e] relative overflow-hidden">
       {/* Animated Stars Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {Array.from({ length: 100 }).map((_, i) => (

@@ -51,7 +51,7 @@ function ErrorFallback({ error, onReset }) {
   // Použijeme window.location namiesto navigate
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-slate-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-corp border border-slate-200 p-8 text-center">
         <div className="mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">

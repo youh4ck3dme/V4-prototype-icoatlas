@@ -3,7 +3,7 @@ import IcoAtlasLogo from '../components/IcoAtlasLogo';
 
 const License = () => {
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4">
+    <div className="min-h-[100dvh] bg-slate-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <IcoAtlasLogo className="mx-auto mb-6" />

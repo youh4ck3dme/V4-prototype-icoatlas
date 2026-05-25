@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const CookiePolicy = () => {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-[100dvh] bg-slate-50">
       <div className="max-w-4xl mx-auto px-8 py-12">
         <Link
           to="/"

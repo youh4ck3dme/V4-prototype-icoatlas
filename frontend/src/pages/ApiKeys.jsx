@@ -124,7 +124,7 @@ const ApiKeys = () => {
   if (user?.tier !== 'enterprise') {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="min-h-[100dvh] bg-slate-50 flex items-center justify-center p-4">
           <div className="max-w-md w-full bg-white border border-slate-200 shadow-md rounded-xl p-8 text-center animate-fade-in">
             <IcoAtlasLogo className="mx-auto mb-6" />
             <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
@@ -144,7 +144,7 @@ const ApiKeys = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-slate-50 pt-20">
+      <div className="min-h-[100dvh] bg-slate-50 pt-20">
         <nav className="bg-white border-b border-slate-200 shadow-sm fixed top-0 left-0 right-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">

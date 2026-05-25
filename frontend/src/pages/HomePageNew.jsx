@@ -338,7 +338,7 @@ export default function HomePageNew() {
   }, [data, isAuthenticated, mainCompany, query, token]);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 overflow-x-hidden relative">
+    <div className="min-h-[100dvh] bg-slate-50 font-sans text-slate-800 overflow-x-hidden relative">
       <div className="aether-bg"></div>
       <SEOHead
         title={
@@ -459,7 +459,7 @@ export default function HomePageNew() {
       )}
 
       {/* --- MAIN CONTENT --- */}
-      <main className="pt-20 min-h-screen relative z-10">
+      <main className="pt-20 min-h-[100dvh] relative z-10">
         {!showResults ? (
           <div className="w-full">
             {/* Hero Section */}
@@ -486,7 +486,7 @@ export default function HomePageNew() {
                     onSubmit={handleSearch}
                     className="flex flex-col md:flex-row gap-2"
                   >
-                    <div className="md:w-32">
+                    <div className="w-full md:w-32">
                         <select
                           className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 appearance-none cursor-pointer font-bold text-center"
                           value={filters.country}
@@ -542,7 +542,7 @@ export default function HomePageNew() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="neon-search-btn text-white px-8 py-4 rounded-xl font-bold text-lg active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
+                      className="neon-search-btn text-white px-8 py-4 rounded-xl font-bold text-lg active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 w-full md:w-auto min-w-[160px]"
                     >
                       {loading ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
