@@ -164,6 +164,11 @@ cp .env.example .env
 
 - `REDIS_URL` - Redis connection string
 - `CORS_ORIGINS` - Allowed frontend origins
+- `SENTRY_DSN` - Backend Sentry DSN for error tracking
+- `SENTRY_TRACES_SAMPLE_RATE` - Sentry traces sample rate (0.0 to 1.0)
+- `VITE_SENTRY_DSN` - Frontend Sentry DSN for error tracking
+- `VITE_SENTRY_TRACES_SAMPLE_RATE` - Frontend Sentry traces sample rate
+- `GRAFANA_PASSWORD` - Grafana admin password
 - External API keys for enhanced data
 
 See `.env.example` for all available options.
@@ -250,6 +255,41 @@ npm run preview
 # Run tests
 npm test
 ```
+
+## Monitoring Setup (Optional)
+
+The project includes Sentry error tracking and Prometheus metrics collection.
+
+### Sentry
+
+1. Create projects at https://sentry.io for backend (FastAPI) and frontend (React).
+2. Add DSN values to `.env`:
+   ```bash
+   SENTRY_DSN=https://your-backend-key@sentry.io/project-id
+   VITE_SENTRY_DSN=https://your-frontend-key@sentry.io/project-id
+   ```
+
+### Prometheus & Grafana
+
+```bash
+# Start Prometheus and Grafana
+docker-compose -f docker-compose.monitoring.yml up -d
+```
+
+- **Prometheus UI**: http://localhost:9090
+- **Grafana UI**: http://localhost:3001 (default: `admin`/`admin`)
+
+### Verify Monitoring
+
+```bash
+# Check metrics endpoint
+curl http://localhost:8000/api/metrics
+
+# Check health endpoint
+curl http://localhost:8000/health/detailed
+```
+
+For full monitoring documentation, see [MONITORING.md](MONITORING.md).
 
 ## Production Deployment
 
@@ -352,6 +392,7 @@ pip install -r requirements.txt
 ## Additional Resources
 
 - **API Documentation**: http://localhost:8000/api/docs
+- **Monitoring Guide**: [MONITORING.md](MONITORING.md)
 - **Project README**: [README.md](README.md)
 - **Troubleshooting Guide**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 - **Architecture Overview**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)

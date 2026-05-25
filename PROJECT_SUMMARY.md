@@ -51,6 +51,24 @@
 - **Backend:**
   - Batch export endpoint s podporou viacerých firiem
 
+### 5. Monitoring & Observability ✅
+- **Sentry Error Tracking:**
+  - Backend: `backend/app/core/monitoring.py` – Sentry init, exception capture, sensitive data filtering
+  - Frontend: `frontend/src/utils/monitoring.js` – Sentry init, error capture, breadcrumbs
+  - `frontend/src/components/ErrorBoundary.jsx` – React Error Boundary with Sentry integration
+- **Prometheus Metrics:**
+  - `backend/app/middleware/monitoring.py` – PrometheusMiddleware, SentryMiddleware
+  - `backend/app/api/endpoints/metrics.py` – `/api/metrics` endpoint
+  - Tracked: HTTP requests, latency, active connections, search counts, cache hits/misses, DB queries
+- **Health Checks:**
+  - `backend/app/api/endpoints/health.py` – `/health` and `/health/detailed` endpoints
+- **Grafana Dashboards:**
+  - `docker-compose.monitoring.yml` – Prometheus + Grafana stack
+  - `monitoring/prometheus.yml` – Scrape configuration
+- **Závislosti:**
+  - `sentry-sdk[fastapi]>=2.0.0`, `prometheus-client>=0.20.0` (backend)
+  - `@sentry/react ^7.99.0` (frontend)
+
 ---
 
 ## 📊 Test Coverage
@@ -169,11 +187,14 @@ DIMITRI-CHECKER/
 - BeautifulSoup4 (scraping)
 - Stripe (platby)
 - JWT (autentifikácia)
+- sentry-sdk (error tracking)
+- prometheus-client (metriky)
 
 ### Frontend
 - React 18
 - Tailwind CSS
 - react-force-graph-2d
+- @sentry/react (error tracking)
 - Vitest (testovanie)
 
 ---
@@ -192,6 +213,9 @@ cd frontend && npm start
 ### Docker Compose
 ```bash
 docker-compose up -d
+
+# Start monitoring stack (optional)
+docker-compose -f docker-compose.monitoring.yml up -d
 ```
 
 ### Environment Variables
@@ -199,6 +223,9 @@ docker-compose up -d
 - `REDIS_HOST`, `REDIS_PORT` - Redis connection
 - `SECRET_KEY` - JWT secret
 - `STRIPE_SECRET_KEY` - Stripe API key
+- `SENTRY_DSN` - Backend Sentry DSN
+- `VITE_SENTRY_DSN` - Frontend Sentry DSN
+- `GRAFANA_PASSWORD` - Grafana admin password
 
 ---
 

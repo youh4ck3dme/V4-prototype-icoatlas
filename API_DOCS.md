@@ -1,5 +1,66 @@
 # ILUMINATI SYSTEM API Documents
 
+## Monitoring Endpoints
+
+### Health Check
+
+```
+GET /health
+```
+
+Returns basic application status.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "env": "development",
+  "version": "5.0.0"
+}
+```
+
+### Detailed Health Check
+
+```
+GET /health/detailed
+```
+
+Returns detailed status of all dependencies (database, Redis, Sentry, external APIs).
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "env": "development",
+  "version": "5.0.0",
+  "checks": {
+    "database": { "status": "ok", "message": "Database is reachable" },
+    "redis": { "status": "skipped", "message": "Redis not configured" },
+    "sentry": { "status": "ok", "message": "Sentry is configured" },
+    "external_apis": {
+      "ares": { "status": "ok", "message": "ARES is reachable" },
+      "krs": { "status": "ok", "message": "KRS is reachable" }
+    }
+  }
+}
+```
+
+### Prometheus Metrics
+
+```
+GET /api/metrics
+```
+
+Returns Prometheus-formatted metrics for scraping. Includes:
+- `http_requests_total` — Total HTTP requests (labels: method, endpoint, status)
+- `http_request_duration_seconds` — Request latency histogram (labels: method, endpoint)
+- `active_connections` — Current active connections
+- `search_requests_total` — Search requests by country and status
+- `cache_hits_total` / `cache_misses_total` — Cache performance
+- `db_queries_total` / `db_query_duration_seconds` — Database query metrics
+
+---
+
 ## Phase 17: Deep SK Intelligence
 
 Extended company profile fields for Slovak entities (Source: ORSR, RUV, ZRSR).
