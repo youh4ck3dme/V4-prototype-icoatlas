@@ -33,6 +33,8 @@ import {
   Sparkles,
   Share,
   Crown,
+  Copy,
+  Check,
 } from "lucide-react";
 import IcoAtlasLogo from "../components/IcoAtlasLogo";
 import ForceGraph from "../components/ForceGraph";
@@ -80,11 +82,18 @@ export default function HomePageNew() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [copiedField, setCopiedField] = useState(null);
   const [filters, setFilters] = useState({
     country: "",
     minRiskScore: "",
     maxRiskScore: "",
   });
+
+  const handleCopy = useCallback((text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(null), 2000);
+  }, []);
 
   // Load Google Fonts
   useEffect(() => {
@@ -162,9 +171,10 @@ export default function HomePageNew() {
   });
 
   const handleSearch = useCallback(
-    async (e) => {
-      e.preventDefault();
-      if (!query.trim()) return;
+    async (e, directQuery = null) => {
+      if (e) e.preventDefault();
+      const searchQuery = directQuery !== null ? directQuery : query;
+      if (!searchQuery.trim()) return;
 
       setLoading(true);
       setError(null);
@@ -174,7 +184,7 @@ export default function HomePageNew() {
       try {
         // V4 Logic: Use unified search endpoint with graph=1
         const countryParam = filters.country || "";
-        const searchUrl = `${ENDPOINTS.SEARCH.V4}/${encodeURIComponent(query)}?country=${countryParam}&graph=1`;
+        const searchUrl = `${ENDPOINTS.SEARCH.V4}/${encodeURIComponent(searchQuery)}?country=${countryParam}&graph=1`;
 
         // Fetch and 3s delay in parallel for premium feel
         const [response] = await Promise.all([
@@ -336,6 +346,38 @@ export default function HomePageNew() {
       setIsFavorite(false);
     }
   }, [data, isAuthenticated, mainCompany, query, token]);
+
+  const relatedEntities = useMemo(() => {
+    if (!data || !mainCompany) return [];
+    const mainId = mainCompany.id;
+    return data.nodes
+      .filter((node) => node.id !== mainId)
+      .map((node) => {
+        const edge = data.edges.find(
+          (e) =>
+            (e.source === mainId && e.target === node.id) ||
+            (e.source === node.id && e.target === mainId) ||
+            (e.source?.id === mainId && e.target?.id === node.id) ||
+            (e.source?.id === node.id && e.target?.id === mainId)
+        );
+        let relType = "";
+        if (edge) {
+          relType = edge.label || edge.type || "Prepojenie";
+        } else {
+          relType = node.type === "company" ? "Prepojená firma" : "Prepojená osoba";
+        }
+        return {
+          id: node.id,
+          label: node.label,
+          type: node.type,
+          ico: node.ico || node.id?.split("_")[1] || "",
+          country: node.country || mainCompany.country,
+          relationship: relType,
+          status: node.status || "Aktívny",
+          risk_score: node.risk_score || 0
+        };
+      });
+  }, [data, mainCompany]);
 
   return (
     <div className="min-h-[100dvh] bg-slate-50 font-sans text-slate-800 overflow-x-hidden relative">
@@ -553,9 +595,78 @@ export default function HomePageNew() {
                   </form>
                 </div>
 
+                {/* V4 Country Quick Chips */}
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  {[
+                    { code: "SK", flag: "🇸🇰", name: "Slovensko" },
+                    { code: "CZ", flag: "🇨🇿", name: "Česko" },
+                    { code: "PL", flag: "🇵🇱", name: "Poľsko" },
+                    { code: "HU", flag: "🇭🇺", name: "Maďarsko" }
+                  ].map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      onClick={() => setFilters({ ...filters, country: c.code })}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 border min-h-[38px] ${
+                        filters.country === c.code
+                          ? "bg-blue-50 border-blue-300 text-[#0B4EA2] shadow-sm"
+                          : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span>{c.flag}</span>
+                      <span>{c.name}</span>
+                    </button>
+                  ))}
+                </div>
+
                 {isAuthenticated && (
                   <div className="mt-6">
                     <RateLimitIndicator />
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mt-6 max-w-3xl mx-auto bg-rose-50 border border-rose-200 p-6 rounded-2xl shadow-sm text-left animate-soft-slide">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-rose-100 rounded-xl text-rose-600 shrink-0">
+                        <AlertTriangle size={24} />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-lg font-bold text-rose-800 mb-1">
+                          {error.includes("nenašiel") ? "Subjekt nenájdený" : "Chyba pri vyhľadávaní"}
+                        </h3>
+                        <p className="text-sm text-slate-700 leading-relaxed mb-4">
+                          {error}
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-3">
+                          <button
+                            type="button"
+                            onClick={(e) => handleSearch(e)}
+                            className="px-4 py-2 bg-[#EE1C25] hover:bg-[#EE1C25]/90 text-white rounded-lg text-xs font-bold transition-all shadow-sm min-h-[40px] flex items-center justify-center active:scale-95 animate-spring-in"
+                          >
+                            Skúsiť znova
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setError(null);
+                              setShowAdvancedFilters(true);
+                              searchInputRef.current?.focus();
+                            }}
+                            className="px-4 py-2 bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 rounded-lg text-xs font-bold transition-all min-h-[40px] flex items-center justify-center active:scale-95"
+                          >
+                            Zmeniť krajinu / filtre
+                          </button>
+                          <a
+                            href="mailto:support@icoatlas.sk"
+                            className="px-4 py-2 bg-white border border-slate-200 text-slate-655 hover:bg-slate-50 hover:text-slate-800 rounded-lg text-xs font-bold transition-all min-h-[40px] inline-flex items-center justify-center active:scale-95"
+                          >
+                            Kontaktovať podporu
+                          </a>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -680,9 +791,8 @@ export default function HomePageNew() {
             <div className="grid lg:grid-cols-12 gap-8">
               {/* Information Panel */}
               <div className="lg:col-span-4 flex flex-col gap-6">
-                {/* Entity Stats Card */}
                 <div
-                  className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm border-t-4"
+                  className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm border-t-4 company-result-card animate-spring-in"
                   style={{
                     borderTopColor:
                       riskStatus.color === "red"
@@ -693,7 +803,7 @@ export default function HomePageNew() {
                   }}
                 >
                   <div className="flex justify-between items-start mb-6">
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap gap-2 items-center mb-2">
                         <span
                           className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
@@ -708,44 +818,102 @@ export default function HomePageNew() {
                         </span>
                         {mainCompany?.provider_status && (
                           <span
-                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider provider-status-badge ${
                               mainCompany.provider_status === "live"
-                                ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+                                ? "bg-emerald-50 border border-emerald-250 text-emerald-700 animate-live-pulse"
                                 : mainCompany.provider_status === "cached"
-                                ? "bg-indigo-50 border border-indigo-200 text-indigo-700"
+                                ? "bg-blue-50 border border-blue-200 text-blue-750"
                                 : "bg-amber-50 border border-amber-200 text-amber-700"
                             }`}
                           >
                             {mainCompany.provider_status === "live"
-                              ? "Aktuálny register"
+                              ? "Live register"
                               : mainCompany.provider_status === "cached"
-                              ? "Dáta z cache"
-                              : "Záložný režim"}
+                              ? "Cached"
+                              : "Fallback"}
                           </span>
                         )}
                       </div>
-                      <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+                      <h2 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight leading-tight mb-2 break-words">
                         {mainCompany?.label || "Unknown Entity"}
                       </h2>
+                      
+                      {/* Premium Card CTA actions */}
+                      <div className="flex flex-wrap gap-2 my-4 pb-4 border-b border-slate-100">
+                        {mainCompany?.ico && (
+                          <button
+                            onClick={() => handleCopy(mainCompany.ico, "ico")}
+                            className="px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 min-h-[40px] active:scale-95"
+                          >
+                            {copiedField === "ico" ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                            <span>Kopírovať IČO</span>
+                          </button>
+                        )}
+                        {mainCompany?.dic && mainCompany.dic !== "N/A" && (
+                          <button
+                            onClick={() => handleCopy(mainCompany.dic, "dic")}
+                            className="px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 min-h-[40px] active:scale-95"
+                          >
+                            {copiedField === "dic" ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                            <span>Kopírovať DIČ</span>
+                          </button>
+                        )}
+                        {mainCompany?.ico && (
+                          <a
+                            href={
+                              mainCompany.country === "SK"
+                                ? `https://www.orsr.sk/hladaj_ico.asp?ICO=${mainCompany.ico}&SID=0`
+                                : mainCompany.country === "CZ"
+                                ? `https://ares.gov.cz/`
+                                : "#"
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 min-h-[40px] active:scale-95"
+                          >
+                            <Globe size={14} />
+                            <span>Otvoriť detail</span>
+                          </a>
+                        )}
+                        <button
+                          onClick={() => {
+                            if (data) exportToPDF(data);
+                          }}
+                          className="px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-700 transition-all flex items-center gap-1.5 min-h-[40px] active:scale-95"
+                        >
+                          <FileText size={14} />
+                          <span>Export PDF</span>
+                        </button>
+                      </div>
+
                       {mainCompany?.provider_status === "fallback" && (
-                        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 flex items-start gap-2 max-w-sm">
-                          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 flex items-start gap-2 max-w-sm animate-soft-slide">
+                          <AlertTriangle className="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5" />
                           <div>
-                            <p className="font-bold">Záložné dáta (Fallback Mode)</p>
-                            <p className="mt-0.5">
-                              Pripojenie k registru zlyhalo (chyba: {mainCompany.provider_error?.error_code || "neznáma"}). Zobrazujú sa simulované údaje.
+                            <p className="font-bold text-amber-700">Záložný režim</p>
+                            <p className="mt-0.5 leading-relaxed text-amber-850 font-medium">
+                              Register je dočasne nedostupný, zobrazený je náhradný overený záznam.
                             </p>
                           </div>
                         </div>
                       )}
                       {mainCompany?.ico && (
-                        <p className="text-sm text-slate-500 mt-1">
-                          ICO: {mainCompany.ico}
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-sm text-slate-500">
+                            IČO: <span className="font-mono font-semibold text-slate-700">{mainCompany.ico}</span>
+                          </p>
+                          <button
+                            onClick={() => handleCopy(mainCompany.ico, "ico")}
+                            className="p-1 hover:bg-slate-100 rounded text-slate-455 hover:text-slate-705 transition-colors"
+                            title="Kopírovať IČO"
+                          >
+                            {copiedField === "ico" ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                          </button>
+                        </div>
                       )}
                     </div>
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-bold text-lg ${
+                      className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-bold text-lg shrink-0 ml-4 ${
                         riskStatus.color === "red"
                           ? "border-red-500/40 text-red-700 bg-red-50"
                           : riskStatus.color === "orange"
@@ -780,7 +948,16 @@ export default function HomePageNew() {
                         !mainCompany?.dic || mainCompany.dic === "N/A" ? (
                           <span className="text-slate-400 italic">DIČ nedostupné</span>
                         ) : (
-                          mainCompany.dic
+                          <div className="flex items-center gap-1.5 justify-end">
+                            <span className="font-mono text-slate-700 font-semibold">{mainCompany.dic}</span>
+                            <button
+                              onClick={() => handleCopy(mainCompany.dic, "dic")}
+                              className="p-1 hover:bg-slate-100 rounded text-slate-450 hover:text-slate-700 transition-colors"
+                              title="Kopírovať DIČ"
+                            >
+                              {copiedField === "dic" ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
+                            </button>
+                          </div>
                         )
                       } 
                     />
@@ -1119,6 +1296,134 @@ export default function HomePageNew() {
                     </p>
                   </div>
                 )}
+
+                {/* Related Entities Section */}
+                <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm related-entities-section animate-spring-in stagger-item-2">
+                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <Users size={16} className="text-[#0B4EA2]" />
+                    Prepojené subjekty
+                  </h3>
+                  
+                  {relatedEntities.length === 0 ? (
+                    <div className="p-6 text-center border border-dashed border-slate-200 rounded-xl text-slate-400">
+                      <Building2 size={32} className="mx-auto mb-2 text-slate-300" />
+                      <p className="text-sm">Pre túto firmu zatiaľ nemáme zistené prepojenia.</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Mobile Horizontal Scroll */}
+                      <div className="flex md:hidden overflow-x-auto gap-4 pb-3 scrollbar-thin snap-x">
+                        {relatedEntities.map((entity) => (
+                          <div
+                            key={entity.id}
+                            className="flex-shrink-0 w-64 bg-slate-50 border border-slate-200 p-4 rounded-xl snap-start hover:border-blue-300 transition-colors"
+                          >
+                            <div className="flex justify-between items-start gap-2 mb-2">
+                              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#0B4EA2] border border-blue-100 max-w-[120px] truncate">
+                                {entity.relationship}
+                              </span>
+                              <span className="text-xs">{entity.country === "SK" ? "🇸🇰" : entity.country === "CZ" ? "🇨🇿" : entity.country === "PL" ? "🇵🇱" : entity.country === "HU" ? "🇭🇺" : entity.country}</span>
+                            </div>
+                            <h4 className="font-bold text-slate-800 text-sm truncate mb-1" title={entity.label}>
+                              {entity.label}
+                            </h4>
+                            {entity.ico && (
+                              <p className="text-xs text-slate-500 font-mono mb-2">IČO: {entity.ico}</p>
+                            )}
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="text-[10px] bg-slate-200/60 text-slate-655 px-2 py-0.5 rounded-full font-medium">
+                                {entity.status}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  const q = entity.ico || entity.label;
+                                  setQuery(q);
+                                  handleSearch(null, q);
+                                }}
+                                className="text-xs text-[#0B4EA2] hover:underline font-semibold flex items-center gap-0.5 min-h-[44px]"
+                              >
+                                Detail <ChevronRight size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Tablet Grid */}
+                      <div className="hidden md:grid lg:hidden grid-cols-2 gap-4">
+                        {relatedEntities.map((entity) => (
+                          <div
+                            key={entity.id}
+                            className="bg-slate-50 border border-slate-200 p-4 rounded-xl hover:border-blue-300 transition-colors"
+                          >
+                            <div className="flex justify-between items-start gap-2 mb-2">
+                              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#0B4EA2] border border-blue-100">
+                                {entity.relationship}
+                              </span>
+                              <span className="text-xs">{entity.country === "SK" ? "🇸🇰" : entity.country === "CZ" ? "🇨🇿" : entity.country === "PL" ? "🇵🇱" : entity.country === "HU" ? "🇭🇺" : entity.country}</span>
+                            </div>
+                            <h4 className="font-bold text-slate-800 text-sm truncate mb-1">
+                              {entity.label}
+                            </h4>
+                            {entity.ico && (
+                              <p className="text-xs text-slate-500 font-mono mb-2">IČO: {entity.ico}</p>
+                            )}
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="text-[10px] bg-slate-200/60 text-slate-655 px-2 py-0.5 rounded-full font-medium">
+                                {entity.status}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  const q = entity.ico || entity.label;
+                                  setQuery(q);
+                                  handleSearch(null, q);
+                                }}
+                                className="text-xs text-[#0B4EA2] hover:underline font-semibold flex items-center gap-0.5 min-h-[44px]"
+                              >
+                                Detail <ChevronRight size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Desktop Vertical List */}
+                      <div className="hidden lg:block space-y-3">
+                        {relatedEntities.map((entity) => (
+                          <div
+                            key={entity.id}
+                            className="bg-slate-50 border border-slate-200 p-3 rounded-xl hover:border-blue-250 transition-colors flex items-center justify-between gap-4"
+                          >
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-50 text-[#0B4EA2] border border-blue-100">
+                                  {entity.relationship}
+                                </span>
+                                <span className="text-[10px] text-slate-500">{entity.country === "SK" ? "🇸🇰" : entity.country === "CZ" ? "🇨🇿" : entity.country === "PL" ? "🇵🇱" : entity.country === "HU" ? "🇭🇺" : entity.country}</span>
+                              </div>
+                              <h4 className="font-bold text-slate-800 text-xs truncate">
+                                {entity.label}
+                              </h4>
+                              {entity.ico && (
+                                <p className="text-[10px] text-slate-400 font-mono">IČO: {entity.ico}</p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => {
+                                const q = entity.ico || entity.label;
+                                setQuery(q);
+                                handleSearch(null, q);
+                              }}
+                              className="text-xs text-[#0B4EA2] hover:underline font-semibold shrink-0 min-h-[44px] flex items-center"
+                            >
+                              Detail
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Graph Panel */}
@@ -1324,6 +1629,128 @@ export default function HomePageNew() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Sticky Action Bar */}
+      {showResults && data && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-filter backdrop-blur-lg border-t border-slate-200 md:hidden pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_12px_rgba(0,0,0,0.05)] mobile-action-bar animate-soft-slide">
+          <div className="px-4 py-2 flex items-center justify-around gap-2">
+            {mainCompany?.ico && (
+              <button
+                onClick={() => handleCopy(mainCompany.ico, "ico")}
+                className="flex-1 flex flex-col items-center justify-center gap-1 py-1 px-2 text-slate-600 hover:text-slate-900 active:scale-95 transition-all min-h-[44px]"
+              >
+                {copiedField === "ico" ? (
+                  <>
+                    <Check size={18} className="text-emerald-600 animate-pulse" />
+                    <span className="text-[9px] font-bold text-emerald-600">IČO skopírované</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={18} />
+                    <span className="text-[9px] font-semibold">Kopírovať IČO</span>
+                  </>
+                )}
+              </button>
+            )}
+            
+            {mainCompany?.dic && mainCompany.dic !== "N/A" && (
+              <button
+                onClick={() => handleCopy(mainCompany.dic, "dic")}
+                className="flex-1 flex flex-col items-center justify-center gap-1 py-1 px-2 text-slate-650 hover:text-slate-900 active:scale-95 transition-all min-h-[44px]"
+              >
+                {copiedField === "dic" ? (
+                  <>
+                    <Check size={18} className="text-emerald-600 animate-pulse" />
+                    <span className="text-[9px] font-bold text-emerald-600">DIČ skopírované</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={18} />
+                    <span className="text-[9px] font-semibold">Kopírovať DIČ</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            {isAuthenticated && (
+              <button
+                onClick={async () => {
+                  setFavoriteLoading(true);
+                  try {
+                    const companyId = mainCompany.ico || mainCompany.id?.split("_")[1] || query;
+                    const country = mainCompany.country || "SK";
+                    if (isFavorite) {
+                      const favoritesResponse = await fetch(`${API_URL}/api/user/favorites`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                      });
+                      if (favoritesResponse.ok) {
+                        const { favorites } = await favoritesResponse.json();
+                        const fav = favorites.find(f => f.company_identifier === companyId && f.country === country);
+                        if (fav) {
+                          await fetch(`${API_URL}/api/user/favorites/${fav.id}`, {
+                            method: "DELETE",
+                            headers: { Authorization: `Bearer ${token}` }
+                          });
+                          setIsFavorite(false);
+                        }
+                      }
+                    } else {
+                      await fetch(`${API_URL}/api/user/favorites`, {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                          company_identifier: companyId,
+                          company_name: mainCompany.label || "Unknown",
+                          country: country,
+                          company_data: mainCompany,
+                          risk_score: riskScore,
+                          risk_factors: mainCompany.risk_factors || []
+                        })
+                      });
+                      setIsFavorite(true);
+                    }
+                  } catch (e) {
+                    console.error(e);
+                  } finally {
+                    setFavoriteLoading(false);
+                  }
+                }}
+                disabled={favoriteLoading}
+                className="flex-1 flex flex-col items-center justify-center gap-1 py-1 px-2 text-slate-655 hover:text-slate-900 active:scale-95 transition-all min-h-[44px]"
+              >
+                {favoriteLoading ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : isFavorite ? (
+                  <>
+                    <Star size={18} className="fill-yellow-500 text-yellow-500" />
+                    <span className="text-[9px] font-bold text-yellow-600">Uložené</span>
+                  </>
+                ) : (
+                  <>
+                    <Star size={18} />
+                    <span className="text-[9px] font-semibold">Uložiť firmu</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                setShowResults(false);
+                setData(null);
+                window.scrollTo(0, 0);
+              }}
+              className="flex-1 flex flex-col items-center justify-center gap-1 py-1 px-2 text-slate-655 hover:text-slate-900 active:scale-95 transition-all min-h-[44px]"
+            >
+              <Search size={18} />
+              <span className="text-[9px] font-semibold">Nové hľadanie</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

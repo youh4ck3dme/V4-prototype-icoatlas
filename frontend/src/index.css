@@ -141,3 +141,110 @@ body {
   box-shadow: 0 0 10px rgba(11, 78, 162, 0.4);
 }
 
+/* --- Mobile / PWA App Shell Extensions --- */
+
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+}
+
+:root {
+  /* Dark Glassmorphism Theme variables */
+  --dark-glass-bg: rgba(15, 23, 42, 0.8);
+  --dark-glass-border: rgba(11, 78, 162, 0.35);
+  --dark-glass-text: #f8fafc;
+}
+
+/* Safe area padding/margin utilities */
+.safe-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-mb {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Shimmer loading skeleton */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+/* Animation classes */
+.animate-spring-in {
+  animation: spring-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes spring-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-soft-slide {
+  animation: soft-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes soft-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-live-pulse {
+  animation: live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+/* Stagger entrance utility for related lists */
+.stagger-item-1 { animation-delay: 40ms; }
+.stagger-item-2 { animation-delay: 80ms; }
+.stagger-item-3 { animation-delay: 120ms; }
+.stagger-item-4 { animation-delay: 160ms; }
+.stagger-item-5 { animation-delay: 200ms; }
+
+/* Accessibility: prefers-reduced-motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
