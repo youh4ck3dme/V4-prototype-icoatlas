@@ -77,14 +77,27 @@ const ProfilePage = () => {
     }
   };
 
-  const handlePaymentLink = (tier) => {
-    // SumUp payment links - replace with your actual SumUp links
-    const paymentLinks = {
-      pro: "https://sumup.com/payment/YOUR_PRO_LINK", // Replace with actual SumUp link
-      enterprise: "https://sumup.com/payment/YOUR_ENTERPRISE_LINK", // Replace with actual SumUp link
-    };
+  const handleUpgrade = async (tier) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/api/payment/checkout?tier=${tier}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    window.open(paymentLinks[tier], "_blank");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url; // Redirect to SumUp Payment
+        }
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+    }
   };
 
   if (!user) return null;
@@ -130,7 +143,7 @@ const ProfilePage = () => {
                                       : "bg-slate-100 text-slate-700 border border-slate-200"
                                   }`}
                 >
-                  {user.tier}
+                  {user.tier === "free" ? "Zadarmo" : user.tier === "pro" ? "PRO" : user.tier === "enterprise" ? "Enterprise" : user.tier}
                 </span>
               </div>
               <div className="flex justify-between items-center text-sm">

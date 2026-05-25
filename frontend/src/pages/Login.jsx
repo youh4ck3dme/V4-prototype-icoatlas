@@ -21,7 +21,7 @@ const Login = () => {
     if (result.success) {
       navigate('/dashboard');
     } else {
-      setError(result.error || 'Invalid email or password');
+      setError(result.error || 'Nesprávny e-mail alebo heslo');
     }
 
     setLoading(false);
@@ -32,8 +32,8 @@ const Login = () => {
       <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
         <div className="text-center mb-8">
           <IcoAtlasLogo className="mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-blue-200">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Vitajte späť</h1>
+          <p className="text-blue-200">Prihláste sa do svojho účtu</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -45,7 +45,7 @@ const Login = () => {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email
+              E-mail
             </label>
             <input
               id="email"
@@ -54,13 +54,13 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="your@email.com"
+              placeholder="vas@email.com"
             />
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-              Password
+              Heslo
             </label>
             <input
               id="password"
@@ -76,10 +76,10 @@ const Login = () => {
           <div className="flex items-center justify-between">
             <label className="flex items-center">
               <input type="checkbox" className="rounded border-white/20 text-blue-600 focus:ring-blue-500" />
-              <span className="ml-2 text-sm text-blue-200">Remember me</span>
+              <span className="ml-2 text-sm text-blue-200">Zapamätať si ma</span>
             </label>
             <Link to="/forgot-password" className="text-sm text-blue-300 hover:text-blue-200">
-              Forgot password?
+              Zabudli ste heslo?
             </Link>
           </div>
 
@@ -88,15 +88,15 @@ const Login = () => {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Prihlasujem sa...' : 'Prihlásiť sa'}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-blue-200">
-            Don't have an account?{' '}
+            Nemáte ešte účet?{' '}
             <Link to="/register" className="text-blue-300 hover:text-blue-200 font-semibold">
-              Sign up
+              Zaregistrujte sa
             </Link>
           </p>
         </div>

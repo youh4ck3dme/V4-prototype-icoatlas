@@ -17,7 +17,7 @@ const CookiePolicy = () => {
         <div className="bg-white rounded-lg shadow-sm p-8">
           <div className="flex items-center gap-3 mb-6">
             <Cookie className="text-blue-600" size={32} />
-            <h1 className="text-3xl font-bold text-slate-900">Cookie Policy</h1>
+            <h1 className="text-3xl font-bold text-slate-900">Pravidlá používania súborov cookies (Cookie Policy)</h1>
           </div>
 
           <div className="prose prose-slate max-w-none">
@@ -170,7 +170,7 @@ const CookiePolicy = () => {
                 Tieto služby majú vlastné zásady ochrany súkromia. Odkazy na ich
                 zásady nájdete v našej{" "}
                 <Link to="/privacy" className="text-blue-600 hover:underline">
-                  Privacy Policy
+                  Zásadách ochrany osobných údajov
                 </Link>
                 .
               </p>
@@ -194,10 +194,10 @@ const CookiePolicy = () => {
               <p className="text-slate-700 leading-relaxed">
                 Pre otázky týkajúce sa cookies kontaktujte:{" "}
                 <a
-                  href="mailto:privacy@crossbordernexus.com"
+                  href="mailto:support@icoatlas.sk"
                   className="text-blue-600 hover:underline"
                 >
-                  privacy@crossbordernexus.com
+                  support@icoatlas.sk
                 </a>
               </p>
             </section>

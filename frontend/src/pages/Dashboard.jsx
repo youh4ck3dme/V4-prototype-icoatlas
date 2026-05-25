@@ -155,7 +155,7 @@ const Dashboard = () => {
                   user?.tier
                 )}`}
               >
-                {user?.tier || "FREE"}
+                {user?.tier === "free" ? "Zadarmo" : user?.tier === "pro" ? "PRO" : user?.tier === "enterprise" ? "Enterprise" : "Zadarmo"}
               </div>
               {user?.tier === "free" && (
                 <button
@@ -299,7 +299,7 @@ const Dashboard = () => {
                             : "bg-gradient-to-r from-emerald-500 to-teal-400"
                         }`}
                       >
-                        Risk Index: {favorite.risk_score.toFixed(1)}
+                        Rizikový index: {favorite.risk_score.toFixed(1)}
                       </div>
 
                       {favorite.risk_factors &&
@@ -364,7 +364,7 @@ const Dashboard = () => {
                   onClick={() => navigate("/webhooks")}
                   className="bg-[#0B4EA2] hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                 >
-                  Webhooks
+                  Webhooky
                 </button>
                 <button
                   onClick={() => navigate("/erp-integrations")}

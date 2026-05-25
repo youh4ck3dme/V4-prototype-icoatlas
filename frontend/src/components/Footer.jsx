@@ -44,12 +44,12 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/cookies" className="hover:text-slate-900 transition-colors text-slate-600">
-                  Cookie Policy
+                  Zásady cookies
                 </Link>
               </li>
               <li>
                 <Link to="/dpa" className="hover:text-slate-900 transition-colors text-slate-600">
-                  Data Processing Agreement (B2B)
+                  Zmluva o spracovaní osobných údajov (B2B)
                 </Link>
               </li>
               <li>
@@ -68,13 +68,13 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:support@crossbordernexus.com" className="hover:text-slate-900 transition-colors text-slate-600">
-                  support@crossbordernexus.com
+                <a href="mailto:support@icoatlas.sk" className="hover:text-slate-900 transition-colors text-slate-600">
+                  support@icoatlas.sk
                 </a>
               </li>
               <li>
-                <a href="mailto:privacy@crossbordernexus.com" className="hover:text-slate-900 transition-colors text-slate-600">
-                  privacy@crossbordernexus.com
+                <a href="mailto:support@icoatlas.sk" className="hover:text-slate-900 transition-colors text-slate-600">
+                  support@icoatlas.sk (GDPR)
                 </a>
               </li>
               <li className="text-slate-500 text-xs">

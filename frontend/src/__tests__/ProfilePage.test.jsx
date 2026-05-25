@@ -32,7 +32,7 @@ describe("ProfilePage", () => {
     renderWithAuth();
     expect(screen.getByText("Test User")).toBeInTheDocument();
     expect(screen.getByText("test@example.com")).toBeInTheDocument();
-    expect(screen.getByText("free")).toBeInTheDocument();
+    expect(screen.getByText("Zadarmo")).toBeInTheDocument();
   });
 
   it("shows upgrade options for free tier", () => {

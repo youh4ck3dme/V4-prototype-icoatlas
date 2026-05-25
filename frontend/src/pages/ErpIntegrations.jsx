@@ -93,15 +93,15 @@ const ErpIntegrations = () => {
           });
           loadConnections();
         } else {
-          alert('Failed to create connection: ' + (data.message || 'Unknown error'));
+          alert('Nepodarilo sa vytvoriť pripojenie: ' + (data.message || 'Neznáma chyba'));
         }
       } else {
         const error = await response.json();
-        alert('Error: ' + (error.detail || 'Unknown error'));
+        alert('Chyba: ' + (error.detail || 'Neznáma chyba'));
       }
     } catch (error) {
       console.error('Error creating connection:', error);
-      alert('Error creating connection');
+      alert('Chyba pri vytváraní pripojenia');
     }
   };
 
@@ -119,11 +119,11 @@ const ErpIntegrations = () => {
         loadConnections();
       } else {
         const error = await response.json();
-        alert('Error: ' + (error.detail || 'Failed to activate'));
+        alert('Chyba: ' + (error.detail || 'Nepodarilo sa aktivovať'));
       }
     } catch (error) {
       console.error('Error activating connection:', error);
-      alert('Error activating connection');
+      alert('Chyba pri aktivácii pripojenia');
     }
   };
 
@@ -141,11 +141,11 @@ const ErpIntegrations = () => {
         loadConnections();
       } else {
         const error = await response.json();
-        alert('Error: ' + (error.detail || 'Failed to deactivate'));
+        alert('Chyba: ' + (error.detail || 'Nepodarilo sa deaktivovať'));
       }
     } catch (error) {
       console.error('Error deactivating connection:', error);
-      alert('Error deactivating connection');
+      alert('Chyba pri deaktivácii pripojenia');
     }
   };
 
@@ -162,16 +162,16 @@ const ErpIntegrations = () => {
 
       if (response.ok) {
         const data = await response.json();
-        alert(`Sync completed! Records synced: ${data.records_synced || 0}`);
+        alert(`Synchronizácia bola úspešne dokončená! Synchronizované záznamy: ${data.records_synced || 0}`);
         loadConnections();
         loadSyncLogs(connectionId);
       } else {
         const error = await response.json();
-        alert('Error: ' + (error.detail || 'Sync failed'));
+        alert('Chyba: ' + (error.detail || 'Synchronizácia zlyhala'));
       }
     } catch (error) {
       console.error('Error syncing:', error);
-      alert('Error syncing data');
+      alert('Chyba pri synchronizácii údajov');
     } finally {
       setSyncing({ ...syncing, [connectionId]: false });
     }
@@ -289,7 +289,7 @@ const ErpIntegrations = () => {
                           disabled={syncing[conn.id]}
                           className="bg-[#0B4EA2] hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 font-semibold"
                         >
-                          {syncing[conn.id] ? 'Synchronizujem...' : 'Sync Teraz'}
+                          {syncing[conn.id] ? 'Synchronizujem...' : 'Synchronizovať teraz'}
                         </button>
                         <button
                           onClick={() => handleDeactivate(conn.id)}
@@ -312,7 +312,7 @@ const ErpIntegrations = () => {
                 <div className="mt-4 text-sm text-slate-550 border-t border-slate-100 pt-3">
                   <p>Posledná synchronizácia: {conn.last_sync_at ? new Date(conn.last_sync_at).toLocaleString() : 'Nikdy'}</p>
                   <p>Nasledujúca synchronizácia: {conn.next_sync_at ? new Date(conn.next_sync_at).toLocaleString() : 'Nenaplánovaná'}</p>
-                  <p>Frekvencia synchronizácie: {conn.sync_frequency}</p>
+                  <p>Frekvencia synchronizácie: {conn.sync_frequency === 'daily' ? 'Denne' : conn.sync_frequency === 'weekly' ? 'Týždenne' : conn.sync_frequency}</p>
                 </div>
 
                 {conn.status === 'active' && (
@@ -338,10 +338,10 @@ const ErpIntegrations = () => {
                         {syncLogs[conn.id].slice(0, 5).map((log) => (
                           <div key={log.id} className="text-sm text-slate-700">
                             <span className={`font-semibold ${log.status === 'success' ? 'text-green-600' : 'text-red-650'}`}>
-                              {log.status.toUpperCase()}
+                              {log.status === 'success' ? 'ÚSPEŠNÁ' : 'NEÚSPEŠNÁ'}
                             </span>
                             {' '}
-                            - {log.records_synced} záznamov synchronizovaných
+                            - Počet synchronizovaných záznamov: {log.records_synced}
                             {' '}
                             - {new Date(log.started_at).toLocaleString()}
                           </div>

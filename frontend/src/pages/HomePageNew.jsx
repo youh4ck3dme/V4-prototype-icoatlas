@@ -219,7 +219,7 @@ export default function HomePageNew() {
               };
             }),
             edges: graphData.links || [],
-            nexus_story: `Intelligence report for ${companyData.legal_name || companyData.name} (${companyData.atlas_id}). The entity is currently ${companyData.status} in the ${companyData.country} business registry. No high-risk relationship patterns detected in the initial scan.`,
+            nexus_story: `Analytická správa pre subjekt ${companyData.legal_name || companyData.name} (${companyData.atlas_id}). Subjekt je aktuálne v stave ${companyData.status} v obchodnom registri pre krajinu ${companyData.country}. Pri prvotnom skenovaní neboli zistené žiadne rizikové vzorce vzťahov.`,
             nexus_metadata: {
               node_count: graphData.nodes.length,
               edge_count: (graphData.links || []).length,
@@ -254,7 +254,7 @@ export default function HomePageNew() {
               }
             ],
             edges: [],
-            nexus_story: `Intelligence report for ${companyData.legal_name || companyData.name} (${companyData.atlas_id}). The entity is currently ${companyData.status} in the ${companyData.country} business registry. No high-risk relationship patterns detected in the initial scan.`,
+            nexus_story: `Analytická správa pre subjekt ${companyData.legal_name || companyData.name} (${companyData.atlas_id}). Subjekt je aktuálne v stave ${companyData.status} v obchodnom registri pre krajinu ${companyData.country}. Pri prvotnom skenovaní neboli zistené žiadne rizikové vzorce vzťahov.`,
             nexus_metadata: {
               node_count: 1,
               edge_count: 0,
@@ -348,7 +348,7 @@ export default function HomePageNew() {
         }
         description={
           showResults && data
-            ? `Komplexná analýza obchodných vzťahov pre ${query}. Risk score: ${riskScore}/10.`
+            ? `Komplexná analýza obchodných vzťahov pre ${query}. Rizikové skóre: ${riskScore}/10.`
             : "Komplexná hĺbková analýza obchodných partnerov, vlastníckych štruktúr a finančného zdravia firiem v regióne strednej Európy (SK, CZ, PL, HU)."
         }
       />
@@ -394,7 +394,7 @@ export default function HomePageNew() {
               }}
             />
             <NavBtn
-              label="Legislatíva & Compliance"
+              label="Legislatíva a Compliance"
               onClick={() => navigate("/vop")}
             />
             {isAuthenticated ? (
@@ -469,7 +469,7 @@ export default function HomePageNew() {
               <div className="max-w-4xl mx-auto text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider mb-6">
                   <Sparkles size={12} />
-                  <span>Next-Gen Corporate Intelligence</span>
+                  <span>Firemná analytika novej generácie</span>
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-8 leading-[1.1] font-heading tracking-tight">
@@ -480,8 +480,7 @@ export default function HomePageNew() {
                 </h1>
 
                 <p className="text-lg md:text-xl text-slate-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-                  Analyze cross-border relationships, detect high-risk patterns,
-                  and reveal hidden ownership structures in the V4 region.
+                  Analyzujte cezhraničné vzťahy, odhaľte rizikové vzorce a odkryte skryté vlastnícke štruktúry v regióne V4.
                 </p>
 
                 <div className="bg-white p-2 md:p-3 max-w-3xl mx-auto rounded-2xl border border-slate-200 shadow-xl">
@@ -509,7 +508,7 @@ export default function HomePageNew() {
                       <input
                         type="text"
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 focus:border-[#0B4EA2] transition-all font-medium text-lg"
-                        placeholder="Insert IČO, ID or Company Name..."
+                        placeholder="Zadajte IČO, názov firmy alebo identifikátor..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
@@ -550,7 +549,7 @@ export default function HomePageNew() {
                       {loading ? (
                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
-                        <>Analyze</>
+                        <>Analyzovať</>
                       )}
                     </button>
                   </form>
@@ -569,7 +568,7 @@ export default function HomePageNew() {
                     className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
                   >
                     <Filter size={16} />
-                    <span>Advanced Search Filters</span>
+                    <span>Rozšírené filtre vyhľadávania</span>
                     {showAdvancedFilters ? (
                       <ChevronUp size={16} />
                     ) : (
@@ -594,16 +593,16 @@ export default function HomePageNew() {
                               })
                             }
                           >
-                            <option value="">All Countries</option>
-                            <option value="SK">Slovakia (SK)</option>
-                            <option value="CZ">Czech Rep. (CZ)</option>
-                            <option value="PL">Poland (PL)</option>
-                            <option value="HU">Hungary (HU)</option>
+                            <option value="">Všetky krajiny</option>
+                            <option value="SK">Slovensko (SK)</option>
+                            <option value="CZ">Česká republika (CZ)</option>
+                            <option value="PL">Poľsko (PL)</option>
+                            <option value="HU">Maďarsko (HU)</option>
                           </select>
                         </div>
                         <div>
                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                            Min Risk
+                            Minimálne riziko
                           </label>
                           <input
                             type="number"
@@ -619,7 +618,7 @@ export default function HomePageNew() {
                         </div>
                         <div>
                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                            Max Risk
+                            Maximálne riziko
                           </label>
                           <input
                             type="number"
@@ -645,18 +644,18 @@ export default function HomePageNew() {
               <div className="grid md:grid-cols-3 gap-8">
                 <FeatureCard
                   icon={<Globe className="text-blue-400" />}
-                  title="Cross-Border Nexus"
-                  desc="Trace ownership across Slovak, Czech, Polish and Hungarian registries instantly."
+                  title="Cezhraničné prepojenia"
+                  desc="Okamžite sledujte vlastníctvo naprieč slovenskými, českými, poľskými a maďarskými registrami."
                 />
                 <FeatureCard
                   icon={<ShieldAlert className="text-rose-400" />}
-                  title="Risk Intelligence"
-                  desc="Detect tax debtors, liquidity issues, and high-risk executive patterns."
+                  title="Analýza rizík"
+                  desc="Odhaľte daňových dlžníkov, problémy s likviditou a rizikové správanie štatutárov."
                 />
                 <FeatureCard
                   icon={<FileCheck className="text-emerald-400" />}
-                  title="iCOAtlas Analýza"
-                  desc="Pixel-perfect relationship visualization with intelligent story generation."
+                  title="Analýza iCOAtlas"
+                  desc="Dokonalá vizualizácia vzťahov s inteligentným generovaním súhrnných správ."
                 />
               </div>
             </div>
@@ -672,11 +671,11 @@ export default function HomePageNew() {
                 className="cursor-pointer hover:text-[#0B4EA2] transition-colors"
                 onClick={() => setShowResults(false)}
               >
-                Home
+                Domov
               </span>
               <ChevronRight size={14} />
               <span className="text-slate-800 font-medium">
-                Entity Intelligence
+                Analýza subjektu
               </span>
             </div>
 
@@ -707,7 +706,7 @@ export default function HomePageNew() {
                               : "bg-blue-50 border border-blue-200 text-[#0B4EA2]"
                           }`}
                         >
-                          {riskStatus.text} Risk
+                          {riskStatus.text}
                         </span>
                         {mainCompany?.provider_status && (
                           <span
@@ -720,10 +719,10 @@ export default function HomePageNew() {
                             }`}
                           >
                             {mainCompany.provider_status === "live"
-                              ? "Live Registry"
+                              ? "Aktuálny register"
                               : mainCompany.provider_status === "cached"
-                              ? "Cached Data"
-                              : "Fallback Mode"}
+                              ? "Dáta z cache"
+                              : "Záložný režim"}
                           </span>
                         )}
                       </div>
@@ -762,23 +761,23 @@ export default function HomePageNew() {
 
                   <div className="space-y-4 py-6 border-y border-slate-100 text-sm">
                     <DataRow
-                      label="Country"
+                      label="Krajina"
                       value={mainCompany?.country || "N/A"}
                     />
                     <DataRow
-                      label="Legal Form"
+                      label="Právna forma"
                       value={mainCompany?.legal_form || "N/A"}
                     />
                     <DataRow
-                      label="Founded"
+                      label="Dátum vzniku"
                       value={mainCompany?.founded || "N/A"}
                     />
                     <DataRow
-                      label="Capital"
+                      label="Základné imanie"
                       value={mainCompany?.capital || "N/A"}
                     />
                     <DataRow 
-                      label="DIC" 
+                      label="DIČ" 
                       value={
                         !mainCompany?.dic || mainCompany.dic === "N/A" ? (
                           <span className="text-slate-400 italic">DIČ nedostupné</span>
@@ -808,25 +807,25 @@ export default function HomePageNew() {
                       />
                     )}
                     <DataRow
-                      label="Street"
+                      label="Ulica"
                       value={mainCompany?.street || "N/A"}
                     />
-                    <DataRow label="City" value={mainCompany?.city || "N/A"} />
+                    <DataRow label="Mesto" value={mainCompany?.city || "N/A"} />
                     {mainCompany?.city_part && (
                       <DataRow
-                        label="City Part"
+                        label="Mestská časť"
                         value={mainCompany.city_part}
                       />
                     )}
                     {mainCompany?.raw_data?.region && (
                       <DataRow
-                        label="Region"
+                        label="Kraj"
                         value={mainCompany.raw_data.region}
                       />
                     )}
                     {mainCompany?.raw_data?.district && (
                       <DataRow
-                        label="District"
+                        label="Okres"
                         value={mainCompany.raw_data.district}
                       />
                     )}
@@ -835,7 +834,7 @@ export default function HomePageNew() {
                   {mainCompany?.risk_factors?.length > 0 && (
                     <div className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200">
                       <h4 className="text-xs font-bold text-red-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <ShieldAlert size={14} /> Critical Risk Factors
+                        <ShieldAlert size={14} /> Kritické rizikové faktory
                       </h4>
                       <ul className="space-y-2">
                         {mainCompany.risk_factors.map((factor, idx) => (
@@ -1000,18 +999,18 @@ export default function HomePageNew() {
                   {mainCompany?.raw_data?.financials && (
                     <div className="mt-6 p-4 rounded-xl bg-emerald-50/70 border border-emerald-200">
                       <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <Activity size={14} /> Financial Data (
-                        {mainCompany.raw_data.financials.year || "Latest"})
+                        <Activity size={14} /> Finančné údaje (
+                        {mainCompany.raw_data.financials.year || "Najnovšie"})
                       </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Revenue</span>
+                          <span className="text-slate-500">Tržby</span>
                           <span className="text-slate-800 font-medium">
                             {mainCompany.raw_data.financials.revenue || "N/A"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Profit</span>
+                          <span className="text-slate-500">Zisk</span>
                           <span
                             className={`font-medium ${
                               (
@@ -1099,12 +1098,12 @@ export default function HomePageNew() {
                         <Loader2 size={18} className="animate-spin" />
                       ) : isFavorite ? (
                         <>
-                          <Star size={18} className="fill-yellow-500 text-yellow-500" /> Saved
-                          to iCOAtlas
+                          <Star size={18} className="fill-yellow-500 text-yellow-500" /> Uložené
+                          do iCOAtlas
                         </>
                       ) : (
                         <>
-                          <Star size={18} /> Add to iCOAtlas
+                          <Star size={18} /> Pridať do iCOAtlas
                         </>
                       )}
                     </button>
@@ -1130,7 +1129,7 @@ export default function HomePageNew() {
                   <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-slate-800 uppercase tracking-wider text-xs">
                       <Share size={16} className="text-[#0B4EA2]" />{" "}
-                      Relationship Visualization
+                      Vizualizácia vzťahov
                     </div>
                     <div className="flex gap-2">
                       <button
