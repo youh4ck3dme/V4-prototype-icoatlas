@@ -89,6 +89,27 @@ def classify_registry_error(exc: Exception) -> Dict[str, Any]:
     }
 
 
+def _ares_company_dict(digits: str, result: Any) -> Dict[str, Any]:
+    """CZ firma z ARES v tvare odpovede /v4/search (polia ako atlas_companies)."""
+    raw = result.raw_data if getattr(result, "raw_data", None) is not None else {}
+    norm = raw.get("normalized") or {}
+    return {
+        "atlas_id": digits,
+        "country": "CZ",
+        "legal_name": result.name,
+        "status": result.status,
+        "street": norm.get("street") or result.address,
+        "city": norm.get("city") or "",
+        "postal_code": norm.get("postal_code") or "",
+        "region": norm.get("region"),
+        "legal_form": norm.get("legal_form"),
+        "nace_codes": norm.get("nace_codes") or [],
+        "source_api": "ARES",
+        "provider_status": "live",
+        "raw_data": raw,
+    }
+
+
 @router.get("/search/{raw_id}", summary="Unified V4 company search with graph")
 async def search_v4(
     raw_id: str,
@@ -182,18 +203,7 @@ async def search_v4(
                     service = AresService(client)
                     result = await service.fetch_company(classification.digits)
                     latency = int((time.time() - t0) * 1000)
-                    company = {
-                        "atlas_id": classification.digits,
-                        "country": "CZ",
-                        "legal_name": result.name,
-                        "status": result.status,
-                        "street": result.address,
-                        "city": "",
-                        "postal_code": "",
-                        "source_api": "ARES",
-                        "provider_status": "live",
-                        "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
-                    }
+                    company = _ares_company_dict(classification.digits, result)
                     company["raw_data"]["provider_latency_ms"] = latency
                     company["raw_data"]["provider_ok"] = True
                     logger.info(f"CZ:ARES fetch succeeded in {latency}ms")
@@ -383,18 +393,7 @@ async def search_v4(
                             service = AresService(client)
                             result = await service.fetch_company(classification.digits)
                             latency_cz = int((time.time() - t0_cz) * 1000)
-                            company = {
-                                "atlas_id": classification.digits,
-                                "country": "CZ",
-                                "legal_name": result.name,
-                                "status": result.status,
-                                "street": result.address,
-                                "city": "",
-                                "postal_code": "",
-                                "source_api": "ARES",
-                                "provider_status": "live",
-                                "raw_data": result.raw_data if (hasattr(result, 'raw_data') and result.raw_data is not None) else {},
-                            }
+                            company = _ares_company_dict(classification.digits, result)
                             company["raw_data"]["provider_latency_ms"] = latency_cz
                             company["raw_data"]["provider_ok"] = True
                             logger.info(f"CZ:ARES fallback fetch succeeded in {latency_cz}ms")
