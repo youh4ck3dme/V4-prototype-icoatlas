@@ -83,3 +83,21 @@ def test_endpoint_persists_when_database_configured(store, monkeypatch):
     assert body["atlas_id"]
     row = store.get_company(body["atlas_id"])
     assert row["last_financial_year"] == 2024 and row["financials"]["template"] == "699"
+
+
+def test_save_iban_check_sets_columns_without_personal_names(store):
+    atlas_id = store.ensure_company("SK", "ICO", "12345678", source="FS")
+    store.save_iban_check(
+        atlas_id,
+        {"registered": True, "ibans": ["SK3112000000198742637541"], "vat_ids": ["SK2020000000"],
+         "list_updated": "2026-11-01", "checked_at": "2026-11-01T00:00:00+00:00", "source": "FS_OPENDATA",
+         "attribution": "x", "ico": "12345678"},
+        request_id="12345678",
+    )
+    row = store.get_company(atlas_id)
+    assert row["iban_verified"] is True and row["iban_verified_at"] is not None
+    with store.conn.cursor() as cur:
+        cur.execute("SELECT payload FROM company_sources WHERE atlas_id = %s AND source_system = 'FS_IBAN'", (atlas_id,))
+        payload = cur.fetchone()["payload"]
+    assert payload["ibans"] == ["SK3112000000198742637541"]
+    assert set(payload) == {"ibans", "vat_ids", "list_updated", "checked_at", "source"}

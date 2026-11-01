@@ -4,7 +4,14 @@ import re
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 from httpx import AsyncClient
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from ...services.fs_iban_service import (
+    FsIbanNotConfiguredError,
+    FsIbanService,
+    FsIbanUnavailableError,
+    iban_checksum_ok,
+    normalize_iban,
+)
 from ...services.ruz_service import RuzService
 from ...services.autoform_service import AutoformService
 from ...services.cache_service import cache_service
@@ -70,6 +77,47 @@ def _persist_financials(ico: str, financials: Dict[str, Any]) -> str:
     with CompanyStore() as store:
         atlas_id = store.ensure_company("SK", "ICO", ico, source="RUZ")
         store.save_financials(atlas_id, financials, request_id=ico)
+        return atlas_id
+
+
+@router.get("/company/{ico}/iban", summary="Overenie IBAN v zozname platiteľov DPH (Finančná správa SR)")
+async def company_iban_sk(
+    ico: str,
+    iban: Optional[str] = Query(None, description="Voliteľne: IBAN, ktorý chcete overiť"),
+    client: AsyncClient = Depends(get_httpx_client),
+) -> Dict[str, Any]:
+    if not re.fullmatch(r"\d{8}", ico):
+        raise HTTPException(status_code=400, detail="IČO musí mať 8 číslic")
+    checked = normalize_iban(iban) if iban else None
+    if checked and not iban_checksum_ok(checked):
+        raise HTTPException(status_code=400, detail="IBAN nemá platný formát alebo kontrolnú číslicu")
+
+    try:
+        result = await FsIbanService(client).lookup(ico)
+    except FsIbanNotConfiguredError:
+        logger.error("FS IBAN lookup not configured or key rejected")
+        raise HTTPException(status_code=503, detail="Overenie IBAN nie je nakonfigurované")
+    except FsIbanUnavailableError:
+        logger.warning("FS IBAN unavailable for %s", ico, exc_info=True)
+        raise HTTPException(status_code=503, detail="Zoznam Finančnej správy je dočasne nedostupný")
+
+    result["checked_iban"] = checked
+    result["iban_match"] = (checked in result["ibans"]) if checked else None
+
+    atlas_id = None
+    if database_configured():
+        try:
+            atlas_id = await run_in_threadpool(_persist_iban, ico, result)
+        except Exception:
+            logger.exception("Saving IBAN check for %s failed", ico)
+    result["atlas_id"] = atlas_id
+    return result
+
+
+def _persist_iban(ico: str, result: Dict[str, Any]) -> str:
+    with CompanyStore() as store:
+        atlas_id = store.ensure_company("SK", "ICO", ico, source="FS")
+        store.save_iban_check(atlas_id, result, request_id=ico)
         return atlas_id
 
 

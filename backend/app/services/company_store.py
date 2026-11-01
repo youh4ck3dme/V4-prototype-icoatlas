@@ -117,6 +117,21 @@ class CompanyStore:
             self._add_source(cur, atlas_id, "RUZ_FINANCIALS", request_id, financials)
         self.conn.commit()
 
+    def save_iban_check(self, atlas_id: str, result: Dict[str, Any], request_id: str) -> None:
+        """iban_verified = firma má v zozname FS (ds_dph_iban) aspoň jeden zverejnený účet."""
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE atlas_companies
+                SET iban_verified = %s, iban_verified_at = now(), updated_at = now()
+                WHERE atlas_id = %s
+                """,
+                (bool(result.get("registered")), atlas_id),
+            )
+            payload = {k: result.get(k) for k in ("ibans", "vat_ids", "list_updated", "checked_at", "source")}
+            self._add_source(cur, atlas_id, "FS_IBAN", request_id, payload)
+        self.conn.commit()
+
     def get_company(self, atlas_id: str) -> Optional[Dict[str, Any]]:
         with self.conn.cursor() as cur:
             cur.execute("SELECT * FROM atlas_companies WHERE atlas_id = %s", (atlas_id,))
