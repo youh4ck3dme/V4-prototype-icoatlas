@@ -133,6 +133,10 @@ async def search_v4(
     """
     
     # Classify the identifier
+    # CZ IČO môže mať menej ako 8 číslic (napr. 6947 -> 00006947); doplniť pred klasifikáciou a cache kľúčom
+    if country and country.upper() == "CZ" and raw_id.strip().isdigit() and len(raw_id.strip()) < 8:
+        raw_id = raw_id.strip().zfill(8)
+
     classification = classify_identifier(raw_id, country)
     
     detected_country = classification.country

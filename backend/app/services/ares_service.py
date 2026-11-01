@@ -24,6 +24,7 @@ RETRY_DELAY = 1.0
 STATUS_ACTIVE = "AKTÍVNA"
 STATUS_DISSOLVED = "ZANIKNUTÁ"
 STATUS_UNKNOWN = "NEZNÁMY"
+_CLIENT_ERROR = "__ares_client_error__"
 
 
 def normalize_cz_ico(ico: str) -> Optional[str]:
@@ -97,6 +98,11 @@ class ARESService:
 
         if data is None:
             raise HTTPException(status_code=404, detail=f"IČO {norm_ico} not found")
+        if _CLIENT_ERROR in data:
+            status = data[_CLIENT_ERROR]
+            if status == 400:
+                raise HTTPException(status_code=400, detail=f"ARES odmietol IČO {norm_ico}")
+            raise HTTPException(status_code=502, detail=f"ARES API error ({status})")
 
         try:
             normalized = normalize_ares(data)
@@ -120,12 +126,11 @@ class ARESService:
                 if resp.status_code >= 500 or resp.status_code == 429:
                     resp.raise_for_status()
                 if resp.status_code != 200:
-                    # 4xx nie je výpadok; nepočítať do circuit breakera opakovaním
-                    resp.raise_for_status()
+                    # Chyba požiadavky (napr. 400 pre neplatné IČO), nie výpadok ARES:
+                    # vráti sa ako výsledok, aby sa nezapočítala do circuit breakera a neopakovala.
+                    return {_CLIENT_ERROR: resp.status_code}
                 return resp.json()
             except HTTPStatusError as e:
-                if e.response.status_code < 500 and e.response.status_code != 429:
-                    raise
                 last_exc = e
             except (TransportError, ValueError) as e:
                 last_exc = e

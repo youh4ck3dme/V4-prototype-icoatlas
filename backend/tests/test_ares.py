@@ -145,3 +145,44 @@ def test_cz_endpoint_and_v4_search(monkeypatch):
             assert comp["legal_form"] == "121" and comp["dic"] == "CZ27082440"
     finally:
         app.dependency_overrides.clear()
+
+
+async def test_client_errors_do_not_trip_breaker():
+    calls = []
+
+    def bad_request(request):
+        calls.append(request)
+        return httpx.Response(400, json={"kod": "CHYBA_VSTUPU"})
+
+    for _ in range(7):
+        with pytest.raises(HTTPException) as e:
+            await _fetch(bad_request, "12345678")
+        assert e.value.status_code == 400
+    assert len(calls) == 7  # bez opakovania a breaker ostal zatvorený
+    assert circuit_breaker.get_circuit_breaker("ares").state.value == "closed"
+    assert (await _fetch(handler_factory(), "27082440")).name == "Alza.cz a.s."
+
+
+def test_v4_search_pads_short_cz_ico(monkeypatch):
+    from backend.app.main import app
+    from backend.app.services.cache_service import cache_service
+
+    seen = []
+
+    async def fake_fetch(self, ico):
+        seen.append(ico)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler_factory())) as c:
+            data = copy.deepcopy(ALZA)
+            data["ico"] = "00006947"
+            from backend.app.models.company import Company
+            n = normalize_ares(data)
+            return Company(ico="00006947", name=n["legal_name"], address=n["address"], status=n["status"],
+                           raw_data={**data, "normalized": n})
+
+    monkeypatch.setattr(ARESService, "fetch_company", fake_fetch)
+    cache_service.in_memory.clear()
+    with TestClient(app) as tc:
+        r = tc.get("/api/v4/search/6947", params={"country": "CZ"})
+    cache_service.in_memory.clear()
+    assert r.status_code == 200, r.text
+    assert seen == ["00006947"]
