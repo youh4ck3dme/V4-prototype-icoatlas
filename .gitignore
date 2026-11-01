@@ -84,3 +84,11 @@ debug_*.txt
 
 
 
+
+# Local databases and debug dumps (never commit)
+*.db
+*.sqlite
+*.sqlite3
+debug_*.txt
+debug_*.json
+.hypothesis/
