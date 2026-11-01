@@ -50,27 +50,29 @@ async def company_financials_sk(
         raise HTTPException(status_code=400, detail="IČO musí mať 8 číslic")
 
     cache_key = f"ruz:financials:{ico}:{years}"
-    financials = None if refresh else await cache_service.get(cache_key)
-    cached = financials is not None
-    if not cached:
-        try:
-            financials = await RuzFinancialsService(client, max_years=years).fetch_financials(ico)
-        except RuzUnavailableError:
-            logger.warning("RÚZ unavailable for %s", ico, exc_info=True)
-            raise HTTPException(status_code=503, detail="Register účtovných závierok je dočasne nedostupný")
-        if financials is None:
-            raise HTTPException(status_code=404, detail=f"Pre IČO {ico} nie sú v RÚZ účtovné závierky")
-        await cache_service.set(cache_key, financials, expire_seconds=RUZ_CACHE_TTL)
+    cached_body = None if refresh else await cache_service.get(cache_key)
+    if cached_body is not None:
+        return {**cached_body, "cached": True}
+
+    try:
+        financials = await RuzFinancialsService(client, max_years=years).fetch_financials(ico)
+    except RuzUnavailableError:
+        logger.warning("RÚZ unavailable for %s", ico, exc_info=True)
+        raise HTTPException(status_code=503, detail="Register účtovných závierok je dočasne nedostupný")
+    if financials is None:
+        raise HTTPException(status_code=404, detail=f"Pre IČO {ico} nie sú v RÚZ účtovné závierky")
 
     atlas_id = None
-    if database_configured() and not cached:
+    if database_configured():
         try:
             atlas_id = await run_in_threadpool(_persist_financials, ico, financials)
         except Exception:
             # zápis nesmie zhodiť odpoveď; dáta už máme
             logger.exception("Saving financials for %s failed", ico)
 
-    return {"ico": ico, "financials": financials, "cached": cached, "atlas_id": atlas_id}
+    body = {"ico": ico, "financials": financials, "atlas_id": atlas_id}
+    await cache_service.set(cache_key, body, expire_seconds=RUZ_CACHE_TTL)
+    return {**body, "cached": False}
 
 
 def _persist_financials(ico: str, financials: Dict[str, Any]) -> str:

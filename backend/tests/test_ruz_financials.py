@@ -203,3 +203,45 @@ def test_endpoint_errors(api):
     assert tc.get("/api/sk/company/87654321/financials").status_code == 404
     holder["handler"] = make_ruz_handler(fail_first=10_000)
     assert tc.get("/api/sk/company/11112222/financials").status_code == 503
+
+
+# ---------- review fixes ----------
+
+async def test_non_404_client_error_is_unavailable_not_missing():
+    calls = []
+
+    def forbidden(request):
+        calls.append(request)
+        return httpx.Response(403, text="Request Rejected")
+
+    with pytest.raises(RuzUnavailableError):
+        await _fetch(forbidden)
+    assert len(calls) == 1  # trvalá 4xx sa neopakuje
+
+
+def test_endpoint_403_returns_503_and_is_not_cached(api):
+    tc, holder = api
+    holder["handler"] = lambda r: httpx.Response(403)
+    assert tc.get("/api/sk/company/12345678/financials").status_code == 503
+    holder["handler"] = make_ruz_handler()
+    body = tc.get("/api/sk/company/12345678/financials").json()
+    assert body["cached"] is False and body["financials"]["year"] == 2024
+
+
+def test_merge_financials_keeps_history_and_latest_available():
+    from backend.app.services.ruz_financials_service import merge_financials
+
+    old = {"ico": "1", "history": [
+        {"year": 2024, "available": True, "assets": 10.0},
+        {"year": 2023, "available": True, "assets": 9.0},
+        {"year": 2022, "available": True, "assets": 8.0},
+    ]}
+    new = {"ico": "1", "source": "RUZ", "fetched_at": "t", "history": [
+        {"year": 2025, "available": False, "template": "742"},
+    ]}
+    m = merge_financials(old, new)
+    assert [h["year"] for h in m["history"]] == [2025, 2024, 2023, 2022]
+    assert m["year"] == 2024 and m["assets"] == 10.0  # nedostupný 2025 nezmaže čísla
+    newer = {"ico": "1", "history": [{"year": 2024, "available": True, "assets": 11.0}]}
+    assert merge_financials(old, newer)["assets"] == 11.0  # nový údaj za rovnaký rok vyhráva
+    assert merge_financials(None, new)["history"] == new["history"]

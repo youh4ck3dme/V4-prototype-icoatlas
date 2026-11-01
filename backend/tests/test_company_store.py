@@ -41,7 +41,10 @@ def test_ensure_company_is_idempotent(store):
 
 def test_save_financials_sets_columns_and_audit(store):
     atlas_id = store.ensure_company("SK", "ICO", "12345678", source="RUZ")
-    fin = {"year": 2024, "template": "699", "assets": 36539.0, "history": [{"year": 2024}, {"year": 2023}]}
+    fin = {"ico": "12345678", "year": 2024, "template": "699", "assets": 36539.0, "history": [
+        {"year": 2024, "template": "699", "available": True, "assets": 36539.0},
+        {"year": 2023, "template": "699", "available": True, "assets": 31840.0},
+    ]}
     store.save_financials(atlas_id, fin, request_id="12345678")
 
     row = store.get_company(atlas_id)
@@ -101,3 +104,38 @@ def test_save_iban_check_sets_columns_without_personal_names(store):
         payload = cur.fetchone()["payload"]
     assert payload["ibans"] == ["SK3112000000198742637541"]
     assert set(payload) == {"ibans", "vat_ids", "list_updated", "checked_at", "source"}
+
+
+def test_endpoint_cached_response_keeps_atlas_id_and_history_survives_smaller_years(store, monkeypatch):
+    import httpx
+    from fastapi.testclient import TestClient
+
+    from backend.app.api.endpoints import search_sk
+    from backend.app.core import circuit_breaker
+    from backend.app.main import app
+    from backend.app.services.cache_service import cache_service
+    from backend.tests.test_ruz_financials import make_ruz_handler
+
+    monkeypatch.setenv("DATABASE_URL", DSN)
+    circuit_breaker._breakers.clear()
+    cache_service.in_memory.clear()
+    handler = make_ruz_handler()
+
+    async def client_override():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+            yield c
+
+    app.dependency_overrides[search_sk.get_httpx_client] = client_override
+    try:
+        with TestClient(app) as tc:
+            first = tc.get("/api/sk/company/12345678/financials").json()
+            again = tc.get("/api/sk/company/12345678/financials").json()
+            tc.get("/api/sk/company/12345678/financials", params={"years": 1}).json()
+    finally:
+        app.dependency_overrides.clear()
+        cache_service.in_memory.clear()
+
+    assert again["cached"] is True and again["atlas_id"] == first["atlas_id"]
+    row = store.get_company(first["atlas_id"])
+    assert [h["year"] for h in row["financials"]["history"]] == [2024, 2023, 2022]
+    assert row["last_financial_year"] == 2024

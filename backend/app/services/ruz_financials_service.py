@@ -143,6 +143,25 @@ def _build_result(ico: str, history: List[Dict[str, Any]], stub: bool = False) -
     return base
 
 
+def merge_financials(existing: Optional[Dict[str, Any]], new: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Kanonická história: zjednotí roky z uloženého a nového výsledku (nový vyhráva pri rovnakom roku),
+    takže požiadavka s menším `years` nezmaže staršie roky a nedostupný najnovší rok nezmaže
+    posledné dostupné čísla. Najnovší dostupný rok sa odvodí zo zlúčenej histórie.
+    """
+    by_year: Dict[int, Dict[str, Any]] = {}
+    for src in (existing or {}).get("history") or [], new.get("history") or []:
+        for entry in src:
+            if isinstance(entry, dict) and isinstance(entry.get("year"), int):
+                by_year[entry["year"]] = entry
+    merged = _build_result(new.get("ico") or (existing or {}).get("ico"), list(by_year.values()),
+                           stub=new.get("source") == "RUZ_STUB")
+    if merged is None:
+        return dict(new)
+    merged["fetched_at"] = new.get("fetched_at", merged["fetched_at"])
+    return merged
+
+
 class RuzFinancialsService:
     def __init__(self, client: httpx.AsyncClient, max_years: int = 5):
         self.client = client
@@ -239,9 +258,9 @@ class RuzFinancialsService:
                 if resp.status_code >= 500 or resp.status_code == 429:
                     raise httpx.HTTPStatusError(f"RÚZ {resp.status_code}", request=resp.request, response=resp)
                 if resp.status_code != 200:
-                    # 4xx okrem 404/429 sa neopakuje, ale nie je to výpadok RÚZ
-                    logger.warning("RÚZ %s %s -> %s", path, params, resp.status_code)
-                    return None
+                    # napr. 403 z firewallu RÚZ: nie je to "nenájdené", neopakuje sa,
+                    # endpoint vráti 503 a nič sa neuloží do cache
+                    raise RuzUnavailableError(f"RÚZ {path} -> HTTP {resp.status_code}")
                 return resp.json()
             except (httpx.TransportError, httpx.HTTPStatusError, ValueError) as e:
                 last_exc = e
