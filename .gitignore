@@ -92,3 +92,7 @@ debug_*.txt
 debug_*.txt
 debug_*.json
 .hypothesis/
+.venv
+backend/.venv
+*.png
+

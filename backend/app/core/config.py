@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     # Sentry configuration
     SENTRY_DSN: Optional[str] = None
     SENTRY_TRACES_SAMPLE_RATE: float = 0.1
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    
+    # Stripe configuration
+    STRIPE_SECRET_KEY: Optional[str] = None
+    STRIPE_PUBLISHABLE_KEY: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    FRONTEND_URL: str = "http://localhost:8009"
+    
+    model_config = SettingsConfigDict(env_file=(".env", "backend/.env"), extra="ignore")
 
 settings = Settings()

@@ -15,10 +15,179 @@ from ...utils.identifier_classifier import classify_identifier
 router = APIRouter()
 
 
-# Check if we have DB for graph features
-def has_db():
+def _build_in_memory_company_graph(company: dict, executives: list, owners: list, ubos: list = None) -> dict:
+    atlas_id = str(company.get("atlas_id") or company.get("ico") or "company_anchor")
+    country = company.get("country", "SK")
+    c_key = f"COMPANY:{country}:{atlas_id}"
+    
+    nodes = [
+        {
+            "id": c_key,
+            "type": "COMPANY",
+            "country": country,
+            "label": company.get("legal_name") or company.get("name") or atlas_id,
+            "data": {
+                "ico": company.get("ico"),
+                "status": company.get("status"),
+                "dic": company.get("dic"),
+                "atlas_id": atlas_id,
+            }
+        }
+    ]
+    edges = []
+    
+    addr_str = f"{company.get('street', '')} {company.get('city', '')} {company.get('postal_code', '')}".strip()
+    if addr_str:
+        a_key = f"ADDRESS:{country}:{addr_str}"
+        nodes.append({
+            "id": a_key,
+            "type": "ADDRESS",
+            "country": country,
+            "label": addr_str,
+            "data": {"address": addr_str}
+        })
+        edges.append({
+            "from_id": c_key,
+            "to_id": a_key,
+            "source": c_key,
+            "target": a_key,
+            "type": "HAS_ADDRESS",
+            "weight": 1.0,
+            "data": {}
+        })
+        
+    for i, ex in enumerate(executives or []):
+        p_name = ex.get("name") or f"Executive {i+1}"
+        p_key = f"PERSON:{country}:{p_name}"
+        if not any(n["id"] == p_key for n in nodes):
+            nodes.append({
+                "id": p_key,
+                "type": "PERSON",
+                "country": country,
+                "label": p_name,
+                "data": ex
+            })
+        edges.append({
+            "from_id": p_key,
+            "to_id": c_key,
+            "source": p_key,
+            "target": c_key,
+            "type": "EXECUTIVE_OF",
+            "weight": 3.0,
+            "data": {"role": ex.get("role", "konateľ"), "since": ex.get("since")}
+        })
+        
+        # Connect affiliated sister companies from person network
+        for aff in (ex.get("affiliated_companies") or [])[:5]:
+            aff_name = aff.get("name")
+            if aff_name:
+                aff_key = f"COMPANY:{country}:{aff_name}"
+                if not any(n["id"] == aff_key for n in nodes):
+                    nodes.append({
+                        "id": aff_key,
+                        "type": "COMPANY",
+                        "country": country,
+                        "label": aff_name,
+                        "data": aff
+                    })
+                edges.append({
+                    "from_id": p_key,
+                    "to_id": aff_key,
+                    "source": p_key,
+                    "target": aff_key,
+                    "type": "PÔSOBÍ_V",
+                    "weight": 2.0,
+                    "data": {"status": aff.get("status", "AKTÍVNA")}
+                })
+        
+    for i, ow in enumerate(owners or []):
+        o_name = ow.get("name") or f"Owner {i+1}"
+        o_type = (ow.get("type") or ("COMPANY" if ow.get("ico") else "PERSON")).upper()
+        if o_type == "COMPANY" or ow.get("ico"):
+            o_key = f"COMPANY:{country}:{ow.get('ico') or o_name}"
+            node_type = "COMPANY"
+        else:
+            o_key = f"PERSON:{country}:{o_name}"
+            node_type = "PERSON"
+            
+        if not any(n["id"] == o_key for n in nodes):
+            nodes.append({
+                "id": o_key,
+                "type": node_type,
+                "country": country,
+                "label": o_name,
+                "data": ow
+            })
+        edges.append({
+            "from_id": o_key,
+            "to_id": c_key,
+            "source": o_key,
+            "target": c_key,
+            "type": "OWNER_OF",
+            "weight": 5.0,
+            "data": {
+                "share": ow.get("share"),
+                "deposit": ow.get("deposit"),
+                "paid": ow.get("paid")
+            }
+        })
+        
+    for i, ub in enumerate(ubos or []):
+        u_name = ub.get("formatted_name") or ub.get("name") or f"UBO {i+1}"
+        u_key = f"UBO:{country}:{u_name}"
+        if not any(n["id"] == u_key for n in nodes):
+            nodes.append({
+                "id": u_key,
+                "type": "UBO",
+                "country": country,
+                "label": u_name,
+                "data": ub
+            })
+        edges.append({
+            "from_id": u_key,
+            "to_id": c_key,
+            "source": u_key,
+            "target": c_key,
+            "type": "SKUTOČNÝ_MAJITEĽ",
+            "weight": 5.0,
+            "data": {}
+        })
+        
+    return {
+        "nodes": nodes,
+        "edges": edges,
+        "fallback": True
+    }
+
+
+# Check if we have active DB for graph features
+_db_status_cache = {"last_check": 0, "is_online": False}
+
+def has_db() -> bool:
+    import time
+    import socket
+    from urllib.parse import urlparse
     from ...core.config import settings
-    return bool(settings.DATABASE_URL)
+    
+    if not settings.DATABASE_URL:
+        return False
+        
+    now = time.time()
+    # Cache status for 30s to avoid repeated socket connects
+    if now - _db_status_cache["last_check"] < 30:
+        return _db_status_cache["is_online"]
+        
+    _db_status_cache["last_check"] = now
+    try:
+        parsed = urlparse(settings.DATABASE_URL.replace("+asyncpg", ""))
+        host = parsed.hostname or "127.0.0.1"
+        port = parsed.port or 5432
+        with socket.create_connection((host, port), timeout=0.3):
+            _db_status_cache["is_online"] = True
+            return True
+    except Exception:
+        _db_status_cache["is_online"] = False
+        return False
 
 def _enrich_company_from_ruz(company_dict, result):
     addr_str = result.address or ""
@@ -583,8 +752,8 @@ async def search_v4(
     owners = company.get("owners", [])
     if company["country"] == "SK":
         try:
-            from ...services.orsr_people_integration import ensure_sk_people_for_company
-            executives, owners = ensure_sk_people_for_company(company, executives, owners)
+            from ...services.orsr_people_integration import ensure_sk_people_for_company_async
+            executives, owners = await ensure_sk_people_for_company_async(company, executives, owners)
         except Exception:
             pass
 
@@ -593,11 +762,39 @@ async def search_v4(
         for ex in company["executives"]:
             addr_str = ex.get("address", "")
             if addr_str:
+                addr_lower = addr_str.lower()
+                # If address is GDPR birth date format ("Dátum narodenia: ...") or contains Slovak indicator,
+                # or person is RFO-identified, it is NOT a foreign nominee.
+                if "dátum narodenia" in addr_lower or "datum narodenia" in addr_lower or ex.get("is_rfo_identified"):
+                    continue
                 addr_country = addr_str.split(",")[-1].strip().lower()
                 if addr_country and not any(x in addr_country for x in ["slovenská republika", "slovensko", "slovakia", "sr"]):
                     ex["potential_nominee"] = True
                     company["risk_factors"].append(f"Zahraničný štatutár (potenciálny biely kôň): {ex.get('name')} ({ex.get('address')})")
                     company["risk_score"] += 40
+
+    # 5. FinTech & Risk Blacklist Ingestion
+    try:
+        from ...services.risk_blacklist_service import RiskBlacklistService
+        blacklists = await RiskBlacklistService.audit_company_blacklists(company["atlas_id"], company.get("status", "AKTÍVNA"))
+        company["blacklists"] = blacklists
+        if blacklists.get("risk_delta"):
+            company["risk_score"] = company.get("risk_score", 0) + blacklists["risk_delta"]
+            for rec in blacklists.get("records", []):
+                if rec.get("status") in ("DEBT_CONFIRMED", "RECORD_ACTIVE"):
+                    company["risk_factors"].append(f"{rec.get('institution')}: {rec.get('description')}")
+    except Exception:
+        company["blacklists"] = {"has_blacklists": False, "records": [], "flags": {}}
+
+    # 6. RPVS & UBO Unmasking
+    try:
+        from ...services.rpvs_service import RPVSService
+        ubo_rpvs = await RPVSService.get_rpvs_details(company["atlas_id"], company.get("legal_name", ""))
+        company["ubo_rpvs"] = ubo_rpvs
+        if ubo_rpvs.get("ubos") and not company.get("ubos"):
+            company["ubos"] = ubo_rpvs["ubos"]
+    except Exception:
+        company["ubo_rpvs"] = {"is_registered_in_rpvs": False, "ubos": []}
 
     # Optional: Include relationship graph
     if graph == 1:
@@ -648,13 +845,30 @@ async def search_v4(
                 finally:
                     gs.close()
             except Exception as e:
-                response["graph"] = {"error": str(e), "note": "Graph DB connection failed"}
+                response["graph"] = _build_in_memory_company_graph(
+                    company=company,
+                    executives=executives,
+                    owners=owners,
+                    ubos=company.get("ubos")
+                )
+                response["graph"]["note"] = f"Graph DB offline ({str(e)}), generated in-memory topology"
         else:
-            response["graph"] = {"note": "Graph features disabled (DATABASE_URL not set)"}
+            response["graph"] = _build_in_memory_company_graph(
+                company=company,
+                executives=executives,
+                owners=owners,
+                ubos=company.get("ubos")
+            )
             
     response["provider_status"] = company.get("provider_status", "live")
     if company.get("provider_error"):
         response["provider_error"] = company.get("provider_error")
+    
+    # Contract Enrichment: Deep History, Deeds, Blacklists, RPVS
+    response["history"] = company.get("history", {})
+    response["deeds"] = company.get("deeds", [])
+    response["blacklists"] = company.get("blacklists", {})
+    response["ubo_rpvs"] = company.get("ubo_rpvs", {})
     
     return response
 

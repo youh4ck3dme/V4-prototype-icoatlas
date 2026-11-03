@@ -91,8 +91,8 @@ const ProfilePage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.url) {
-          window.location.href = data.url; // Redirect to SumUp Payment
+        if (data.url || data.checkout_url) {
+          window.location.href = data.url || data.checkout_url; // Redirect to Stripe Checkout
         }
       }
     } catch (error) {
@@ -230,17 +230,11 @@ const ProfilePage = () => {
             </div>
 
             {/* Payment Instructions */}
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-slate-700">
-                <strong className="text-[#0B4EA2]">ℹ️ Po úhrade:</strong>{" "}
-                Kontaktujte nás na{" "}
-                <a
-                  href="mailto:support@icoatlas.sk"
-                  className="text-[#0B4EA2] hover:underline font-semibold"
-                >
-                  support@icoatlas.sk
-                </a>{" "}
-                s potvrdením platby pre aktiváciu vášho predplatného.
+            <div className="mt-4 p-4 bg-emerald-50 border border-emerald-250 rounded-xl flex items-start gap-3">
+              <FaCreditCard className="text-emerald-600 mt-1 shrink-0" />
+              <p className="text-xs text-slate-700 leading-relaxed">
+                <strong className="text-emerald-800">⚡ Okamžitá aktivácia cez Stripe:</strong>{" "}
+                Platba prebieha cez zabezpečenú Stripe Checkout bránu s podporou Apple Pay, Google Pay a platobných kariet. Vyššie limity a forenzné funkcie sa aktivujú ihneď po úhrade.
               </p>
             </div>
           </div>
