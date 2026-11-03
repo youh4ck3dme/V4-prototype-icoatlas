@@ -11,10 +11,11 @@ export const AuthProvider = ({ children }) => {
   const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
   useEffect(() => {
-    // If token exists, fetch user details
+    // If token exists, fetch user details (login() už používateľa načítal)
     if (token) {
       localStorage.setItem("token", token);
-      fetchUser(token);
+      if (!user) fetchUser(token);
+      else setLoading(false);
     } else {
       localStorage.removeItem("token");
       setUser(null);
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUser = async (authToken) => {
     try {
       const response = await fetch(
-        `${API_URL}/api/auth/me?token=${authToken}`,
+        `${API_URL}/api/auth/me`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
+        return userData;
       } else {
         // If token invalid, logout
         logout();
@@ -67,6 +69,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     const data = await response.json();
+    // načítať používateľa ešte pred návratom, aby ProtectedRoute po navigate() videl prihlásenie
+    await fetchUser(data.access_token);
     setToken(data.access_token);
     return data;
   };
@@ -96,7 +100,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, register, loading }}
+      value={{ user, token, login, logout, register, loading, isAuthenticated: !!user }}
     >
       {!loading && children}
     </AuthContext.Provider>
