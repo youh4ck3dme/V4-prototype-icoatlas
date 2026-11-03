@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright and browsers for HU provider
+# Install Playwright and browsers for HU/PL provider
 RUN playwright install --with-deps chromium
 
 # Copy app code

@@ -237,19 +237,35 @@ class GraphService:
             name = ow.get("name") or ""
             if not name:
                 continue
-            person_node = self.get_or_create_node(
-                node_type="PERSON",
-                key_hash=self.person_key(country, name, ow.get("birth_date"), ow.get("reg_id")),
-                label=name,
-                country=country,
-                data={"name": name, "birth_date": ow.get("birth_date"), "reg_id": ow.get("reg_id")},
-            )
+            is_company = (ow.get("type") == "COMPANY" or bool(ow.get("ico")))
+            if is_company:
+                owner_node = self.get_or_create_node(
+                    node_type="COMPANY",
+                    key_hash=self.company_key(ow.get("country", country), ow.get("ico") or name),
+                    label=name,
+                    country=ow.get("country", country),
+                    data=ow,
+                )
+            else:
+                owner_node = self.get_or_create_node(
+                    node_type="PERSON",
+                    key_hash=self.person_key(country, name, ow.get("birth_date"), ow.get("reg_id")),
+                    label=name,
+                    country=country,
+                    data={"name": name, "birth_date": ow.get("birth_date"), "reg_id": ow.get("reg_id")},
+                )
             self.upsert_edge(
-                from_node=person_node,
+                from_node=owner_node,
                 to_node=company_node,
                 edge_type="OWNER_OF",
                 weight=5.0,
-                data={"share": ow.get("share"), "since": ow.get("since"), "until": ow.get("until")},
+                data={
+                    "share": ow.get("share"),
+                    "deposit": ow.get("deposit"),
+                    "paid": ow.get("paid"),
+                    "since": ow.get("since"),
+                    "until": ow.get("until")
+                },
                 source=source,
             )
 

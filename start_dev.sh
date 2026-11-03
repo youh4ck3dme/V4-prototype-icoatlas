@@ -44,9 +44,14 @@ fi
 if [ ! -d "backend/venv" ]; then
     echo -e "${YELLOW}⚠️  Virtual environment not found. Creating...${NC}"
     cd backend
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
+    if command -v uv &> /dev/null; then
+        uv venv venv
+        VIRTUAL_ENV=venv uv pip install -r requirements.txt
+    else
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+    fi
     cd ..
 fi
 
@@ -73,7 +78,11 @@ fi
 if [ ! -d "frontend/node_modules" ]; then
     echo -e "${YELLOW}⚠️  Node modules not found. Installing...${NC}"
     cd frontend
-    npm install
+    if command -v pnpm &> /dev/null; then
+        pnpm install
+    else
+        npm install
+    fi
     cd ..
 fi
 
@@ -146,7 +155,11 @@ done
 # Start frontend
 echo -e "${BLUE}[2/2] Starting Frontend Dev Server...${NC}"
 cd frontend
-nohup npm run dev > ../logs/frontend.log 2>&1 &
+if command -v pnpm &> /dev/null; then
+    nohup pnpm dev > ../logs/frontend.log 2>&1 &
+else
+    nohup npm run dev > ../logs/frontend.log 2>&1 &
+fi
 FRONTEND_PID=$!
 cd ..
 

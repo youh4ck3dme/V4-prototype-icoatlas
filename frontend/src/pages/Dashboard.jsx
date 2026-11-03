@@ -74,7 +74,7 @@ const Dashboard = () => {
     try {
       const token = authContextToken || localStorage.getItem("token");
       const response = await fetch(
-        `${ENDPOINTS.API_URL}/api/payment/checkout?tier=${tier}`,
+        `${ENDPOINTS.PAYMENT?.CHECKOUT || "/api/payment/checkout"}?tier=${tier}`,
         {
           method: "POST",
           headers: {
@@ -85,8 +85,8 @@ const Dashboard = () => {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.url) {
-          window.location.href = data.url; // Redirect to SumUp Payment
+        if (data.url || data.checkout_url) {
+          window.location.href = data.url || data.checkout_url; // Redirect to Stripe Checkout
         }
       }
     } catch (error) {
