@@ -29,7 +29,7 @@ ATTRIBUTION = "Zdroj údajov: Finančná správa SR - https://opendata.financnas
 MAX_RETRIES = 2
 RETRY_DELAY = 1.0
 REQUEST_TIMEOUT = 15.0
-MAX_PAGES = 5
+MAX_PAGES = 20
 STUB_ICO = "52374220"
 STUB_IBAN = "SK3112000000198742637541"
 
@@ -125,12 +125,15 @@ class FsIbanService:
     async def _search(self, column: str, ico: str) -> List[Dict[str, Any]]:
         items: List[Dict[str, Any]] = []
         page, pages = 1, 1
-        while page <= min(pages, MAX_PAGES):
+        while page <= pages:
             data = await self._get(f"data/{SLUG}/search", {"page": page, "column": column, "search": ico})
             if not data:
                 break  # 404 = nič nenájdené
             items.extend(data.get("data") or [])
             pages = int(data.get("pages") or 1)
+            if pages > MAX_PAGES:
+                # neúplný zoznam by dal falošné iban_match=false; radšej žiadny výsledok
+                raise FsIbanUnavailableError(f"FS vrátilo {pages} strán, limit je {MAX_PAGES}")
             page += 1
         return items
 

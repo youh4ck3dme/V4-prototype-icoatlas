@@ -1,40 +1,143 @@
-from httpx import AsyncClient, HTTPStatusError, TimeoutException
+"""
+CZ ARES (otvorené REST API Ministerstva financí ČR, bez kľúča a bez poplatkov).
+GET https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/{ico}
+
+fetch_company vracia spoločný Company model; raw_data = celá odpoveď ARES
++ raw_data["normalized"] s poliami v tvare atlas_companies (normalize_ares).
+"""
+import asyncio
+import logging
+import re
+from typing import Any, Dict, Optional
+
 from fastapi import HTTPException
-from bs4 import BeautifulSoup  # only if needed for fallback, but JSON preferred
-from typing import Optional
+from httpx import AsyncClient, HTTPStatusError, TimeoutException, TransportError
+
+from ..core.circuit_breaker import CircuitBreakerOpenError, get_circuit_breaker
 from ..models.company import Company
+
+logger = logging.getLogger("uvicorn.error")
+
+MAX_RETRIES = 2
+RETRY_DELAY = 1.0
+
+STATUS_ACTIVE = "AKTÍVNA"
+STATUS_DISSOLVED = "ZANIKNUTÁ"
+STATUS_UNKNOWN = "NEZNÁMY"
+_CLIENT_ERROR = "__ares_client_error__"
+
+
+def normalize_cz_ico(ico: str) -> Optional[str]:
+    """ARES IČO má 8 číslic; staršie kratšie IČO sa dopĺňa nulami zľava."""
+    digits = re.sub(r"\D+", "", ico or "")
+    if not digits or len(digits) > 8:
+        return None
+    return digits.zfill(8)
+
+
+def ares_status(data: Dict[str, Any]) -> str:
+    if data.get("datumZaniku"):
+        return STATUS_DISSOLVED
+    regs = data.get("seznamRegistraci") or {}
+    states = [regs.get("stavZdrojeVr"), regs.get("stavZdrojeRos"), regs.get("stavZdrojeRes")]
+    if "AKTIVNI" in states:
+        return STATUS_ACTIVE
+    if any(s in ("ZANIKLY", "HISTORICKY") for s in states):
+        return STATUS_DISSOLVED
+    return STATUS_UNKNOWN
+
+
+def normalize_ares(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Polia v tvare atlas_companies (+ dic, founded/dissolved) z odpovede ARES."""
+    sidlo = data.get("sidlo") or {}
+    street = sidlo.get("nazevUlice") or sidlo.get("nazevCastiObce") or sidlo.get("nazevObce")
+    number = sidlo.get("cisloDomovni")
+    if number is not None and sidlo.get("cisloOrientacni") is not None:
+        number = f"{number}/{sidlo.get('cisloOrientacni')}{sidlo.get('cisloOrientacniPismeno') or ''}"
+    psc = sidlo.get("psc")
+    return {
+        "ico": data.get("ico"),
+        "legal_name": data.get("obchodniJmeno"),
+        "status": ares_status(data),
+        "legal_form": data.get("pravniForma"),
+        "street": " ".join(str(p) for p in (street, number) if p not in (None, "")) or None,
+        "city": sidlo.get("nazevObce"),
+        "postal_code": str(psc) if psc is not None else None,
+        "region": sidlo.get("nazevKraje"),
+        "country_code": sidlo.get("kodStatu") or "CZ",
+        "address": sidlo.get("textovaAdresa"),
+        "nace_codes": data.get("czNace") or [],
+        "dic": data.get("dic"),
+        "founded": data.get("datumVzniku"),
+        "dissolved": data.get("datumZaniku"),
+        "updated": data.get("datumAktualizace"),
+    }
+
 
 class ARESService:
     BASE_URL = "https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty"
 
     def __init__(self, client: AsyncClient):
         self.client = client
+        self.breaker = get_circuit_breaker("ares", failure_threshold=5, recovery_timeout=60)
 
     async def fetch_company(self, ico: str) -> Company:
-        url = f"{self.BASE_URL}/{ico}"
+        norm_ico = normalize_cz_ico(ico)
+        if not norm_ico:
+            raise HTTPException(status_code=400, detail="IČO musí mať najviac 8 číslic")
+
         try:
-            resp = await self.client.get(url, timeout=10.0)
-            resp.raise_for_status()
-            with open("debug_ares.txt", "w") as f:
-                f.write(resp.text)
-            data = resp.json()
+            data = await self.breaker.acall(self._get_with_retry, norm_ico)
+        except CircuitBreakerOpenError:
+            raise HTTPException(status_code=503, detail="ARES je dočasne nedostupný")
         except TimeoutException:
             raise HTTPException(status_code=504, detail="ARES request timed out")
-        except HTTPStatusError as exc:
-            if exc.response.status_code == 404:
-                raise HTTPException(status_code=404, detail=f"IČO {ico} not found")
-            raise HTTPException(status_code=exc.response.status_code, detail="ARES API error")
+        except (HTTPStatusError, TransportError, ValueError) as exc:
+            logger.warning("ARES %s failed: %s", norm_ico, exc)
+            raise HTTPException(status_code=502, detail="ARES API error")
 
-        # map JSON fields into our Company model
+        if data is None:
+            raise HTTPException(status_code=404, detail=f"IČO {norm_ico} not found")
+        if _CLIENT_ERROR in data:
+            status = data[_CLIENT_ERROR]
+            if status == 400:
+                raise HTTPException(status_code=400, detail=f"ARES odmietol IČO {norm_ico}")
+            raise HTTPException(status_code=502, detail=f"ARES API error ({status})")
+
         try:
-            company = Company(
-                ico=data["ico"],
-                name=data.get("obchodniJmeno", ""),
-                address=data.get("sidlo", {}).get("textovaAdresa", ""),
-                status=data.get("seznamRegistraci", {}).get("stavZdrojeRos", "UNKNOWN"),
-                raw_data=data
+            normalized = normalize_ares(data)
+            return Company(
+                ico=str(data["ico"]),
+                name=normalized["legal_name"] or "",
+                address=normalized["address"] or "",
+                status=normalized["status"],
+                raw_data={**data, "normalized": normalized},
             )
         except (KeyError, TypeError) as e:
             raise HTTPException(status_code=502, detail=f"Unexpected ARES response format: {e}")
 
-        return company
+    async def _get_with_retry(self, ico: str) -> Optional[Dict[str, Any]]:
+        last_exc: Optional[Exception] = None
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                resp = await self.client.get(f"{self.BASE_URL}/{ico}", timeout=10.0)
+                if resp.status_code == 404:
+                    return None
+                if resp.status_code >= 500 or resp.status_code == 429:
+                    resp.raise_for_status()
+                if resp.status_code != 200:
+                    # Chyba požiadavky (napr. 400 pre neplatné IČO), nie výpadok ARES:
+                    # vráti sa ako výsledok, aby sa nezapočítala do circuit breakera a neopakovala.
+                    return {_CLIENT_ERROR: resp.status_code}
+                return resp.json()
+            except HTTPStatusError as e:
+                last_exc = e
+            except (TransportError, ValueError) as e:
+                last_exc = e
+            if attempt < MAX_RETRIES:
+                await asyncio.sleep(RETRY_DELAY * (2 ** attempt))
+        raise last_exc  # type: ignore[misc]
+
+
+# identity_graph.py a utils/id_router.py importujú AresService
+AresService = ARESService

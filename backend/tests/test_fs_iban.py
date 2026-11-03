@@ -167,3 +167,8 @@ def test_endpoint_errors(api, monkeypatch):
     monkeypatch.setenv("FS_OPENDATA_API_KEY", "test-key")
     holder["handler"] = make_fs_handler(fail_first=10_000)
     assert tc.get("/api/sk/company/12345678/iban").status_code == 503
+
+
+async def test_too_many_pages_is_not_a_conclusive_result():
+    with pytest.raises(FsIbanUnavailableError):
+        await _lookup(make_fs_handler(pages=fs.MAX_PAGES + 1))

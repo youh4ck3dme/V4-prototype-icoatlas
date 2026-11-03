@@ -104,18 +104,28 @@ class CompanyStore:
             (atlas_id, source_system, f"/{source_system.lower()}/{request_id}", request_id, json.dumps(payload)),
         )
 
-    def save_financials(self, atlas_id: str, financials: Dict[str, Any], request_id: str) -> None:
+    def save_financials(self, atlas_id: str, financials: Dict[str, Any], request_id: str) -> Dict[str, Any]:
+        """Zlúči históriu s uloženou (po rokoch) v jednej transakcii a vráti uložený stav."""
+        from .ruz_financials_service import merge_financials
+
         with self.conn.cursor() as cur:
+            cur.execute("SELECT financials FROM atlas_companies WHERE atlas_id = %s FOR UPDATE", (atlas_id,))
+            row = cur.fetchone()
+            existing = row["financials"] if row else None
+            if isinstance(existing, str):
+                existing = json.loads(existing)
+            merged = merge_financials(existing, financials)
             cur.execute(
                 """
                 UPDATE atlas_companies
                 SET financials = %s::jsonb, last_financial_year = %s, updated_at = now()
                 WHERE atlas_id = %s
                 """,
-                (json.dumps(financials), financials.get("year"), atlas_id),
+                (json.dumps(merged), merged.get("year"), atlas_id),
             )
             self._add_source(cur, atlas_id, "RUZ_FINANCIALS", request_id, financials)
         self.conn.commit()
+        return merged
 
     def save_iban_check(self, atlas_id: str, result: Dict[str, Any], request_id: str) -> None:
         """iban_verified = firma má v zozname FS (ds_dph_iban) aspoň jeden zverejnený účet."""
