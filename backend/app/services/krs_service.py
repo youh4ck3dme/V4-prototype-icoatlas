@@ -15,9 +15,6 @@ class KRSService:
             resp = await self.client.get(url, params=params, timeout=10.0)
             resp.raise_for_status()
             data = resp.json()
-            import json
-            with open("debug_krs.json", "w") as f:
-                json.dump(data, f, indent=2)
         except TimeoutException:
             raise HTTPException(status_code=504, detail="KRS API request timed out")
         except HTTPStatusError as exc:

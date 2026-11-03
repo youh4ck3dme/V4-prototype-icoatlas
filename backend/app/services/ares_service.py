@@ -15,8 +15,6 @@ class ARESService:
         try:
             resp = await self.client.get(url, timeout=10.0)
             resp.raise_for_status()
-            with open("debug_ares.txt", "w") as f:
-                f.write(resp.text)
             data = resp.json()
         except TimeoutException:
             raise HTTPException(status_code=504, detail="ARES request timed out")
