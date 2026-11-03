@@ -48,6 +48,12 @@ export const ENDPOINTS = {
   USER: {
     HISTORY: `${API_URL}/api/search/history`,
     FAVORITES: `${API_URL}/api/user/favorites`,
+  },
+  PAYMENT: {
+    CHECKOUT: `${API_URL}/api/payment/checkout`,
+    CONFIG: `${API_URL}/api/payment/config`,
+    PRICING: `${API_URL}/api/payment/pricing`,
+    VERIFY: `${API_URL}/api/payment/verify-session`,
   }
 };
 

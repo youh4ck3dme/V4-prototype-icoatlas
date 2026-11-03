@@ -84,3 +84,8 @@ debug_*.txt
 
 
 
+
+.venv
+backend/.venv
+*.png
+

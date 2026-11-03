@@ -35,11 +35,18 @@ import {
   Crown,
   Copy,
   Check,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  ExternalLink,
+  History,
+  Calendar,
 } from "lucide-react";
 import IcoAtlasLogo from "../components/IcoAtlasLogo";
 import ForceGraph from "../components/ForceGraph";
 import IntelligenceBrief from "../components/IntelligenceBrief";
 import Disclaimer from "../components/Disclaimer";
+import Footer from "../components/Footer";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import PremiumLoader from "../components/PremiumLoader";
 import axios from "axios";
@@ -56,6 +63,7 @@ import RateLimitIndicator from "../components/RateLimitIndicator";
 import { useAuth } from "../contexts/AuthContext";
 import SEOHead from "../components/SEOHead";
 import { API_URL, ENDPOINTS } from "../config/api";
+import { detectCountryFromQuery } from "../utils/countryDetector";
 
 /**
  * iCOAtlas v5.0 - SLOVAK ENTERPRISE EDITION
@@ -83,11 +91,38 @@ export default function HomePageNew() {
   const [showResults, setShowResults] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [copiedField, setCopiedField] = useState(null);
+  const [activeTab, setActiveTab] = useState("graph");
+  const [deedsCategoryFilter, setDeedsCategoryFilter] = useState("ALL");
+  const [deedsSearchQuery, setDeedsSearchQuery] = useState("");
+  const [autoDetectedCountry, setAutoDetectedCountry] = useState(null);
+  const [isManualCountrySelection, setIsManualCountrySelection] = useState(false);
   const [filters, setFilters] = useState({
-    country: "",
+    country: "SK",
     minRiskScore: "",
     maxRiskScore: "",
   });
+
+  const handleQueryChange = (val) => {
+    setQuery(val);
+    const detected = detectCountryFromQuery(val, filters.country, isManualCountrySelection);
+    if (detected && detected !== filters.country) {
+      setFilters((prev) => ({ ...prev, country: detected }));
+      setAutoDetectedCountry(detected);
+      setIsManualCountrySelection(false);
+    }
+  };
+
+  const handlePaste = (e) => {
+    const pastedText = e.clipboardData?.getData("text");
+    if (pastedText) {
+      const detected = detectCountryFromQuery(pastedText, filters.country, isManualCountrySelection);
+      if (detected && detected !== filters.country) {
+        setFilters((prev) => ({ ...prev, country: detected }));
+        setAutoDetectedCountry(detected);
+        setIsManualCountrySelection(false);
+      }
+    }
+  };
 
   const handleCopy = useCallback((text, fieldName) => {
     navigator.clipboard.writeText(text);
@@ -183,7 +218,14 @@ export default function HomePageNew() {
 
       try {
         // V4 Logic: Use unified search endpoint with graph=1
-        const countryParam = filters.country || "";
+        let effectiveCountry = filters.country;
+        const detected = detectCountryFromQuery(searchQuery, filters.country, isManualCountrySelection);
+        if (detected && detected !== filters.country) {
+          effectiveCountry = detected;
+          setFilters((prev) => ({ ...prev, country: detected }));
+          setAutoDetectedCountry(detected);
+        }
+        const countryParam = effectiveCountry || "SK";
         const searchUrl = `${ENDPOINTS.SEARCH.V4}/${encodeURIComponent(searchQuery)}?country=${countryParam}&graph=1`;
 
         // Fetch and 3s delay in parallel for premium feel
@@ -206,6 +248,13 @@ export default function HomePageNew() {
         const graphData = searchData.graph;
 
         let result;
+        const osintBlocks = {
+          history: searchData.history || companyData.history || {},
+          deeds: searchData.deeds || companyData.deeds || [],
+          blacklists: searchData.blacklists || companyData.blacklists || {},
+          ubo_rpvs: searchData.ubo_rpvs || companyData.ubo_rpvs || {},
+        };
+
         if (graphData && graphData.nodes) {
           result = {
             nodes: graphData.nodes.map(n => {
@@ -215,6 +264,7 @@ export default function HomePageNew() {
                 return {
                   ...n,
                   ...companyData,
+                  ...osintBlocks,
                   type: "company",
                   label: companyData.legal_name || companyData.name || n.label,
                   risk_score: companyData.risk_score || 0,
@@ -235,7 +285,8 @@ export default function HomePageNew() {
               edge_count: (graphData.links || []).length,
               involved_countries: [companyData.country],
               is_cross_border: false
-            }
+            },
+            ...osintBlocks
           };
         } else {
           result = {
@@ -261,6 +312,7 @@ export default function HomePageNew() {
                 activities: companyData.activities || [],
                 provider_status: companyData.provider_status || "live",
                 provider_error: companyData.provider_error,
+                ...osintBlocks
               }
             ],
             edges: [],
@@ -270,7 +322,8 @@ export default function HomePageNew() {
               edge_count: 0,
               involved_countries: [companyData.country],
               is_cross_border: false
-            }
+            },
+            ...osintBlocks
           };
         }
 
@@ -316,6 +369,19 @@ export default function HomePageNew() {
   const mainCompany = getMainCompany();
   const riskScore = data ? getRiskScore(data.nodes) : 0;
   const riskStatus = getRiskStatus(riskScore);
+
+  const filteredDeeds = useMemo(() => {
+    const list = data?.deeds || mainCompany?.deeds || [];
+    return list.filter((doc) => {
+      const matchCat =
+        deedsCategoryFilter === "ALL" || doc.category === deedsCategoryFilter;
+      const matchQuery =
+        !deedsSearchQuery.trim() ||
+        (doc.title || "").toLowerCase().includes(deedsSearchQuery.toLowerCase()) ||
+        (doc.doc_type || "").toLowerCase().includes(deedsSearchQuery.toLowerCase());
+      return matchCat && matchQuery;
+    });
+  }, [data, mainCompany, deedsCategoryFilter, deedsSearchQuery]);
 
   // Check if company is favorite
   useEffect(() => {
@@ -528,17 +594,30 @@ export default function HomePageNew() {
                     onSubmit={handleSearch}
                     className="flex flex-col md:flex-row gap-2"
                   >
-                    <div className="w-full md:w-32">
+                    <div className="w-full md:w-36 relative">
                         <select
-                          className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 appearance-none cursor-pointer font-bold text-center"
+                          aria-label="Výber krajiny"
+                          className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl py-4 px-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 appearance-none cursor-pointer font-bold text-center transition-all hover:bg-slate-100/70"
                           value={filters.country}
-                          onChange={(e) => setFilters({...filters, country: e.target.value})}
+                          onChange={(e) => {
+                            setFilters({...filters, country: e.target.value});
+                            setAutoDetectedCountry(null);
+                            setIsManualCountrySelection(true);
+                          }}
                         >
-                          <option value="CZ">🇨🇿 CZ</option>
                           <option value="SK">🇸🇰 SK</option>
+                          <option value="CZ">🇨🇿 CZ</option>
                           <option value="PL">🇵🇱 PL</option>
                           <option value="HU">🇭🇺 HU</option>
                         </select>
+                        {autoDetectedCountry && (
+                          <span 
+                            title={`Krajina automaticky detegovaná: ${autoDetectedCountry}`}
+                            className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500 text-white shadow-sm animate-pulse tracking-wide pointer-events-none"
+                          >
+                            Auto
+                          </span>
+                        )}
                       </div>
                     <div className="flex-grow relative group">
                       <Search
@@ -550,7 +629,8 @@ export default function HomePageNew() {
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0B4EA2]/30 focus:border-[#0B4EA2] transition-all font-medium text-lg"
                         placeholder="Zadajte IČO, názov firmy alebo identifikátor..."
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={(e) => handleQueryChange(e.target.value)}
+                        onPaste={handlePaste}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         onFocus={() => { if(suggestions.length > 0) setShowSuggestions(true); }}
                         ref={searchInputRef}
@@ -568,6 +648,11 @@ export default function HomePageNew() {
                               className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0"
                               onClick={() => {
                                 setQuery(sug.id);
+                                const detected = detectCountryFromQuery(sug.id, filters.country);
+                                if (detected) {
+                                  setFilters((prev) => ({ ...prev, country: detected }));
+                                  setAutoDetectedCountry(detected);
+                                }
                                 setShowSuggestions(false);
                               }}
                             >
@@ -606,7 +691,11 @@ export default function HomePageNew() {
                     <button
                       key={c.code}
                       type="button"
-                      onClick={() => setFilters({ ...filters, country: c.code })}
+                      onClick={() => {
+                        setFilters({ ...filters, country: c.code });
+                        setAutoDetectedCountry(null);
+                        setIsManualCountrySelection(true);
+                      }}
                       className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 border min-h-[38px] ${
                         filters.country === c.code
                           ? "bg-blue-50 border-blue-300 text-[#0B4EA2] shadow-sm"
@@ -1426,44 +1515,527 @@ export default function HomePageNew() {
                 </div>
               </div>
 
-              {/* Graph Panel */}
+              {/* Tabbed Intelligence & Analytics Panel */}
               <div className="lg:col-span-8 flex flex-col gap-6">
-                <div className="bg-white border border-slate-200 rounded-2xl flex-grow overflow-hidden relative flex flex-col">
-                  <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-slate-800 uppercase tracking-wider text-xs">
-                      <Share size={16} className="text-[#0B4EA2]" />{" "}
-                      Vizualizácia vzťahov
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => exportToCSV(data)}
-                        className="text-[10px] uppercase font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all"
-                      >
-                        CSV
-                      </button>
-                      <button
-                        onClick={() => {
-                          /* PNG logic handled in watermarking block below */
-                        }}
-                        className="text-[10px] uppercase font-bold bg-[#0B4EA2] border border-[#0B4EA2] px-3 py-1.5 rounded-lg text-white hover:bg-blue-800 transition-all shadow-sm"
-                      >
-                        Export PNG
-                      </button>
-                    </div>
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[640px]">
+                  {/* Top Navigation Tabs */}
+                  <div className="flex border-b border-slate-200 bg-slate-50/70 px-3 pt-2 gap-1.5 overflow-x-auto scrollbar-none">
+                    <button
+                      data-testid="tab-graph"
+                      onClick={() => setActiveTab("graph")}
+                      className={`px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+                        activeTab === "graph"
+                          ? "border-[#0B4EA2] text-[#0B4EA2] bg-white rounded-t-xl shadow-[0_-2px_6px_rgba(0,0,0,0.02)]"
+                          : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60 rounded-t-xl"
+                      }`}
+                    >
+                      <Share size={14} className={activeTab === "graph" ? "text-[#0B4EA2]" : "text-slate-400"} />
+                      <span>Vizualizácia vzťahov</span>
+                    </button>
+                    <button
+                      data-testid="tab-timeline"
+                      onClick={() => setActiveTab("timeline")}
+                      className={`px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+                        activeTab === "timeline"
+                          ? "border-[#0B4EA2] text-[#0B4EA2] bg-white rounded-t-xl shadow-[0_-2px_6px_rgba(0,0,0,0.02)]"
+                          : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60 rounded-t-xl"
+                      }`}
+                    >
+                      <Clock size={14} className={activeTab === "timeline" ? "text-[#0B4EA2]" : "text-slate-400"} />
+                      <span>Časová os zmien</span>
+                      {data?.history?.timeline?.length > 0 && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-[#0B4EA2]">
+                          {data.history.timeline.length}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      data-testid="tab-risk"
+                      onClick={() => setActiveTab("risk")}
+                      className={`px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+                        activeTab === "risk"
+                          ? "border-[#0B4EA2] text-[#0B4EA2] bg-white rounded-t-xl shadow-[0_-2px_6px_rgba(0,0,0,0.02)]"
+                          : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60 rounded-t-xl"
+                      }`}
+                    >
+                      <ShieldAlert size={14} className={activeTab === "risk" ? "text-[#0B4EA2]" : "text-slate-400"} />
+                      <span>Finančné a daňové riziko</span>
+                      {data?.blacklists?.has_blacklists ? (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 animate-pulse">
+                          Dlh
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                          Čisté
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      data-testid="tab-deeds"
+                      onClick={() => setActiveTab("deeds")}
+                      className={`px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+                        activeTab === "deeds"
+                          ? "border-[#0B4EA2] text-[#0B4EA2] bg-white rounded-t-xl shadow-[0_-2px_6px_rgba(0,0,0,0.02)]"
+                          : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60 rounded-t-xl"
+                      }`}
+                    >
+                      <FileText size={14} className={activeTab === "deeds" ? "text-[#0B4EA2]" : "text-slate-400"} />
+                      <span>Zbierka listín</span>
+                      {data?.deeds?.length > 0 && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700">
+                          {data.deeds.length}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      data-testid="tab-ubo"
+                      onClick={() => setActiveTab("ubo")}
+                      className={`px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all shrink-0 ${
+                        activeTab === "ubo"
+                          ? "border-[#0B4EA2] text-[#0B4EA2] bg-white rounded-t-xl shadow-[0_-2px_6px_rgba(0,0,0,0.02)]"
+                          : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/60 rounded-t-xl"
+                      }`}
+                    >
+                      <Crown size={14} className={activeTab === "ubo" ? "text-[#0B4EA2]" : "text-slate-400"} />
+                      <span>Majetkové pozadie (UBO)</span>
+                      {data?.ubo_rpvs?.is_registered_in_rpvs && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                          RPVS
+                        </span>
+                      )}
+                    </button>
                   </div>
-                  <div className="flex-grow bg-slate-50/50 p-4 relative flex flex-col md:flex-row gap-4">
-                    <div className="flex-grow relative">
-                      <ForceGraph data={data} />
+
+                  {/* TAB 1: Force Graph */}
+                  {activeTab === "graph" && (
+                    <div className="flex-grow flex flex-col animate-fade-in">
+                      <div className="px-6 py-3.5 border-b border-slate-100 flex items-center justify-between bg-white">
+                        <div className="flex items-center gap-2 font-bold text-slate-800 uppercase tracking-wider text-xs">
+                          <Share size={15} className="text-[#0B4EA2]" />
+                          Interaktívna topológia vzťahov
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => exportToCSV(data)}
+                            className="text-[10px] uppercase font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all hover:bg-slate-50"
+                          >
+                            CSV
+                          </button>
+                          <button
+                            onClick={() => {
+                              /* PNG logic */
+                            }}
+                            className="text-[10px] uppercase font-bold bg-[#0B4EA2] border border-[#0B4EA2] px-3 py-1.5 rounded-lg text-white hover:bg-blue-800 transition-all shadow-sm"
+                          >
+                            Export PNG
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex-grow bg-slate-50/50 p-4 relative flex flex-col md:flex-row gap-4 min-h-[580px]">
+                        <div className="flex-grow relative h-full min-h-[520px]">
+                          <ForceGraph data={data} />
+                        </div>
+                        {data?.nexus_story && (
+                          <div className="md:w-80 flex-shrink-0">
+                            <IntelligenceBrief
+                              story={data.nexus_story}
+                              metadata={data.nexus_metadata}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {data?.nexus_story && (
-                      <div className="md:w-80 flex-shrink-0">
-                        <IntelligenceBrief
-                          story={data.nexus_story}
-                          metadata={data.nexus_metadata}
+                  )}
+
+                  {/* TAB 2: Timeline & History */}
+                  {activeTab === "timeline" && (
+                    <div className="p-6 space-y-6 animate-fade-in overflow-y-auto max-h-[750px]">
+                      {/* Nominee Handover / Exit Scam Analysis Card */}
+                      {data?.history?.nominee_handover_analysis && (
+                        <div
+                          className={`p-5 rounded-2xl border ${
+                            data.history.nominee_handover_analysis.suspicious_handover
+                              ? "bg-amber-50/80 border-amber-300 text-amber-950"
+                              : "bg-emerald-50/60 border-emerald-200 text-emerald-950"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                              {data.history.nominee_handover_analysis.suspicious_handover ? (
+                                <AlertTriangle className="text-amber-600 w-6 h-6 shrink-0" />
+                              ) : (
+                                <CheckCircle2 className="text-emerald-600 w-6 h-6 shrink-0" />
+                              )}
+                              <div>
+                                <h3 className="text-sm font-bold tracking-tight">
+                                  {data.history.nominee_handover_analysis.suspicious_handover
+                                    ? "Detegovaný podozrivý prevod subjektu (Exit Scam / Nominee Handover)"
+                                    : "Audit prevodov a histórie štatutárov: V norme"}
+                                </h3>
+                                <p className="text-xs text-slate-600 mt-0.5">
+                                  {data.history.nominee_handover_analysis.suspicious_handover
+                                    ? "Forenzná analýza identifikovala zmenu štatutárov alebo spoločníkov vykazujúcu znaky účelového odovzdania rizikovej firmy."
+                                    : "Historické zmeny štatutárov a spoločníkov nevykazujú anomálie typické pre biele kone."}
+                                </p>
+                              </div>
+                            </div>
+                            {data.history.nominee_handover_analysis.risk_score_delta > 0 && (
+                              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-200 text-amber-900 border border-amber-300 shrink-0">
+                                +{data.history.nominee_handover_analysis.risk_score_delta} Riziko
+                              </span>
+                            )}
+                          </div>
+
+                          {data.history.nominee_handover_analysis.reasons?.length > 0 && (
+                            <div className="mt-4 pt-3 border-t border-amber-200/60 space-y-1.5">
+                              {data.history.nominee_handover_analysis.reasons.map((r, idx) => (
+                                <p key={idx} className="text-xs text-slate-700 flex items-start gap-2">
+                                  <span className="text-amber-500 font-bold">•</span> {r}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-3 border-t border-slate-200/50 text-center">
+                            <div className="bg-white/70 p-2.5 rounded-xl border border-slate-200/60">
+                              <span className="text-[10px] uppercase font-bold text-slate-500 block">Historickí konatelia</span>
+                              <span className="text-base font-bold text-slate-800">{data.history.nominee_handover_analysis.total_historical_executives || 0}</span>
+                            </div>
+                            <div className="bg-white/70 p-2.5 rounded-xl border border-slate-200/60">
+                              <span className="text-[10px] uppercase font-bold text-slate-500 block">Historickí spoločníci</span>
+                              <span className="text-base font-bold text-slate-800">{data.history.nominee_handover_analysis.total_historical_owners || 0}</span>
+                            </div>
+                            <div className="bg-white/70 p-2.5 rounded-xl border border-slate-200/60">
+                              <span className="text-[10px] uppercase font-bold text-slate-500 block">Zmeny názvu</span>
+                              <span className="text-base font-bold text-slate-800">{data.history.nominee_handover_analysis.total_name_changes || 0}</span>
+                            </div>
+                            <div className="bg-white/70 p-2.5 rounded-xl border border-slate-200/60">
+                              <span className="text-[10px] uppercase font-bold text-slate-500 block">Zmeny sídla</span>
+                              <span className="text-base font-bold text-slate-800">{data.history.nominee_handover_analysis.total_relocations || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Vertical Timeline */}
+                      <div className="bg-slate-50/70 p-6 rounded-2xl border border-slate-200">
+                        <h3 className="text-xs font-bold text-[#0B4EA2] uppercase tracking-wider mb-6 flex items-center gap-2">
+                          <Clock size={16} /> Chronologická história zápisov a zmien
+                        </h3>
+
+                        {(!data?.history?.timeline || data.history.timeline.length === 0) ? (
+                          <div className="text-center py-12 text-slate-400">
+                            <History size={36} className="mx-auto mb-2 text-slate-300" />
+                            <p className="text-sm">V Obchodnom registri neboli nájdené žiadne historické zmeny.</p>
+                          </div>
+                        ) : (
+                          <div className="relative border-l-2 border-blue-200 ml-4 space-y-6 py-2">
+                            {data.history.timeline.map((event, idx) => (
+                              <div key={idx} className="relative pl-6 group">
+                                <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white border-2 border-[#0B4EA2] group-hover:scale-125 transition-transform" />
+                                
+                                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs hover:border-blue-300 transition-colors">
+                                  <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                                    <span className="text-xs font-mono font-bold text-[#0B4EA2] bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-100">
+                                      {event.date}
+                                    </span>
+                                    <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                                      {event.type}
+                                    </span>
+                                  </div>
+                                  <h4 className="text-sm font-bold text-slate-800 leading-snug">{event.title}</h4>
+                                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">{event.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 3: Risk & Blacklists */}
+                  {activeTab === "risk" && (
+                    <div className="p-6 space-y-6 animate-fade-in overflow-y-auto max-h-[750px]">
+                      {/* Blacklist Debt Summary Header */}
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Stav overenia registrov</span>
+                          <div className="flex items-center gap-2">
+                            {data?.blacklists?.has_blacklists ? (
+                              <>
+                                <AlertTriangle className="text-red-600 w-5 h-5 shrink-0" />
+                                <span className="text-base font-bold text-red-700">Evidovaný záväzok</span>
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 className="text-emerald-600 w-5 h-5 shrink-0" />
+                                <span className="text-base font-bold text-emerald-700">Bez evidovaného dlhu</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Celková zistená suma nedoplatkov</span>
+                          <span className="text-2xl font-bold font-mono text-slate-800">
+                            {data?.blacklists?.total_debt_amount ? `${Number(data.blacklists.total_debt_amount).toFixed(2)} €` : "0.00 €"}
+                          </span>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Dopad na risk scoring</span>
+                          <span className="text-2xl font-bold font-mono text-red-600">
+                            +{data?.blacklists?.risk_delta || 0} b
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Blacklist Detailed Cards */}
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                          <ShieldAlert size={16} className="text-[#0B4EA2]" />
+                          Audit verejných registrov a dlhových zoznamov SR
+                        </h3>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {(data?.blacklists?.records || []).map((rec, idx) => (
+                            <div
+                              key={idx}
+                              className={`p-5 rounded-2xl border transition-all ${
+                                rec.status === "DEBT_CONFIRMED" || rec.status === "RECORD_ACTIVE"
+                                  ? "bg-red-50/50 border-red-200 shadow-xs"
+                                  : "bg-white border-slate-200 hover:border-slate-300"
+                              }`}
+                            >
+                              <div className="flex justify-between items-start gap-2 mb-2">
+                                <span className="text-sm font-bold text-slate-800 leading-snug">{rec.institution}</span>
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0 ${
+                                    rec.status === "DEBT_CONFIRMED" || rec.status === "RECORD_ACTIVE"
+                                      ? "bg-red-100 text-red-700 border border-red-200"
+                                      : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  }`}
+                                >
+                                  {rec.status === "DEBT_CONFIRMED" ? "Nedoplatok" : rec.status === "RECORD_ACTIVE" ? "Aktívny záznam" : "Čisté"}
+                                </span>
+                              </div>
+
+                              <p className="text-xs text-slate-600 leading-relaxed mb-3">{rec.description}</p>
+
+                              <div className="flex justify-between items-center pt-3 border-t border-slate-100 text-xs text-slate-500">
+                                <span>{rec.published_on ? `K dátumu: ${rec.published_on}` : "Live overenie"}</span>
+                                {rec.amount > 0 && (
+                                  <span className="text-sm font-bold font-mono text-red-700">
+                                    {Number(rec.amount).toFixed(2)} {rec.currency || "EUR"}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 4: Deeds Collection */}
+                  {activeTab === "deeds" && (
+                    <div className="p-6 space-y-6 animate-fade-in overflow-y-auto max-h-[750px]">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-200">
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <FileText size={16} className="text-[#0B4EA2]" />
+                            Zbierka listín Obchodného registra SR
+                          </h3>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Kompletný zoznam uložených dokumentov, účtovných závierok a notárskych zápisníc.
+                          </p>
+                        </div>
+
+                        {/* Filter pills */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {[
+                            { id: "ALL", label: "Všetky" },
+                            { id: "FINANCIAL_STATEMENT", label: "Účtovné závierky" },
+                            { id: "LEGAL_CONTRACT", label: "Zmluvy a stanovy" },
+                            { id: "OFFICIAL_MINUTES", label: "Zápisnice" },
+                            { id: "TRADE_LICENSE", label: "Živnosti" },
+                          ].map(cat => (
+                            <button
+                              key={cat.id}
+                              onClick={() => setDeedsCategoryFilter(cat.id)}
+                              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                                deedsCategoryFilter === cat.id
+                                  ? "bg-[#0B4EA2] text-white shadow-xs"
+                                  : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                              }`}
+                            >
+                              {cat.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Search inside deeds */}
+                      <div className="relative">
+                        <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+                        <input
+                          type="text"
+                          placeholder="Hľadať v listinách (napr. účtovná závierka, zmluva, 2024)..."
+                          value={deedsSearchQuery}
+                          onChange={(e) => setDeedsSearchQuery(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:border-[#0B4EA2]"
                         />
                       </div>
-                    )}
-                  </div>
+
+                      {/* Deeds Table / List */}
+                      {filteredDeeds.length === 0 ? (
+                        <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                          <FileText size={36} className="mx-auto mb-2 text-slate-300" />
+                          <p className="text-sm">V Zbierke listín sa nenašli žiadne dokumenty pre zvolený filter.</p>
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden bg-white">
+                          {filteredDeeds.map((doc, idx) => (
+                            <div key={idx} className="p-4 hover:bg-slate-50/80 transition-colors flex items-center justify-between gap-4">
+                              <div className="min-w-0 flex items-start gap-3">
+                                <div className="p-2 rounded-lg bg-blue-50 text-[#0B4EA2] shrink-0 mt-0.5">
+                                  <FileText size={16} />
+                                </div>
+                                <div>
+                                  <h4 className="text-xs font-bold text-slate-800 leading-snug">{doc.title}</h4>
+                                  <p className="text-[11px] text-slate-500 mt-0.5">{doc.doc_type}</p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-3 shrink-0">
+                                <span className="text-[10px] font-mono px-2 py-1 rounded bg-slate-100 text-slate-600">
+                                  {doc.delivery_date}
+                                </span>
+                                <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#0B4EA2] border border-blue-100">
+                                  {doc.category}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* TAB 5: UBO & RPVS */}
+                  {activeTab === "ubo" && (
+                    <div className="p-6 space-y-6 animate-fade-in overflow-y-auto max-h-[750px]">
+                      {/* RPVS Registration Badge Banner */}
+                      <div
+                        className={`p-5 rounded-2xl border ${
+                          data?.ubo_rpvs?.is_registered_in_rpvs
+                            ? "bg-emerald-50/70 border-emerald-250 text-emerald-950"
+                            : "bg-slate-50 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <Crown className={`w-6 h-6 shrink-0 ${data?.ubo_rpvs?.is_registered_in_rpvs ? "text-emerald-600" : "text-slate-400"}`} />
+                            <div>
+                              <h3 className="text-sm font-bold tracking-tight">
+                                {data?.ubo_rpvs?.is_registered_in_rpvs
+                                  ? "Subjekt je zapísaný v Registri partnerov verejného sektora (RPVS)"
+                                  : "Subjekt nie je evidovaný v RPVS"}
+                              </h3>
+                              <p className="text-xs text-slate-600 mt-0.5">
+                                {data?.ubo_rpvs?.is_registered_in_rpvs
+                                  ? `Číslo vložky: ${data.ubo_rpvs.registration_number || "Overené"} | Dátum zápisu: ${data.ubo_rpvs.registered_on || "N/A"}`
+                                  : "Zápis v RPVS je povinný pri čerpaní verejných financií, štátnych zákaziek a eurofondov."}
+                              </p>
+                            </div>
+                          </div>
+                          <span
+                            className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shrink-0 ${
+                              data?.ubo_rpvs?.is_registered_in_rpvs
+                                ? "bg-emerald-200 text-emerald-900 border border-emerald-300"
+                                : "bg-slate-200 text-slate-700"
+                            }`}
+                          >
+                            {data?.ubo_rpvs?.is_registered_in_rpvs ? "Overené RPVS" : "Nezapísaný"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Authorized Person Card (Oprávnená osoba) */}
+                      {data?.ubo_rpvs?.authorized_person && (
+                        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <Building2 size={16} className="text-[#0B4EA2]" /> Oprávnená osoba (Advokát / Notár ručiaci za pravdivosť zápisu)
+                          </h4>
+                          <div className="space-y-1 text-xs text-slate-700">
+                            <p className="font-bold text-slate-900 text-sm">{data.ubo_rpvs.authorized_person.name}</p>
+                            {data.ubo_rpvs.authorized_person.attorney && (
+                              <p className="text-slate-600">Konajúci advokát: <span className="font-medium text-slate-800">{data.ubo_rpvs.authorized_person.attorney}</span></p>
+                            )}
+                            {data.ubo_rpvs.authorized_person.ico && (
+                              <p className="text-slate-500 font-mono">IČO: {data.ubo_rpvs.authorized_person.ico}</p>
+                            )}
+                            {data.ubo_rpvs.authorized_person.address && (
+                              <p className="text-slate-500">{data.ubo_rpvs.authorized_person.address}</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Ultimate Beneficial Owners List */}
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-bold text-[#0B4EA2] uppercase tracking-wider flex items-center gap-2">
+                          <Crown size={16} /> Identifikovaní koneční užívatelia výhod (KÚV / UBO)
+                        </h4>
+
+                        {(!data?.ubo_rpvs?.ubos || data.ubo_rpvs.ubos.length === 0) ? (
+                          <div className="text-center py-12 text-slate-400 border border-dashed border-slate-200 rounded-xl">
+                            <Users size={36} className="mx-auto mb-2 text-slate-300" />
+                            <p className="text-sm">Koneční užívatelia výhod nie sú verejne dostupní.</p>
+                          </div>
+                        ) : (
+                          <div className="grid md:grid-cols-2 gap-4">
+                            {data.ubo_rpvs.ubos.map((ubo, idx) => (
+                              <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-colors">
+                                <div className="flex justify-between items-start gap-2 mb-2">
+                                  <h5 className="font-bold text-slate-900 text-sm">{ubo.name || ubo.formatted_name}</h5>
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-850 border border-amber-200">
+                                    KÚV / UBO
+                                  </span>
+                                </div>
+
+                                {ubo.address && (
+                                  <p className="text-xs text-slate-500 mb-3">{ubo.address}</p>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-2 my-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                                  <div>
+                                    <span className="text-[10px] uppercase font-bold text-slate-500 block">Hlasovacie práva</span>
+                                    <span className="text-sm font-bold text-emerald-700">
+                                      {ubo.voting_rights_percentage != null ? `${ubo.voting_rights_percentage}%` : "100%"}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-[10px] uppercase font-bold text-slate-500 block">Podiel na zisku</span>
+                                    <span className="text-sm font-bold text-emerald-700">
+                                      {ubo.profit_share_percentage != null ? `${ubo.profit_share_percentage}%` : "100%"}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {ubo.legal_basis && (
+                                  <p className="text-[11px] text-slate-600 bg-blue-50/50 p-2.5 rounded-lg border border-blue-100 leading-normal">
+                                    <span className="font-bold text-[#0B4EA2]">Právny titul:</span> {ubo.legal_basis}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1471,164 +2043,8 @@ export default function HomePageNew() {
         )}
       </main>
 
-      {/* --- FOOTER --- */}
-      <footer className="bg-slate-100 text-slate-600 py-12 text-sm border-t border-slate-200 mt-auto">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-2 text-slate-800 font-bold mb-4 font-heading">
-              <IcoAtlasLogo size={24} /> iCOAtlas
-            </div>
-            <p className="mb-4">
-              Profesionálny nástroj pre overovanie obchodných partnerov.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-slate-800 font-bold mb-4">Produkt</h4>
-            <ul className="space-y-2">
-              <li className="hover:text-slate-950 cursor-pointer">Funkcie</li>
-              <li className="hover:text-slate-950 cursor-pointer">
-                API Integrácia
-              </li>
-              <li className="hover:text-slate-950 cursor-pointer">Cenník</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-slate-800 font-bold mb-4">Spoločnosť</h4>
-            <ul className="space-y-2">
-              <li className="hover:text-slate-950 cursor-pointer">O nás</li>
-              <li className="hover:text-slate-950 cursor-pointer">Kariéra</li>
-              <li className="hover:text-slate-950 cursor-pointer">Kontakt</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-slate-800 font-bold mb-4">Legislatíva</h4>
-            <ul className="space-y-2">
-              <li
-                className="hover:text-slate-950 cursor-pointer"
-                onClick={() => navigate("/vop")}
-              >
-                VOP
-              </li>
-              <li
-                className="hover:text-slate-950 cursor-pointer"
-                onClick={() => navigate("/privacy")}
-              >
-                Ochrana údajov
-              </li>
-              <li
-                className="hover:text-slate-950 cursor-pointer"
-                onClick={() => navigate("/disclaimer")}
-              >
-                Disclaimer
-              </li>
-              <li
-                className="hover:text-slate-950 cursor-pointer"
-                onClick={() => navigate("/cookies")}
-              >
-                Cookies
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Disclaimer s zdrojmi dát */}
-        <div className="border-t border-slate-200 mt-8 pt-6">
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 border-l-4 border-amber-500">
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <svg
-                  className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                <div className="flex-1">
-                  <p className="text-amber-700 font-semibold text-sm mb-2">
-                    Dôležité upozornenie
-                  </p>
-                  <p className="text-slate-700 text-xs leading-relaxed">
-                    Dáta majú len informatívny charakter. Poskytovateľ
-                    negarantuje správnosť dát. Pre oficiálne informácie použite
-                    pôvodné zdroje.
-                  </p>
-                </div>
-              </div>
-              <div className="pl-8">
-                <p className="text-amber-700 font-semibold text-xs mb-2">
-                  Zdroj dát:
-                </p>
-                <ul className="space-y-1 text-xs text-slate-500">
-                  <li>
-                    <a
-                      href="https://www.orsr.sk"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-amber-400 transition-colors"
-                    >
-                      Obchodný register SR (ORSR)
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.zrsr.sk"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-amber-400 transition-colors"
-                    >
-                      Živnostenský register SR (ZRSR)
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.registeruz.sk"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-amber-400 transition-colors"
-                    >
-                      Register účtovných závierok (RUZ)
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://wwwinfo.mfcr.cz"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-amber-400 transition-colors"
-                    >
-                      ARES (ČR)
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.financnasprava.sk"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-amber-400 transition-colors"
-                    >
-                      Finančná správa SR
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-3 pl-8">
-                <button
-                  onClick={() => navigate("/disclaimer")}
-                  className="text-amber-400 hover:text-amber-300 text-xs font-semibold underline"
-                >
-                  Viac informácií o vylúčení zodpovednosti
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* --- PREPRACOVANÝ LIQUID GLASS FOOTER S MODROU PRIESVITNOU --- */}
+      <Footer />
 
       {/* Mobile Sticky Action Bar */}
       {showResults && data && (

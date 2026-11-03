@@ -78,7 +78,8 @@ Terminal 2 - Frontend:
 
 ```bash
 cd frontend
-npm run dev
+pnpm dev
+# or npm run dev
 ```
 
 **Option B: Using Start Script**
@@ -90,7 +91,7 @@ chmod +x start_dev.sh
 
 ### 5. Access Application
 
-- **Frontend**: http://localhost:5173 (or port shown in terminal)
+- **Frontend**: http://localhost:8009 (port configured in vite.config.js)
 - **Backend API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/api/docs
 
