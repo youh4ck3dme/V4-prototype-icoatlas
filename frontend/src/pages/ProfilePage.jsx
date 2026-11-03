@@ -28,7 +28,9 @@ const ProfilePage = () => {
   const fetchApiKeys = async () => {
     setLoadingKeys(true);
     try {
-      const response = await fetch(`${API_URL}/api/api-keys?token=${token}`);
+      const response = await fetch(`${API_URL}/api/api-keys`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.ok) {
         const data = await response.json();
         setApiKeys(data);
@@ -43,9 +45,12 @@ const ProfilePage = () => {
   const createApiKey = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_URL}/api/api-keys?token=${token}`, {
+      const response = await fetch(`${API_URL}/api/api-keys`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ name: newKeyName }),
       });
 
@@ -64,9 +69,10 @@ const ProfilePage = () => {
     if (!confirm("Naozaj chcete zrušiť tento API kľúč?")) return;
     try {
       const response = await fetch(
-        `${API_URL}/api/api-keys/${id}?token=${token}`,
+        `${API_URL}/api/api-keys/${id}`,
         {
           method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (response.ok) {

@@ -2,7 +2,7 @@
 Unified V4 Search Endpoint
 Supports all V4 countries with automatic identifier classification and optional graph.
 """
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import Optional, Dict, Any
 import os
 import time
@@ -11,6 +11,8 @@ import logging
 logger = logging.getLogger("uvicorn.error")
 
 from ...utils.identifier_classifier import classify_identifier
+from ..deps import get_optional_user
+from .users import record_search
 
 router = APIRouter()
 
@@ -265,6 +267,7 @@ async def search_v4(
     graph: int = Query(0, description="Include relationship graph (1=yes, 0=no)"),
     limit: int = Query(50, description="Max related companies in graph"),
     fallback: int = Query(1, description="Allow fallback to mock data (1=yes, 0=no)"),
+    user: Optional[Dict[str, Any]] = Depends(get_optional_user),
 ) -> Dict[str, Any]:
     """
     Unified V4 company search.
@@ -867,6 +870,9 @@ async def search_v4(
     response["blacklists"] = company.get("blacklists", {})
     response["ubo_rpvs"] = company.get("ubo_rpvs", {})
     
+    # história len pre prihláseného používateľa
+    await record_search(user, raw_id, (company or {}).get("country") or detected_country,
+                        (company or {}).get("atlas_id"), 1 if company else 0)
     return response
 
 

@@ -7,7 +7,10 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5432/iluminati"
     AUTOFORM_API_TOKEN: Optional[str] = None
     DATAHUB_API_TOKEN: Optional[str] = None
-    
+
+    # JWT podpis (povinný v produkcii, aspoň 32 znakov)
+    SECRET_KEY: Optional[str] = None
+
     # Redis configuration
     REDIS_URL: Optional[str] = None
     
