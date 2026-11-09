@@ -43,7 +43,12 @@ def validate_template(schema_path: Path, example_path: Path) -> bool:
 
 def main():
     """Validate all example files."""
-    templates_dir = Path(__file__).parent / "backend" / "services" / "templates"
+    templates_dir = (
+        Path(__file__).resolve().parent.parent
+        / "backend_legacy_20251229_195800"
+        / "services"
+        / "templates"
+    )
     examples_dir = templates_dir / "examples"
     
     if not templates_dir.exists():

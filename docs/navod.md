@@ -327,9 +327,9 @@ python -m alembic upgrade head
 
 ### Hlavné dokumenty:
 - **README.md** - Prehľad projektu
-- **QUICK_START.md** - Rýchly štart
-- **TEST_REPORT.md** - Test report
-- **SPECIAL_TESTS_REPORT.md** - Špeciálne testy
+- **docs/QUICK_START.md** - Rýchly štart
+- **docs/archive/TEST_REPORT.md** - Test report
+- **docs/archive/SPECIAL_TESTS_REPORT.md** - Špeciálne testy
 
 ### Detailná dokumentácia (docs/):
 - **DEVELOPER_GUIDE.md** - Príručka pre vývojárov

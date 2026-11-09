@@ -202,7 +202,7 @@ Nasadenie na produkčný VPS server `fantastic4-vps` prebieha pomocou Docker Com
    npm run build
    cd ..
    git status
-   git add frontend/src frontend/Dockerfile.prod PRODUCTION_OPS_GUIDE.md
+   git add frontend/src frontend/Dockerfile.prod docs/PRODUCTION_OPS_GUIDE.md
    git commit -m "fix(frontend): improve mobile and iPhone responsiveness"
    git push origin main
    ```

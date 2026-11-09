@@ -167,10 +167,10 @@ npm test
 ## 📚 Dokumentácia
 
 - **README.md** - Hlavná dokumentácia projektu
-- **QUICK_START.md** - Rýchly štart
+- **docs/QUICK_START.md** - Rýchly štart
 - **docs/** - Detailná dokumentácia
-- **TEST_REPORT.md** - Test report
-- **SPECIAL_TESTS_REPORT.md** - Špeciálne testy
+- **docs/archive/TEST_REPORT.md** - Test report
+- **docs/archive/SPECIAL_TESTS_REPORT.md** - Špeciálne testy
 
 ---
 
