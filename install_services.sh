@@ -19,7 +19,7 @@ echo ""
 # Check OS
 if [[ "$OSTYPE" != "darwin"* ]]; then
     echo -e "${RED}❌ This script is for macOS only${NC}"
-    echo "For Linux, see SETUP.md for manual installation instructions"
+    echo "For Linux, see docs/SETUP.md for manual installation instructions"
     exit 1
 fi
 

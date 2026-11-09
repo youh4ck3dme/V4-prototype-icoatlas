@@ -198,6 +198,6 @@ if [ $REQUIRED_FAILED -eq 0 ]; then
 else
     echo -e "${RED}❌ Some required services are missing!${NC}"
     echo ""
-    echo -e "${YELLOW}Please check SETUP.md for installation instructions.${NC}"
+    echo -e "${YELLOW}Please check docs/SETUP.md for installation instructions.${NC}"
     exit 1
 fi

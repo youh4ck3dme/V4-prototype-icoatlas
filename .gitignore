@@ -89,7 +89,6 @@ debug_*.txt
 *.db
 *.sqlite
 *.sqlite3
-debug_*.txt
 debug_*.json
 .hypothesis/
 .venv

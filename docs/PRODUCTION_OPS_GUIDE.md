@@ -56,7 +56,7 @@ You should see a full JSON response containing the company data. At the end of t
    npm run build
    cd ..
    git status
-   git add frontend/src frontend/Dockerfile.prod PRODUCTION_OPS_GUIDE.md
+   git add frontend/src frontend/Dockerfile.prod docs/PRODUCTION_OPS_GUIDE.md
    git commit -m "fix(frontend): improve mobile and iPhone responsiveness"
    git push origin main
    ```
